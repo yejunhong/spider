@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "puppeteer": "^1.12.2"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-remove-strict-mode": "0.0.2"
   }
 }
