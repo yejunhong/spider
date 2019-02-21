@@ -2,8 +2,8 @@ const puppeteer = require('puppeteer');
 const crypto = require('crypto');
 
 const arguments = process.argv.splice(2);
-
-const config = require(`./config/${arguments[0]}`);
+const config_name = arguments[0]
+const config = require(`./config/${config_name}`);
 
 console.log(arguments)
 
@@ -19,7 +19,7 @@ puppeteer.launch(options).then(async browser => {
   //await page.exposeFunction('res_data', e => 1);
   // 注入配置信息
   await page.addScriptTag({
-    path: `config/kuaikanmanhua.js`,
+    path: `config/${config_name}.js`,
   });
 
   const list = await page.$$eval(config.list.selector, async (d, config) => {

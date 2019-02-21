@@ -1,2 +1,5 @@
 /node/node_modules
 /node/package-lock.json
+/web/admin/node_modules
+/web/admin/package-lock.json
+.DS_Store
