@@ -1,0 +1,14 @@
+syntax = "proto3";
+ 
+package drive;
+ 
+service browser {
+  rpc ping (pingRequest) returns (pingReply) {}
+}
+ 
+message pingRequest {
+}
+ 
+message pingReply {
+  string message = 1;
+}
