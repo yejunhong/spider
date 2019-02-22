@@ -1,14 +1,18 @@
 syntax = "proto3";
  
-package drive;
+package grpc;
  
 service browser {
-  rpc ping (pingRequest) returns (pingReply) {}
+  rpc CrawlList (Request) returns (Reply) {}
+  rpc CrawlChapter (Request) returns (Reply) {}
+  rpc CrawlChapterContent (Request) returns (Reply) {}
 }
  
-message pingRequest {
+message Request {
+  string url = 1;
+  string config_name = 1;
 }
  
-message pingReply {
+message Reply {
   string message = 1;
 }
