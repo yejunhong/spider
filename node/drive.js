@@ -85,6 +85,18 @@ class Drive{
    */
   async OpenPage(url, config_name, config) {
     const page = await browser.newPage();
+    
+    if (config.cookie != false){
+      for (let e of d) {
+        await page.setCookie(e);     // 设置cookie
+      }
+    }
+
+    // 伪造浏览器
+    if (config.user_agent != false){
+      await page.setUserAgent(config.user_agent);
+    }
+   
     await page.goto(url);
     page.on('console', msg => console.log(msg.text()));
     // 注入函数到浏览器
