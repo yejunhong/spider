@@ -60,7 +60,7 @@ class Drive{
     if(config.login == false){ // 是否进行登录操作
       return
     }
-    const page = await browser.newPage();
+    const page = await this.browser.newPage();
     await page.goto(url);
     // 注入配置信息
     await page.addScriptTag({
