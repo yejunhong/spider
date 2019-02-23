@@ -36,6 +36,7 @@ function get_list_data(e) {
   };
 }
 
+// http://c1021.w406.s236341.5fmj.com.cn/manhua/info.html?id=67864
 function get_chapter_data(e) {
   const res = e.querySelector('.article-img');
   return {
@@ -46,7 +47,7 @@ function get_chapter_data(e) {
   };
 }
 
-
+// http://c1021.w406.s236341.5fmj.com.cn/manhua/reader.html?chapter_id=2921367&bid=67864
 function get_chapter_content_data(e) {
   return {
     tags: e.querySelector('span.itemTitle').innerHTML,
