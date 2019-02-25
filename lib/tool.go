@@ -18,7 +18,7 @@ func Time() int64{
 /**
  *
  * md5加密
- * @param encrypt 需要加密的字符串
+ * @param encrypt string 需要加密的字符串
  * @return "加密后的字符串"
  *
  */

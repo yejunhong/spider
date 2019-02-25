@@ -1,7 +1,9 @@
 package model
 
 import (
-	"time"
+	// "time"
+	"fmt"
+	"strings"
 )
 
 type CartoonList struct{
@@ -29,7 +31,27 @@ type CartoonList struct{
  * @return CartoonResource{}
  *
  */
- func (model *Model) CreateCartoonList(resource_url, resource_name, config_name string) CartoonList{
+ func (model *Model) CreateCartoonList(data []map[string]interface{}) {
+	
+	var field []string
+	var values []interface{}
+	
+	for key, val := range data {
+		
+		var value []interface{}
+
+		for k, v := range val {
+			if key == 0 {
+				field = append(field, k)
+			}
+
+			value = append(value, v)
+		}
+		
+		values = append(values, strings.Join(value, ","))
+	}
+	fmt.Println(values)
+	/*
 	var cartoon_list CartoonList = CartoonList{
 		Unique_id string
 		Title string
@@ -40,9 +62,12 @@ type CartoonList struct{
 		Resource_url string
 		Resource_name string
 		Resource_img_url string
-		Download_img_url string
 		Cdate: time.Now().Unix()
 	}
+
+	model.Db.Exec(fmt.Sprintf(`INSERT INTO t_goods_selected_attributes(goods_no, goods_attributes_no, source, addtime) VALUES %s `,
+								strings.Join(sql_selected_attributes, ",")))
+
 	model.Db.Create(&cartoon_list)
-	return cartoon_list
+	return cartoon_list*/
 }

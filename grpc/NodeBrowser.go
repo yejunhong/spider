@@ -29,8 +29,8 @@ func(browser *NodeBrowser) CreateBrowserClient(){
 /**
  *
  * 爬取数据列表
- * @param url 爬取的远程url
- * @param user_config_name 数据源使用的配置
+ * @param url string 爬取的远程url
+ * @param user_config_name string 数据源使用的配置
  *
  */
  func(browser *NodeBrowser) CrawlList(url, user_config_name string) *ListReply{
@@ -49,8 +49,8 @@ func(browser *NodeBrowser) CreateBrowserClient(){
 /**
  *
  * 爬取数据章节
- * @param url 爬取的远程url
- * @param user_config_name 数据源使用的配置
+ * @param url string 爬取的远程url
+ * @param user_config_name string 数据源使用的配置
  *
  */
  func(browser *NodeBrowser) CrawlChapter(url, user_config_name string) *ChapterReply{
@@ -69,8 +69,8 @@ func(browser *NodeBrowser) CreateBrowserClient(){
 /**
  *
  * 爬取数据章节内容
- * @param url 爬取的远程url
- * @param user_config_name 数据源使用的配置
+ * @param url string 爬取的远程url
+ * @param user_config_name string 数据源使用的配置
  *
  */
  func(browser *NodeBrowser) CrawlChapterContent(url, user_config_name string) *ChapterContentReply{
