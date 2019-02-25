@@ -3,16 +3,45 @@ syntax = "proto3";
 package grpc;
  
 service browser {
-  rpc CrawlList (Request) returns (Reply) {}
-  rpc CrawlChapter (Request) returns (Reply) {}
-  rpc CrawlChapterContent (Request) returns (Reply) {}
+  rpc CrawlList (Request) returns (ListReply) {}
+  rpc CrawlChapter (Request) returns (ChapterReply) {}
+  rpc CrawlChapterContent (Request) returns (ChapterContentReply) {}
 }
  
 message Request {
   string url = 1;
-  string config_name = 1;
+  string config_name = 2;
 }
- 
-message Reply {
-  string message = 1;
+
+message List{ // 漫画列表
+  string tags = 1;
+  string detail = 2;
+  string resource_name = 3;
+  string resource_url = 4;
+  string resource_img_url = 5;
+  string author = 6;
+}
+message ListReply {
+  repeated List data = 1;
+  string next = 2;
+}
+
+
+message Chapter{  // 漫画章节列表
+  string is_free = 1;
+  string resource_name = 2;
+  string resource_url = 3;
+  string resource_img_url = 4;
+}
+message ChapterReply {
+  repeated Chapter data = 1;
+  string next = 2;
+}
+
+
+message ChapterContent{ // 章节内容
+  repeated string resource_img_url = 1;
+}
+message ChapterContentReply {
+  repeated ChapterContent data = 1;
 }
