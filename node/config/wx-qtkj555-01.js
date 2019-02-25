@@ -32,6 +32,7 @@ function get_list_data(e) {
   return {
     resource_name: e.querySelector('div.txt h4').innerHTML,
     resource_url: e.querySelector('img').getAttribute("src"),
+    resource_img_url: e.querySelector('img').getAttribute("src"),
     detail: e.querySelector('div.txt span').innerHTML,
   };
 }

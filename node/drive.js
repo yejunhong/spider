@@ -2,13 +2,16 @@ const puppeteer = require('puppeteer');
 const crypto = require('crypto');
 const options = {args: ['--no-sandbox', '--disable-setuid-sandbox']};
 
-class Drive{
+let browser = {};
 
+class Drive{
+  
   /**
    * 创建浏览器
    */
   async CreateBrowser() {
-    const browser = await puppeteer.launch(options);
+    browser = await puppeteer.launch(options);
+    return this;
   }
 
   /**
@@ -16,12 +19,12 @@ class Drive{
    * @param call // 客户端请求参数
    * @param callback // 推送信息到客户端
    */
-  CrawlList(call, callback){
+  async CrawlList(call, callback){
     const request = call.request
     const config = require(`./config/${request.config_name}`);
-    await this.Login(); // 登录操作
-    const resData = await this.OpenPage(request.url, request.config_name, config.list);
-    callback(null, {data: resData, next: ''});
+    await this.Login(config); // 登录操作
+    const resData = await this.OpenPage(request.url, request.config_name, config, config.list);
+    callback(null, resData);
   }
 
   /**
@@ -32,9 +35,9 @@ class Drive{
   async CrawlChapter(call, callback){
     const request = call.request;
     const config = require(`./config/${request.config_name}`);
-    await this.Login(); // 登录操作
-    const resData = await this.OpenPage(request.url, request.config_name, config.chapter);
-    callback(null, {data: resData, next: ''});
+    await this.Login(config); // 登录操作
+    const resData = await this.OpenPage(request.url, request.config_name, config, config.chapter);
+    callback(null, resData);
   }
 
   /**
@@ -45,9 +48,9 @@ class Drive{
   async CrawlChapterContent(call, callback){
     const request = call.request;
     const config = require(`./config/${request.config_name}`);
-    await this.Login(); // 登录操作
-    const resData = await this.OpenPage(request.url, request.config_name, config.chapter_content);
-    callback(null, {data: resData, next: ''});
+    await this.Login(config); // 登录操作
+    const resData = await this.OpenPage(request.url, request.config_name, config, config.chapter_content);
+    callback(null, resData);
   }
 
   /**
@@ -56,11 +59,11 @@ class Drive{
    * @param config_name // 配置名称, 用于标签页面加载js配置文件
    * @param config // 配置信息
    */
-  async Login(url, config_name, config){
+  async Login(config){
     if(config.login == false){ // 是否进行登录操作
       return
     }
-    const page = await this.browser.newPage();
+    const page = await browser.newPage();
     await page.goto(url);
     // 注入配置信息
     await page.addScriptTag({
@@ -83,11 +86,12 @@ class Drive{
    * @param config_name // 配置名称, 用于标签页面加载js配置文件
    * @param config // 配置信息
    */
-  async OpenPage(url, config_name, config) {
+  async OpenPage(url, config_name, config, config_eval) {
+ 
     const page = await browser.newPage();
     
     if (config.cookie != false){
-      for (let e of d) {
+      for (let e of config.cookie) {
         await page.setCookie(e);     // 设置cookie
       }
     }
@@ -109,20 +113,19 @@ class Drive{
       path: `config/${config_name}.js`,
     });
 
-    const list = await page.$$eval(config.selector, async (d, config) => {
+    const list = await page.$$eval(config_eval.selector, async (d, config) => {
       let res = {
         data: [], 
-        next: eval(`${config.datas}(e)`) // 下一页url
+        next: '' // 下一页url
       };
       for (let e of d) {
         const r = eval(`${config.datas}(e)`);
         res.data.push(r);
       }
       return res;
-    }, config);
+    }, config_eval);
 
     await page.close(); // 关闭当前标签页
-
     return list;
   }
 
