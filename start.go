@@ -11,20 +11,18 @@ func main(){
     var browser Drive.NodeBrowser = Drive.NodeBrowser{}
     var models model.Model = model.Model{Db: model.InitDb()}
     
-    var data []map[string]interface{}
+    var data []interface{}
 
     for i := 1; i <= 20; i++ {
-        data = append(data, map[string]interface{
-            "id": 1,
-            "name": "n",
-            "uid": 222,
-            "test": "kskdfskdf",
-        })
+
+        var d map[string]interface{} = map[string]interface{}
+        d["id"] = 1
+        data = append(data, d)
     }
 
-    
+    fmt.Println(data)
 
-    model.CreateCartoonList(data)
+    // model.CreateCartoonList(data)
     return 
 
     browser.CreateBrowserClient()

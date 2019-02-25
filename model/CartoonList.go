@@ -3,7 +3,7 @@ package model
 import (
 	// "time"
 	"fmt"
-	"strings"
+	// "strings"
 )
 
 type CartoonList struct{
@@ -33,7 +33,7 @@ type CartoonList struct{
  */
  func (model *Model) CreateCartoonList(data []map[string]interface{}) {
 	
-	var field []string
+	// var field []string
 	var values []interface{}
 	
 	for key, val := range data {
@@ -42,13 +42,14 @@ type CartoonList struct{
 
 		for k, v := range val {
 			if key == 0 {
-				field = append(field, k)
+				fmt.Println(k)
+				
 			}
 
 			value = append(value, v)
 		}
 		
-		values = append(values, strings.Join(value, ","))
+		values = append(values, 1)
 	}
 	fmt.Println(values)
 	/*
