@@ -27,3 +27,15 @@ type CartoonList struct{
 	model.Db.Where("id = ?", id).First(&cartoon_list)
 	return cartoon_list
 }
+
+/**
+ *
+ * 通过id 获取漫画资源书籍
+ * @return CartoonResource{}
+ *
+ */
+ func (model *Model) GetCartoonListByNo(no string) []CartoonList{
+	var cartoon_list []CartoonList = []CartoonList{}
+	model.Db.Where("resource_no = ?", no).Find(&cartoon_list)
+	return cartoon_list
+}

@@ -51,29 +51,34 @@ func GetList(){
 func GetChapter(){
     var cartoon = models.GetCartoonById(1)
     
-    var cartoonList = models.GetCartoonInfoById(6760)
-    fmt.Println("请求页面：", cartoonList.ResourceUrl)
-    var chapter_data *Drive.ChapterReply = browser.CrawlChapter(cartoonList.ResourceUrl, cartoon.ConfigName) // 浏览器拉取列表数据
+    var cartoonList = models.GetCartoonListByNo(cartoon.ResourceNo)
 
-    var data []map[string]interface{}
-    // 获取服务端返回的结果
+    for _, val := range cartoonList {
+        
+        fmt.Println("请求页面：", val.ResourceUrl)
+        
+        var chapter_data *Drive.ChapterReply = browser.CrawlChapter(val.ResourceUrl, cartoon.ConfigName) // 浏览器拉取列表数据
 
-    for _, v := range chapter_data.Data {
-        data = append(data, map[string]interface{}{
-            "resource_no": cartoon.ResourceNo,
-            "unique_id": lib.MD5(cartoon.ResourceNo + v.ResourceName),
-            "list_unique_id": cartoonList.UniqueId,
-            "conent": "",
-            "is_free": v.IsFree,
-            "status": 0,
-            "resource_url": v.ResourceUrl,
-            "resource_name": v.ResourceName,
-            "resource_img_url": v.ResourceImgUrl,
-            "cdate": lib.Time(),
-        })
-        // fmt.Println(v)
+        var data []map[string]interface{}
+        // 获取服务端返回的结果
+
+        for _, v := range chapter_data.Data {
+            data = append(data, map[string]interface{}{
+                "resource_no": cartoon.ResourceNo,
+                "unique_id": lib.MD5(val.UniqueId + cartoon.ResourceNo + v.ResourceName),
+                "list_unique_id": val.UniqueId,
+                "conent": "",
+                "is_free": v.IsFree,
+                "status": 0,
+                "resource_url": v.ResourceUrl,
+                "resource_name": v.ResourceName,
+                "resource_img_url": v.ResourceImgUrl,
+                "cdate": lib.Time(),
+            })
+            // fmt.Println(v)
+        }
+    
+        models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
+        
     }
-   
-    models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
-
 }
