@@ -16,8 +16,8 @@ func main(){
     models = model.Model{Db: model.InitDb()}
 
     browser.CreateBrowserClient() // 创建浏览器客户端
-    GetList();
-    // GetChapter();
+    // GetList();
+    GetChapter();
 }
 
 
@@ -50,8 +50,9 @@ func GetList(){
 
 func GetChapter(){
     var cartoon = models.GetCartoonById(1)
-    var cartoonList = models.GetCartoonInfoById(6760)
     
+    var cartoonList = models.GetCartoonInfoById(6760)
+    fmt.Println("请求页面：", cartoonList.ResourceUrl)
     var chapter_data *Drive.ChapterReply = browser.CrawlChapter(cartoonList.ResourceUrl, cartoon.ConfigName) // 浏览器拉取列表数据
 
     var data []map[string]interface{}
@@ -61,7 +62,7 @@ func GetChapter(){
         data = append(data, map[string]interface{}{
             "resource_no": cartoon.ResourceNo,
             "unique_id": lib.MD5(cartoon.ResourceNo + v.ResourceName),
-            "list_unique_id": cartoon.UniqueId,
+            "list_unique_id": cartoonList.UniqueId,
             "conent": "",
             "is_free": v.IsFree,
             "status": 0,
@@ -72,8 +73,7 @@ func GetChapter(){
         })
         // fmt.Println(v)
     }
-    fmt.Println(data)
-    return
+   
     models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
 
 }

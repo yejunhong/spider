@@ -1,8 +1,10 @@
 const puppeteer = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
 const crypto = require('crypto');
 const options = {args: ['--no-sandbox', '--disable-setuid-sandbox']};
 
 let browser = {};
+const iPhone = devices['iPhone X'];
 
 class Drive{
   
@@ -91,13 +93,14 @@ class Drive{
  
     const page = await browser.newPage();
     
-    if (config.cookie != false){
-
-      if(config_eval.cookie != undefined){
-        config.cookie.push(...config_eval.cookie)
-      }
-
+    if (config.cookie != undefined && config.cookie != false){
       for (let e of config.cookie) {
+        await page.setCookie(e);     // 设置cookie
+      }
+    }
+
+    if (config_eval.cookie != undefined && config_eval.cookie != false){
+      for (let e of config_eval.cookie) {
         await page.setCookie(e);     // 设置cookie
       }
     }
@@ -106,7 +109,7 @@ class Drive{
     if (config.user_agent != false){
       await page.setUserAgent(config.user_agent);
     }
-
+    // await page.emulate(iPhone);
     await page.goto(url);
 
     page.on('console', msg => console.log(msg.text()));
@@ -144,7 +147,8 @@ class Drive{
         scrollHeight = scrollResult[1];
       }
     }
-    
+
+    // console.log(await page.content())
     const list = await page.$$eval(config_eval.selector, async (d, config) => {
       let res = {
         data: [], 
