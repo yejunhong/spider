@@ -16,8 +16,10 @@ func main(){
     models = model.Model{Db: model.InitDb()}
 
     browser.CreateBrowserClient() // 创建浏览器客户端
+
+   
     // GetList();
-    GetChapter();
+    // GetChapter();
 }
 
 
@@ -72,6 +74,38 @@ func GetChapter(){
                 "status": 0,
                 "resource_url": v.ResourceUrl,
                 "resource_name": v.ResourceName,
+                "resource_img_url": v.ResourceImgUrl,
+                "cdate": lib.Time(),
+            })
+            // fmt.Println(v)
+        }
+    
+        models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
+        
+    }
+}
+
+
+
+func GetChapter(){
+    var cartoon = models.GetCartoonById(1)
+    var cartoonList = models.GetCartoonChapterListByNo(cartoon.ResourceNo)
+
+    for _, val := range cartoonList {
+        
+        fmt.Println("请求页面：", val.ResourceUrl)
+
+        var chapter_data *Drive.ChapterContentReply = browser.CrawlChapterContent("http://c1021.w406.s4694780.5fmj.com.cn/manhua/reader.html?chapter_id=2922604&bid=67889", cartoon.ConfigName) // 浏览器拉取列表数据
+    
+        var data []map[string]interface{}
+        // 获取服务端返回的结果
+
+        for _, v := range chapter_data.Data {
+            data = append(data, map[string]interface{}{
+                "resource_no": cartoon.ResourceNo,
+                "unique_id": lib.MD5(val.UniqueId + cartoon.ResourceNo + v.ResourceName),
+                "list_unique_id": val.UniqueId,
+                "resource_url": v.ResourceUrl,
                 "resource_img_url": v.ResourceImgUrl,
                 "cdate": lib.Time(),
             })

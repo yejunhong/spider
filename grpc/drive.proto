@@ -44,4 +44,5 @@ message ChapterContent{ // 章节内容
 }
 message ChapterContentReply {
   repeated ChapterContent data = 1;
+  string next = 2;
 }

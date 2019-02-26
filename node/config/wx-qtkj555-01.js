@@ -24,7 +24,7 @@ module.exports = {
     datas: 'get_chapter_data', // 对应当前配置文件 function
   },
   chapter_content: {// 漫画章节-内容
-    selector: 'div.ItemSpecial', // 列表选择器
+    selector: 'div.readMain img', // 列表选择器
     datas: 'get_chapter_content_data', // 对应当前配置文件 function
   }
 }
@@ -64,11 +64,6 @@ function get_chapter_data(e) {
 
 function get_chapter_content_data(e) {
   return {
-    tags: e.querySelector('span.itemTitle').innerHTML,
-    detail: e.querySelector('span.itemTitle').innerHTML,
-    resource_name: e.querySelector('span.itemTitle').innerHTML,
-    resource_url: e.querySelector('a').getAttribute('href'),
-    resource_img_url: e.querySelector('.img').getAttribute('data-src'),
-    author: e.querySelector('p .author').innerHTML
+    resource_img_url: e.getAttribute('data-original'),
   };
 }
