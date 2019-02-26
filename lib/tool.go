@@ -3,6 +3,7 @@ package lib
 import (
 	"time"
 	"crypto/md5"
+	"encoding/hex"
 )
 
 /**

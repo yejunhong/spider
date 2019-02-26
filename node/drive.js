@@ -75,6 +75,7 @@ class Drive{
       const res = eval(`${config.login}(e)`);
       return res; // 登录结果
     }, config);
+
     await page.close(); // 关闭当前标签页
     return res
 
@@ -91,6 +92,11 @@ class Drive{
     const page = await browser.newPage();
     
     if (config.cookie != false){
+
+      if(config_eval.cookie != undefined){
+        config.cookie.push(...config_eval.cookie)
+      }
+
       for (let e of config.cookie) {
         await page.setCookie(e);     // 设置cookie
       }
@@ -100,8 +106,9 @@ class Drive{
     if (config.user_agent != false){
       await page.setUserAgent(config.user_agent);
     }
-   
+
     await page.goto(url);
+
     page.on('console', msg => console.log(msg.text()));
     // 注入函数到浏览器
     await page.exposeFunction('md5', text =>
@@ -113,6 +120,31 @@ class Drive{
       path: `config/${config_name}.js`,
     });
 
+    // 滚动操作
+    if (config_eval.scroll != undefined && config_eval.scroll != false){
+      let preScrollHeight = 0;
+      let scrollHeight = -1;
+      while(preScrollHeight !== scrollHeight) {
+        // 详情信息是根据滚动异步加载，所以需要让页面滚动到屏幕最下方，通过延迟等待的方式进行多次滚动
+        let scrollH1 = await page.evaluate(async () => {
+          let h1 = document.body.scrollHeight;
+          window.scrollTo(0, h1);
+          return h1;
+        });
+        
+        await page.waitFor(500);
+        let scrollH2 = await page.evaluate(async () => {
+          return document.body.scrollHeight;
+        });
+
+        console.log(`滚动页面高度：${scrollH2}`)
+
+        let scrollResult = [scrollH1, scrollH2];
+        preScrollHeight = scrollResult[0];
+        scrollHeight = scrollResult[1];
+      }
+    }
+    
     const list = await page.$$eval(config_eval.selector, async (d, config) => {
       let res = {
         data: [], 
@@ -120,11 +152,14 @@ class Drive{
       };
       for (let e of d) {
         const r = eval(`${config.datas}(e)`);
-        res.data.push(r);
+        if(r != false){
+          res.data.push(r);
+        }
       }
       return res;
     }, config_eval);
 
+    
     await page.close(); // 关闭当前标签页
     return list;
   }

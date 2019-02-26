@@ -4,9 +4,10 @@ import (
 	// "fmt"
 )
 
-
 type CartoonResource struct{
 	Id int64
+	UniqueId string
+	ResourceNo string
 	ResourceUrl string
 	ResourceName string
 	ConfigName string

@@ -4,22 +4,23 @@
 module.exports = {
   name: '谦棠科技-漫画',
   console: true, // 是否开启 console.log() 控制台
-  // cookie 信息
+  // cookie 信息 Referer: http://c1021.w406.s4694780.5fmj.com.cn/manhua/
   cookie: [
-    {name: "sid", value:"6807933", domain: "c1021.w406.s236341.5fmj.com.cn"},
-    {name: "token", value: "3300330093007300030083006300160057008600E6001600D600", domain: "c1021.w406.s236341.5fmj.com.cn"},
-    {name: "UM_distinctid", value: "1691805e44257f-0d1ddf426e1d63-7e145f62-4a574-1691805e4434f4", domain: "c1021.w406.s236341.5fmj.com.cn"}
+    {name: "sid", value:"6807933", domain: ""},
+    {name: "token", value: "3300330093007300030083006300160057008600E6001600D600", domain: ""},
+    {name: "UM_distinctid", value: "1691805e44257f-0d1ddf426e1d63-7e145f62-4a574-1691805e4434f4", domain: ""}
   ],
   // 伪造浏览器
-  user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16D57 MicroMessenger/7.0.3(0x17000321) NetType/WIFI Language/zh_CN",
+  user_agent: "Mozilla/5.0 (Linux; Android 4.4.4; HM NOTE 1LTEW Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 Mobile Safari/537.36 MicroMessenger/6.0.0.54_r849063.501 NetType/WIFI",
   // jquery: false,
   login: false,
   list: { // 漫画列表
-    selector: 'div.similar div.item', // 列表选择器
+    selector: 'tr.bookshelfListMainTr', // 列表选择器
     datas: 'get_list_data', // 对应当前配置文件 function
+    scroll: true, // 滚动操作 异步加载信息
   },
   chapter: { // 漫画章节
-    selector: 'div.article-list table tr', // 列表选择器
+    selector: 'div.titleDiv', // 列表选择器
     datas: 'get_chapter_data', // 对应当前配置文件 function
   },
   chapter_content: {// 漫画章节-内容
@@ -29,26 +30,38 @@ module.exports = {
 }
 
 function get_list_data(e) {
+  const resource_url = e.getAttribute("onclick");
   return {
-    resource_name: e.querySelector('div.txt h4').innerHTML,
-    resource_url: e.querySelector('img').getAttribute("src"),
-    resource_img_url: e.querySelector('img').getAttribute("src"),
-    detail: e.querySelector('div.txt span').innerHTML,
+    resource_name: e.querySelector('.bookshelfListMainTitle').innerHTML,
+    resource_url: "http://c1021.w406.s4694780.5fmj.com.cn/manhua/" + resource_url.split('"')[1],
+    resource_img_url: e.querySelector('.bookshelfListMainImg img').getAttribute("src"),
+    detail: e.querySelector('.bookshelfListMainDes').innerHTML,
   };
 }
 
-// http://c1021.w406.s236341.5fmj.com.cn/manhua/info.html?id=67864
+/**
+<div class="titleDiv" id='2922828'  num='5' >
+  <a href='reader.html?chapter_id=2922828&bid=67894'>
+  <div class='title already'>第5话</div>
+  <div class='needBuyDiv' cid='2922828'>
+    <img  src="images/needBuy.png"  class="d0">
+  </div>
+  </a>
+</div>
+ */
 function get_chapter_data(e) {
-  const res = e.querySelector('.article-img');
+  let is_free = 1;
+  if(e.querySelector('.needBuyDiv img').getAttribute('class') == 'd0'){
+    is_free = 0;
+  }
+  console.log(e)
   return {
-    is_free: e.querySelector('i.ico-lockoff'),
-    resource_name: res.getAttribute('title'),
-    resource_url: res.getAttribute('href'),
-    resource_img_url: e.querySelector('.kk-sub-img').getAttribute('src'),
+    is_free: is_free,
+    resource_name: e.querySelector('.title').innerHTML,
+    resource_url: "http://c1021.w406.s4694780.5fmj.com.cn/manhua/" + e.querySelector('a').getAttribute('href'),
   };
 }
 
-// http://c1021.w406.s236341.5fmj.com.cn/manhua/reader.html?chapter_id=2921367&bid=67864
 function get_chapter_content_data(e) {
   return {
     tags: e.querySelector('span.itemTitle').innerHTML,
