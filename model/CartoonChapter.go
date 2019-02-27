@@ -37,3 +37,4 @@ type CartoonChapter struct{
 	model.Db.Where("resource_no = ?", no).Find(&cartoon_chapter)
 	return cartoon_chapter
 }
+

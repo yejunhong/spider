@@ -1,5 +1,9 @@
 package model
 
+import (
+	// "fmt"
+)
+
 type CartoonList struct{
 	Id int64
 	ResourceNo string
@@ -13,6 +17,8 @@ type CartoonList struct{
 	ResourceName string
 	ResourceImgUrl string
 	DownloadImgUrl string
+	IsFree int64
+	IsEnd int64
 	Cdate int64
 }
 
@@ -38,4 +44,15 @@ type CartoonList struct{
 	var cartoon_list []CartoonList = []CartoonList{}
 	model.Db.Where("resource_no = ?", no).Find(&cartoon_list)
 	return cartoon_list
+}
+
+/**
+ *
+ * 通过id 修改漫画是否完结状态
+ * @param id int64 漫画id
+ * @param udata string 漫画是否完结
+ *
+ */
+ func (model *Model) UpdateCartoonListById(id int64, udata map[string]interface{}){
+	model.Db.Table("cartoon_list").Where("id = ?", id).Updates(udata)
 }

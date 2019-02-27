@@ -1,1 +1,3 @@
 protoc --go_out=plugins=grpc:. ./grpc/drive.proto
+
+export LD_LIBRARY_PATH=/usr/local/lib

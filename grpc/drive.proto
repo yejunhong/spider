@@ -12,6 +12,9 @@ message Request {
   string url = 1;
   string config_name = 2;
 }
+message Detail{
+  string is_end = 1; // 是否完结
+}
 
 message List{ // 漫画列表
   string tags = 1;
@@ -26,18 +29,18 @@ message ListReply {
   string next = 2;
 }
 
-
 message Chapter{  // 漫画章节列表
   string is_free = 1;
   string resource_name = 2;
   string resource_url = 3;
   string resource_img_url = 4;
 }
+
 message ChapterReply {
   repeated Chapter data = 1;
+  Detail detail = 3; // 详情信息
   string next = 2;
 }
-
 
 message ChapterContent{ // 章节内容
   repeated string resource_img_url = 1;

@@ -105,23 +105,24 @@ class Drive{
       }
     }
 
-    // 伪造浏览器
-    if (config.user_agent != false){
+    // 伪造浏览器 
+    if (config.user_agent != undefined && config.user_agent != false){
       await page.setUserAgent(config.user_agent);
     }
-    // await page.emulate(iPhone);
+    // 是否启用手机模式
+    if (config.mobile != undefined && config.mobile != false){
+      await page.emulate(iPhone); // 手机浏览器模式
+    }
+    
     await page.goto(url);
 
     page.on('console', msg => console.log(msg.text()));
     // 注入函数到浏览器
-    await page.exposeFunction('md5', text =>
+    /*await page.exposeFunction('md5', text =>
       crypto.createHash('md5').update(text).digest('hex')
-    );
-    //await page.exposeFunction('res_data', e => 1);
+    );*/
     // 注入配置信息
-    await page.addScriptTag({
-      path: `config/${config_name}.js`,
-    });
+    await page.addScriptTag({path: `config/${config_name}.js`});
 
     // 滚动操作
     if (config_eval.scroll != undefined && config_eval.scroll != false){
@@ -134,38 +135,47 @@ class Drive{
           window.scrollTo(0, h1);
           return h1;
         });
-        
         await page.waitFor(500);
         let scrollH2 = await page.evaluate(async () => {
           return document.body.scrollHeight;
         });
-
         console.log(`滚动页面高度：${scrollH2}`)
-
         let scrollResult = [scrollH1, scrollH2];
         preScrollHeight = scrollResult[0];
         scrollHeight = scrollResult[1];
       }
     }
 
+    const resData = {data: [], next: ""}; // 返回的对象
     // console.log(await page.content())
-    const list = await page.$$eval(config_eval.selector, async (d, config) => {
-      let res = {
-        data: [], 
-        next: '' // 下一页url
-      };
+    if(config_eval.detail != undefined && config_eval.detail != false){
+      resData.detail = await page.$$eval(config_eval.detail[0], async (e, func) => {
+        const res = eval(`${func}(e)`);
+        return res
+      }, config_eval.detail[1]);
+    }
+
+    if(config_eval.next != undefined && config_eval.next != false){
+      resData.next = await page.$$eval(config_eval.next[0], async (e, func) => {
+        const res = eval(`${func}(e)`);
+        return res
+      }, config_eval.next[1]);
+    }
+
+    // console.log(await page.content())
+    resData.data = await page.$$eval(config_eval.selector, async (d, config) => {
+      let res = [];
       for (let e of d) {
         const r = eval(`${config.datas}(e)`);
         if(r != false){
-          res.data.push(r);
+          res.push(r);
         }
       }
       return res;
     }, config_eval);
-
     
     await page.close(); // 关闭当前标签页
-    return list;
+    return resData;
   }
 
 }
