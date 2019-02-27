@@ -4,21 +4,12 @@ import (
     "fmt"
     "spider/model"
     "spider/lib"
+    "sync"
 	Drive "spider/grpc"
 )
 
 var browser Drive.NodeBrowser
 var models model.Model
-
-var i = 0
-func test(){
-    i = i + 1
-    if i < 5 {
-        fmt.Println(1)
-        test()
-    }
-    
-}
 
 func main(){
 
@@ -28,10 +19,10 @@ func main(){
     browser.CreateBrowserClient() // 创建浏览器客户端
     
     // 通过资源获取漫画列表
-    var cartoon = models.GetCartoonById(2)
-    GetList(cartoon.ResourceUrl, cartoon);
+    /*var cartoon = models.GetCartoonById(2)
+    GetList(cartoon.ResourceUrl, cartoon);*/
 
-    // GetChapter(2)
+    GetChapter(2)
     //GetChapterContent(1)
 }
 
@@ -64,6 +55,8 @@ func GetList(resource_url string, cartoon model.CartoonResource){
     }
 
 }
+
+var waitGrop sync.WaitGroup
 
 func GetChapter(id int64){
     var cartoon = models.GetCartoonById(id)
@@ -98,8 +91,12 @@ func GetChapter(id int64){
                 "cdate": lib.Time(),
             })
         }
-        // 修改状态信息
-        models.UpdateCartoonListById(val.Id, map[string]interface{}{"is_free": cartoon_is_free, "is_end": chapter_data.Detail.IsEnd})
+        // fmt.Println(chapter_data.Detail)
+        if chapter_data.Detail != nil {
+            // 修改状态信息
+            models.UpdateCartoonListById(val.Id, map[string]interface{}{"is_free": cartoon_is_free, "is_end": chapter_data.Detail.IsEnd, "status": 1})
+        }
+        
         models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
         
     }

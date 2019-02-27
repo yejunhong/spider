@@ -18,7 +18,7 @@ module.exports = {
   }, 
   chapter: { // 漫画章节
     selector: 'div#play_0 ul li', // 列表选择器
-    // detail: ['div.xinxi span', 'GetChapterDetail'], // 获取章节详情
+    detail: ['div.xinxi span', 'GetChapterDetail'], // 获取章节详情
     datas: 'GetChapterData', // 对应当前配置文件 function
   },
   chapter_content: {// 漫画章节-内容
