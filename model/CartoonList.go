@@ -42,7 +42,7 @@ type CartoonList struct{
  */
  func (model *Model) GetCartoonListByNo(no string) []CartoonList{
 	var cartoon_list []CartoonList = []CartoonList{}
-	model.Db.Where("resource_no = ?", no).Find(&cartoon_list)
+	model.Db.Where("resource_no = ? AND status = 0", no).Find(&cartoon_list)
 	return cartoon_list
 }
 

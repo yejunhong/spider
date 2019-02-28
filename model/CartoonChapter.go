@@ -34,7 +34,17 @@ type CartoonChapter struct{
  */
  func (model *Model) GetCartoonChapterListByNo(no string) []CartoonChapter{
 	var cartoon_chapter []CartoonChapter = []CartoonChapter{}
-	model.Db.Where("resource_no = ?", no).Find(&cartoon_chapter)
+	model.Db.Where("resource_no = ? AND is_free = 0 AND status = 0", no).Limit(20000).Find(&cartoon_chapter)
 	return cartoon_chapter
 }
 
+/**
+ *
+ * 通过id 修改漫画涨价是否完结状态
+ * @param id int64 漫画id
+ * @param udata string 漫画是否完结
+ *
+ */
+ func (model *Model) UpdateCartoonChapterById(id int64, udata map[string]interface{}){
+	model.Db.Table("cartoon_chapter").Where("id = ?", id).Updates(udata)
+}
