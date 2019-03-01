@@ -140,7 +140,7 @@ func GetChapterContent(id int64){
 
     var cartoon = models.GetCartoonById(id)
 
-    var task = make(chan TaskInfo, 10) // 最大任务数量
+    var task = make(chan TaskInfo, 5) // 最大任务数量
     var wait = make(chan int, 10) // 等待执行
     var end = make(chan int, 1) // 任务投放结束
 
