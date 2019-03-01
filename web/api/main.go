@@ -15,8 +15,9 @@ import (
 )
 
 func main() {
-	paimei := app.Paimei{}
-	paimei.InitDb()
+  var Db = InitDb();
+  cartoonController := app.Cartoon{Db}
+  downloadController := app.Download{Db}
 
 	router := gin.Default()
 	router.Use(Cors())
@@ -24,32 +25,30 @@ func main() {
 	router.Static("/css", "./admin/dist/css")
 	router.Static("/js", "./admin/dist/js")
 
-	router.GET("/paimei", func(c *gin.Context) {
+	router.GET("/admin", func(c *gin.Context) {
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		html, _ := ioutil.ReadFile("./admin/dist/index.html")
 		c.String(200, string(html))
-    })
-
-    // resource
-    // list
-    // chapter
-    // chapter_content
+  })
 
 	router.POST("/upload", Fileupload)
 
-	category := router.Group("/category")
-	category.GET("/list", paimei.CategoryList) // 分类列表
-	category.POST("/opt", paimei.CategorySave)  // 操作分类
-	category.POST("/set/status", paimei.CategorySetStatus)  // 操作分类
-	category.POST("/del", paimei.CategoryDel)  // 操作分类
+	// 漫画
+  cartoon := router.Group("/cartoon")
+  cartoon.GET("/resource", cartoonController.CartoonResource) // 漫画资源
+	cartoon.GET("/list", cartoonController.CartoonList) // 漫画列表
+	cartoon.GET("/chapter", cartoonController.CartoonChapter)  // 漫画章节列表
+  cartoon.GET("/chapter/content", cartoonController.CartoonChapterContent)  // 漫画章节内容
+  
+  
+  // 下载
+  download := router.Group("/download")
+  download.GET("/book", downloadController.Book)  // 下载指定资源-书籍
+  download.GET("/book/content", downloadController.BookContent)  // 下载指定书籍-所有内容
 
-	// 商品列表
-	goods := router.Group("/goods")
-	goods.GET("/list", paimei.GoodsList) // 分类列表
-	goods.POST("/opt", paimei.GoodsSave)  // 操作分类
-	goods.POST("/set/status", paimei.GoodsSetStatus)  // 操作分类
-	goods.POST("/del", paimei.GoodsDel)  // 操作分类
-
+  download.GET("/chapter", downloadController.Chapter)  // 下载指定书籍-章节
+  download.GET("/chapter/content", downloadController.GoodsDel)  // 下载指定书籍-章节内容
+  
 	router.Run(":6010") // listen and serve on 0.0.0.0:8080
 }
 
