@@ -3,23 +3,22 @@
     <el-tabs v-model="tabsName" @tab-click="tabsClick">
       <el-tab-pane :label="v.ResourceName" :name="v.ResourceNo" v-for="(v, k) in tabsList" :key="k"></el-tab-pane>
     </el-tabs>
-    <el-row :gutter="10">
-      <el-col :xs="8" :sm="6" :lg="4" :xl="3" v-for="(v, k) in cartoonList" :key="k" class="info">
-        <el-card>
-          <img src="http://www.pptok.com/wp-content/uploads/2012/08/xunguang-4.jpg" style="width:100%">
-          <div style="padding: 2px;">
-            <span>{{v.ResourceName}}</span>
-            <el-button type="text" class="button" @click="SelectCartoonChapter(v)">查看</el-button>
-            <div class="bottom clearfix">
-              <el-button type="text" class="button" @click="SelectCartoonChapter(v)">全部下载</el-button>
-              <el-button type="text" class="button" @click="SelectCartoonChapter(v)">下载章节</el-button>
-              <el-button type="text" class="button" @click="SelectCartoonChapter(v)">下载章节内容</el-button>
+    <el-main class="cartoon-main">
+      <el-row :gutter="10">
+        <el-col :xs="8" :sm="6" :lg="4" :xl="3" v-for="(v, k) in cartoonList" :key="k" class="info">
+          <el-card>
+            <img class="card-img" src="http://www.pptok.com/wp-content/uploads/2012/08/xunguang-4.jpg" @click="SelectCartoonChapter(v)" style="width:100%">
+            <span class="title">{{v.ResourceName}}</span>
+            <div class="row">
+              <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节列表</el-button>
             </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
+            <div class="row">
+              <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节内容</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-main>
     <el-dialog :title="`${dialogTitle}-章节`" :visible.sync="cartoonChapterShow" width="98%">
       <div class="chapter">
         <div style="width: 40vw">
@@ -126,5 +125,16 @@ export default {
   .chapter{
     display: flex;
     flex-direction: row;
+  }
+  .title{
+    font-size: 14px;
+  }
+  .card-img{
+    cursor: pointer;
+  }
+  .cartoon-main{
+    height: 80vh;
+    overflow: scroll-y;
+    padding: 5px !important;
   }
 </style>
