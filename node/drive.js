@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 const crypto = require('crypto');
-const options = {args: ['--no-sandbox', '--disable-setuid-sandbox']};
+const options = {args: ['--no-sandbox', '--disable-setuid-sandbox', '--process-per-tab', '--disable-images']};
 
 let browser = {};
 const iPhone = devices['iPhone X'];
