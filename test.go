@@ -1,36 +1,18 @@
 package main
  
 import (
-    "fmt"
-    "time"
+    // "fmt"
+    "spider/model"
+    "spider/web/api"
 )
 
+var models *model.Model
 
 func main(){
-    
-    var task = make(chan int, 10) // 最大任务数量
-    var wait = make(chan int, 10) // 最大任务数量
-    var wait = make(chan int, 10) // 最大任务数量
 
-    go func(){
-        for i := 0; i <= 100; i++ {
-            wait <- i
-            task <- i
-        }
-        end <- 1
-    }()
+    models = &model.Model{Db: model.InitDb()}
 
-    for{
-        select{
-            case <-task: {
-                go func(){
-                    time.Sleep(time.Second * 1)
-                    <-wait // 告诉队列可以新增任务了
-                }()
-            }
-            default:
-        }
-    }
+    api.HttpRun(models, "4321")
 
-
+    // fmt.Println(models.GetCartoonResources("酷", 1, 0))
 }

@@ -2,6 +2,7 @@ package model
 
 import (
 	// "fmt"
+	"github.com/jinzhu/gorm"
 )
 
 type CartoonResource struct{
@@ -11,6 +12,30 @@ type CartoonResource struct{
 	ResourceUrl string
 	ResourceName string
 	ConfigName string
+}
+
+/**
+ *
+ * 获取漫画资源列表
+ * @param resource_name 模糊查询 资源名称
+ * @param show_num 显示行数
+ * @param start_num 开始行数
+ * @return []CartoonResource{}
+ *
+ */
+func (model *Model) GetCartoonResources(resource_name string, show_num int64, start_num int64) []CartoonResource{
+	
+	// 分页资源
+	var CartoonResourcesDb *gorm.DB = model.Db.Limit(show_num).Offset(start_num)
+
+	if resource_name != "" { // 检索资源名称
+		CartoonResourcesDb = CartoonResourcesDb.Where("resource_name LIKE ?", "%" + resource_name + "%")
+	}
+
+	var cartoon []CartoonResource = []CartoonResource{}
+	CartoonResourcesDb.Find(&cartoon) // 执行sql
+
+	return cartoon
 }
 
 /**

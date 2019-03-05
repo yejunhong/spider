@@ -1,23 +1,18 @@
-package main
+package api
 
 import (
 	"fmt"
-	"paimei/app"
+  "spider/model"
+  "spider/web/api/controller"
 	"github.com/gin-gonic/gin"
-	"log"
-	"io"
 	"io/ioutil"
-	"os"
 	"net/http"
 	"strings"
-	"github.com/satori/go.uuid"
-	// "github.com/unrolled/secure"
 )
 
-func main() {
-  var Db = InitDb();
-  cartoonController := app.Cartoon{Db}
-  downloadController := app.Download{Db}
+func HttpRun(Model *model.Model, listen string) {
+  
+  var controllers *controller.Controller = &controller.Controller{Model}
 
 	router := gin.Default()
 	router.Use(Cors())
@@ -31,56 +26,21 @@ func main() {
 		c.String(200, string(html))
   })
 
-	router.POST("/upload", Fileupload)
-
 	// 漫画
   cartoon := router.Group("/cartoon")
-  cartoon.GET("/resource", cartoonController.CartoonResource) // 漫画资源
-	cartoon.GET("/list", cartoonController.CartoonList) // 漫画列表
-	cartoon.GET("/chapter", cartoonController.CartoonChapter)  // 漫画章节列表
-  cartoon.GET("/chapter/content", cartoonController.CartoonChapterContent)  // 漫画章节内容
-  
+  cartoon.GET("/resource", controllers.CartoonResource) // 漫画资源
+	cartoon.GET("/list", controllers.CartoonList) // 漫画列表
+	cartoon.GET("/chapter", controllers.CartoonChapter)  // 漫画章节列表
+  cartoon.GET("/chapter/content", controllers.CartoonChapterContent)  // 漫画章节内容
   
   // 下载
   download := router.Group("/download")
-  download.GET("/book", downloadController.Book)  // 下载指定资源-书籍
-  download.GET("/book/content", downloadController.BookContent)  // 下载指定书籍-所有内容
-
-  download.GET("/chapter", downloadController.Chapter)  // 下载指定书籍-章节
-  download.GET("/chapter/content", downloadController.GoodsDel)  // 下载指定书籍-章节内容
+  download.GET("/book", controllers.DownloadBook)  // 下载指定资源-书籍
+  download.GET("/chapter", controllers.DownloadChapter)  // 下载指定书籍-章节
+  download.GET("/chapter/content", controllers.DownloadChapterContent)  // 下载指定书籍-章节内容
   
-	router.Run(":6010") // listen and serve on 0.0.0.0:8080
-}
-
-/**上传方法**/
-func Fileupload(c *gin.Context){
-  //得到上传的文件
-  file, _, err := c.Request.FormFile("file") //image这个是uplaodify参数定义中的   'fileObjName':'image'
-  if err != nil {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-    return
-  }
-  //文件的名称
-  // filename := header.Filename
-	filename := uuid.NewV4().String() + ".jpg"
-  fmt.Println(file, err, filename)
-  //创建文件
-  out, err := os.Create("static/" + filename)
-  //注意此处的 static/uploadfile/ 不是/static/uploadfile/
-  if err != nil {
-    log.Fatal(err)
-  }
-  defer out.Close()
-  _, err = io.Copy(out, file)
-  if err != nil {
-      log.Fatal(err)
-  }
-	c.JSON(200, gin.H{
-		"error": 0,
-		"msg": filename,
-	})
+  fmt.Println("开启0.0.0.0:", listen)
+	router.Run(":" + listen) // listen and serve on 0.0.0.0:8080
 }
 
 ////// 跨域
