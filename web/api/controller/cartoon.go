@@ -21,9 +21,16 @@ func (controller *Controller) CartoonResource(c *gin.Context){
 }
 
 func (controller *Controller) CartoonList(c *gin.Context){
+	var page, size, num int64 = controller.Page(c)
+	var search string = c.Query("search")
+	var list []model.CartoonList = controller.Model.GetCartoons(search, size, num)
 	c.JSON(200, gin.H{
 		"error": 0,
-		"msg": "漫画列表",
+		"msg": gin.H{
+			"page": page,
+			"list": list,
+			"count": 0,
+		},
 	})
 }
 

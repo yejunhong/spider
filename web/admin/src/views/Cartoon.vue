@@ -5,9 +5,9 @@
     </el-tabs>
     <el-main class="cartoon-main">
       <el-row :gutter="10">
-        <el-col :xs="8" :sm="6" :lg="4" :xl="3" v-for="(v, k) in cartoonList" :key="k" class="info">
+        <el-col :xs="8" :sm="6" :lg="4" :xl="3" v-for="(v, k) in cartoon_list" :key="k" class="info">
           <el-card>
-            <img class="card-img" src="http://www.pptok.com/wp-content/uploads/2012/08/xunguang-4.jpg" @click="SelectCartoonChapter(v)" style="width:100%">
+            <img class="card-img" :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="width:100%">
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
               <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节列表</el-button>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import http from '@/lib/http'
 export default {
   name: 'cartoon',
   data () {
@@ -73,13 +73,11 @@ export default {
       tabsName: '',
       tabsList: [],
       cartoonChapterShow: false,
-      cartoonList: []
+      cartoon_list: []
     }
   },
   mounted() {
     this.GetCartonnResource()
-  },
-  components: {
   },
   methods: {
     GetCartonnResource(){
@@ -92,14 +90,9 @@ export default {
       }
     },
     // 获取漫画数据
-    GetCartoonData(){
-      this.cartoonList = []
-      for(var i = 0; i < 17; i++){
-        this.cartoonList.push({
-          Id: i,
-          ResourceName: `资源名称${i}`,
-        })
-      }
+    async GetCartoonData(){
+      const res = await http.get('/cartoon/list')
+      this.cartoon_list = res.list
     },
     // 标签选择
     tabsClick() {
@@ -127,7 +120,11 @@ export default {
     flex-direction: row;
   }
   .title{
-    font-size: 14px;
+    display: flex;
+    width: 100%;
+    white-space:nowrap;
+    font-size: 13px;
+    overflow:hidden; //超出的文本隐藏
   }
   .card-img{
     cursor: pointer;
