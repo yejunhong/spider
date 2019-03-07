@@ -48,3 +48,16 @@ type CartoonChapter struct{
  func (model *Model) UpdateCartoonChapterById(id int64, udata map[string]interface{}){
 	model.Db.Table("cartoon_chapter").Where("id = ?", id).Updates(udata)
 }
+
+/**
+ *
+ * 获取漫画章节列表
+ * @param unique_id 漫画章节
+ * @return []CartoonChapter{}
+ *
+ */
+ func (model *Model) GetChaptersFindByListUniqueId(list_unique_id string) []CartoonChapter{
+	var cartoonChapters []CartoonChapter = []CartoonChapter{}
+	model.Db.Where("list_unique_id = ?", list_unique_id).Find(&cartoonChapters) // 执行sql
+	return cartoonChapters
+}

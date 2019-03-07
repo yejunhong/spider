@@ -4,8 +4,8 @@ const prefix = 'http://127.0.0.1:4321'
 
 class Http {
 
-  async get(uri){
-    const res = await axios.get(`${prefix}${uri}`)
+  async get(uri, param){
+    const res = await axios.get(`${prefix}${uri}`, {params: param})
     return this.recover(res)
   }
   

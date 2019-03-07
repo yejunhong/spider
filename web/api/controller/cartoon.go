@@ -22,8 +22,9 @@ func (controller *Controller) CartoonResource(c *gin.Context){
 
 func (controller *Controller) CartoonList(c *gin.Context){
 	var page, size, num int64 = controller.Page(c)
+	var resource_no string = c.Query("resource_no")
 	var search string = c.Query("search")
-	var list []model.CartoonList = controller.Model.GetCartoons(search, size, num)
+	var list []model.CartoonList = controller.Model.GetCartoons(resource_no, search, size, num)
 	c.JSON(200, gin.H{
 		"error": 0,
 		"msg": gin.H{
@@ -35,15 +36,19 @@ func (controller *Controller) CartoonList(c *gin.Context){
 }
 
 func (controller *Controller) CartoonChapter(c *gin.Context){
+	var list_unique_id string = c.Query("list_unique_id")
+	var list []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(list_unique_id)
 	c.JSON(200, gin.H{
 		"error": 0,
-		"msg": "漫画章节列表",
+		"msg": list,
 	})
 }
 
 func (controller *Controller) CartoonChapterContent(c *gin.Context){
+	var chapter_unique_id string = c.Query("chapter_unique_id")
+	var list []model.CartoonChapterContent = controller.Model.GetContentsFindByChapterUniqueId(chapter_unique_id)
 	c.JSON(200, gin.H{
 		"error": 0,
-		"msg": "漫画章节内容",
+		"msg": list,
 	})
 }

@@ -7,7 +7,9 @@
       <el-row :gutter="10">
         <el-col :xs="8" :sm="6" :lg="4" :xl="3" v-for="(v, k) in cartoon_list" :key="k" class="info">
           <el-card>
-            <img class="card-img" :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="width:100%">
+            <div class="card-img">
+              <img :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="height: 150%;position: relative;">
+            </div>
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
               <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节列表</el-button>
@@ -21,43 +23,16 @@
     </el-main>
     <el-dialog :title="`${dialogTitle}-章节`" :visible.sync="cartoonChapterShow" width="98%">
       <div class="chapter">
-        <div style="width: 40vw">
+        <div style="width: 40vw; height: 80vh;overflow: scroll">
           <el-row :gutter="10">
-            <el-col :xs="7" :sm="5" :lg="4" :xl="3" v-for="(v, k) in cartoonList" :key="k" class="info">
-              <el-button >{{v.Id}}</el-button>
+            <el-col :xs="8" :sm="7" :lg="6" :xl="5" v-for="(v, k) in cartoon_chapter_list" :key="k" class="info">
+              <el-button @click="SelectChapterContent(v)">{{v.ResourceName}}</el-button>
             </el-col>
           </el-row>
         </div>
-        <div style="width: 59vw; height: 70vh;overflow: scroll">
-        
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>123123<br/>
-          123123<br/>
-
-        </div>
+        <el-main style="width: 59vw; height: 80vh;overflow: scroll" ref="scrollDiv" v-loading="loading">
+          <img class="chapter-img" :src="v.ResourceUrl" width="100%" v-for="(v, k) in cartoon_chapter_content" :key="k"/>
+        </el-main>
       </div>
     </el-dialog>
   </div>
@@ -69,38 +44,50 @@ export default {
   name: 'cartoon',
   data () {
     return {
+      loading: false,
       dialogTitle: '',
       tabsName: '',
       tabsList: [],
       cartoonChapterShow: false,
-      cartoon_list: []
+      cartoon_list: [],
+      cartoon_chapter_list: [],
+      cartoon_chapter_content: []
     }
   },
   mounted() {
     this.GetCartonnResource()
   },
   methods: {
-    GetCartonnResource(){
-      for(var i = 0; i < 6; i++){
-        this.tabsList.push({
-          Id: i,
-          ResourceNo: `C${i}`,
-          ResourceName: `资源名称${i}`,
-        })
-      }
+    async GetCartonnResource(){
+      const res = await http.get('/cartoon/resource')
+      this.tabsList = res.list
+      this.GetCartoonData(this.tabsList[0].ResourceNo)
+      this.tabsName = this.tabsList[0].ResourceNo
     },
     // 获取漫画数据
-    async GetCartoonData(){
-      const res = await http.get('/cartoon/list')
+    async GetCartoonData(no){
+      const res = await http.get('/cartoon/list', {resource_no: no})
       this.cartoon_list = res.list
     },
     // 标签选择
-    tabsClick() {
-      this.GetCartoonData()
+    tabsClick(v) {
+      this.GetCartoonData(v.name)
     },
-    SelectCartoonChapter(row){
+    async SelectCartoonChapter(row){
+      this.cartoon_chapter_content = []
       this.cartoonChapterShow = true
       this.dialogTitle = row.ResourceName
+      const res = await http.get('/cartoon/chapter', {list_unique_id: row.UniqueId})
+      this.cartoon_chapter_list = res
+      await this.SelectChapterContent(res[0])
+    },
+    async SelectChapterContent(row){
+      this.cartoon_chapter_content = []
+      this.loading = true
+      this.$refs.scrollDiv.scrollTop = '0px'
+      const res = await http.get('/cartoon/chapter/content', {chapter_unique_id: row.UniqueId})
+      this.cartoon_chapter_content = res
+      this.loading = false
     }
   }
 }
@@ -122,16 +109,28 @@ export default {
   .title{
     display: flex;
     width: 100%;
+    justify-content: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
     white-space:nowrap;
-    font-size: 13px;
+    font-size: 14px;
     overflow:hidden; //超出的文本隐藏
   }
   .card-img{
     cursor: pointer;
+    display: flex;
+    width: 100%;
+    height: 150px;
+    justify-content: center;
+    align-content: center;
+    overflow: hidden;
   }
   .cartoon-main{
     height: 80vh;
     overflow: scroll-y;
     padding: 5px !important;
+  }
+  .chapter-img{
+    vertical-align: bottom;
   }
 </style>

@@ -18,7 +18,7 @@ type Controller struct{
 func (controller *Controller) Page(c *gin.Context) (int64, int64, int64){
 
 	var page string = c.DefaultQuery("page", "1")
-	var pagesize string = c.DefaultQuery("pagesize", "10")
+	var pagesize string = c.DefaultQuery("pagesize", "20")
 	
 	pageInt64, _ := strconv.ParseInt(page, 10, 64)
 	pagesizeInt64, _ := strconv.ParseInt(pagesize, 10, 64)

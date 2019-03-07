@@ -61,19 +61,24 @@ type CartoonList struct{
 /**
  *
  * 获取漫画资列表
+ * @param resource_no 资源编号
  * @param resource_name 模糊查询 资源名称
  * @param show_num 显示行数
  * @param start_num 开始行数
  * @return []CartoonResource{}
  *
  */
- func (model *Model) GetCartoons(resource_name string, show_num int64, start_num int64) []CartoonList{
+ func (model *Model) GetCartoons(resource_no string, resource_name string, show_num int64, start_num int64) []CartoonList{
 	
 	// 分页资源
 	var CartoonsDb *gorm.DB = model.Db.Limit(show_num).Offset(start_num)
 
 	if resource_name != "" { // 检索资源名称
 		CartoonsDb = CartoonsDb.Where("resource_name LIKE ?", "%" + resource_name + "%")
+	}
+
+	if resource_no != "" { // 检索资源名称
+		CartoonsDb = CartoonsDb.Where("resource_no = ?", resource_no)
 	}
 
 	var cartoons []CartoonList = []CartoonList{}
