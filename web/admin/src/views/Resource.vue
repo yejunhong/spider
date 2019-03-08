@@ -1,11 +1,12 @@
 <template>
   <div>
     <el-table :data="resource_list" style="width: 100%" header-cell-class-name="header" height="90vh">
-      <el-table-column prop="id" label="ID" fixed="left" width="80"></el-table-column>
-      <el-table-column prop="resource_no" label="编号" width="100"></el-table-column>
-      <el-table-column prop="resource_name" label="资源名称" width="120"></el-table-column>
-      <el-table-column prop="resource_url" label="资源书籍列表地址" min-width="350"></el-table-column>
-      <el-table-column prop="book_count" label="书籍数量" width="100"></el-table-column>
+      <el-table-column prop="Id" label="ID" fixed="left" width="80"></el-table-column>
+      <el-table-column prop="ResourceNo" label="编号" width="100"></el-table-column>
+      <el-table-column prop="ResourceName" label="资源名称" width="120"></el-table-column>
+      <el-table-column prop="ResourceUrl" label="资源书籍列表地址" min-width="350"></el-table-column>
+      <el-table-column prop="ConfigName" label="爬虫配置" width="200"></el-table-column>
+      <el-table-column prop="BookCount" label="书籍数量" width="100"></el-table-column>
       <el-table-column label="操作" fixed="right" width="120">
         <template slot-scope="scope">
           <el-button type="text" size="small">下载</el-button>
@@ -22,37 +23,23 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        resource_list: [{
-          id: '1',
-          resource_no: 'C001',
-          resource_name: '漫画书籍',
-          resource_url: 'http://127.0.0.1:8080/resource',
-          book_count: 20
-        }, {
-          id: '1',
-          resource_no: 'C001',
-          resource_name: '漫画书籍',
-          resource_url: 'http://127.0.0.1:8080/resource',
-          book_count: 20
-        }, {
-          id: '1',
-          resource_no: 'C001',
-          resource_name: '漫画书籍',
-          resource_url: 'http://127.0.0.1:8080/resource',
-          book_count: 20
-        }, {
-          id: '1',
-          resource_no: 'C001',
-          resource_name: '漫画书籍',
-          resource_url: 'http://127.0.0.1:8080/resource',
-          book_count: 20
-        }]
-      }
+import http from '@/lib/http'
+export default {
+  data() {
+    return {
+      resource_list: []
+    }
+  },
+  mounted(){
+    this.GetResource(1)
+  },
+  methods: {
+    async GetResource(page){
+      const res = await http.get('/cartoon/resource')
+      this.resource_list = res.list
     }
   }
+}
 </script>
 <style>
 .header{

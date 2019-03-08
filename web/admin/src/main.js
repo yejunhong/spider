@@ -8,6 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 Vue.config.productionTip = false
 
+// http://127.0.0.1:4321/cartoon/resource
+
 new Vue({
   router,
   store,
