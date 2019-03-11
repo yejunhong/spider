@@ -83,7 +83,6 @@ type CartoonList struct{
 
 	var cartoons []CartoonList = []CartoonList{}
 	var count int64
-
 	CartoonsDb.Model(&CartoonList{}).Count(&count)
 	CartoonsDb.Find(&cartoons) // 执行sql
 

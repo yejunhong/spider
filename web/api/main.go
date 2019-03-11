@@ -7,8 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
-	"strings"
+  "strings"
+  "github.com/gorilla/websocket"
 )
+
+var upGrader = websocket.Upgrader{  
+  CheckOrigin: func (r *http.Request) bool {  
+     return true  
+  },  
+}
 
 func HttpRun(Model *model.Model, listen string) {
   
@@ -25,6 +32,15 @@ func HttpRun(Model *model.Model, listen string) {
 		html, _ := ioutil.ReadFile("./admin/dist/index.html")
 		c.String(200, string(html))
   })
+
+  //监听claw websocket连接
+	router.GET("/crawl", func(c *gin.Context) {
+		c.Request.Header.Add("Origin", "http://localhost:8010")
+		handler := websocket.Handler(func(conn *websocket.Conn) {
+			clawServer.ClawListen(c, conn)
+		})
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 
 	// 漫画
   cartoon := router.Group("/cartoon")

@@ -71,3 +71,15 @@ func (model *Model) GetCartoonById(id int64) CartoonResource{
 	model.Db.Where("id = ?", id).First(&cartoon)
 	return cartoon
 }
+
+/**
+ *
+ * 通过id 获取漫画资源书籍
+ * @return CartoonResource{}
+ *
+ */
+ func (model *Model) GetCartoonByResourceNo(ResourceNo string) CartoonResource{
+	var cartoon CartoonResource = CartoonResource{}
+	model.Db.Where("resource_no = ?", ResourceNo).First(&cartoon)
+	return cartoon
+}

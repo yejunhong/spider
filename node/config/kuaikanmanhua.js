@@ -1,7 +1,6 @@
 
 module.exports = {
   name: '快看漫画',
-  console: true, // 是否开启 console.log() 控制台
   // jquery: false,
   login: false,
   list: { // 漫画列表
