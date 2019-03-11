@@ -20,7 +20,7 @@ type CartoonResource struct{
  * @param resource_name 模糊查询 资源名称
  * @param show_num 显示行数
  * @param start_num 开始行数
- * @return []CartoonResource{}
+ * @return []CartoonResource{}, count
  *
  */
 func (model *Model) GetCartoonResources(resource_name string, show_num int64, start_num int64) []CartoonResource{
@@ -33,9 +33,12 @@ func (model *Model) GetCartoonResources(resource_name string, show_num int64, st
 	}
 
 	var cartoon []CartoonResource = []CartoonResource{}
+	var count int64
+
+	CartoonsDb.Model(&CartoonResource{}).Count(&count)
 	CartoonResourcesDb.Find(&cartoon) // 执行sql
 
-	return cartoon
+	return cartoon, count
 }
 
 /**
