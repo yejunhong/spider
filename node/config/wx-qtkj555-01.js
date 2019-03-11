@@ -3,7 +3,6 @@
 
 module.exports = {
   name: '谦棠科技-漫画',
-  console: true, // 是否开启 console.log() 控制台
   // cookie 信息 Referer: http://c1021.w406.s4694780.5fmj.com.cn/manhua/
   // 伪造浏览器
   user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16D57 MicroMessenger/7.0.3(0x17000321) NetType/WIFI Language/zh_CN",

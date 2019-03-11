@@ -3,11 +3,13 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"spider/model"
+	"spider/service"
 	"strconv"
 )
 
 type Controller struct{
 	Model *model.Model
+	Service *service.Service
 }
 
 /**

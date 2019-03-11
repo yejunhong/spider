@@ -13,14 +13,22 @@
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
               <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节列表</el-button>
+              <span>10000</span>
             </div>
             <div class="row">
               <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">下载章节内容</el-button>
+              <span>10000/10000</span>
             </div>
           </el-card>
         </el-col>
       </el-row>
     </el-main>
+    <el-pagination
+      background
+      layout="total, prev, pager, next"
+      :page-size="pagesize"
+      :total="total" style="margin-top: 10px;">
+    </el-pagination>
     <el-dialog :title="`${dialogTitle}-章节`" :visible.sync="cartoonChapterShow" width="98%">
       <div class="chapter">
         <div style="width: 40vw; height: 80vh;overflow: scroll">
@@ -48,6 +56,8 @@ export default {
       dialogTitle: '',
       tabsName: '',
       tabsList: [],
+      total: 0,
+      pagesize: 0,
       cartoonChapterShow: false,
       cartoon_list: [],
       cartoon_chapter_list: [],
@@ -68,6 +78,8 @@ export default {
     async GetCartoonData(no){
       const res = await http.get('/cartoon/list', {resource_no: no})
       this.cartoon_list = res.list
+      this.total = res.count
+      this.pagesize = res.size
     },
     // 标签选择
     tabsClick(v) {
@@ -132,5 +144,16 @@ export default {
   }
   .chapter-img{
     vertical-align: bottom;
+  }
+  .row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 14px;
+    align-content: center;
+    span {
+      display: flex;
+      align-content: center;
+    }
   }
 </style>

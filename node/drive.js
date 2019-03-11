@@ -66,7 +66,7 @@ class Drive{
       return
     }
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(config.login.url);
     // 注入配置信息
     await page.addScriptTag({
       path: `config/${config_name}.js`,
@@ -74,7 +74,7 @@ class Drive{
     // 待定过期
     await page.waitForNavigation({timeout: 1000});
     const res = await page.$$eval(config.selector, async (d, config) => {
-      const res = eval(`${config.login}(e)`);
+      const res = eval(`${config.login.operation}(e)`);
       return res; // 登录结果
     }, config);
 

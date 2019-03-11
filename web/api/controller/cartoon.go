@@ -24,13 +24,16 @@ func (controller *Controller) CartoonList(c *gin.Context){
 	var page, size, num int64 = controller.Page(c)
 	var resource_no string = c.Query("resource_no")
 	var search string = c.Query("search")
-	var list []model.CartoonList = controller.Model.GetCartoons(resource_no, search, size, num)
+	var count int64
+	var list []model.CartoonList
+	list, count = controller.Model.GetCartoons(resource_no, search, size, num)
 	c.JSON(200, gin.H{
 		"error": 0,
 		"msg": gin.H{
 			"page": page,
+			"size": size,
 			"list": list,
-			"count": 0,
+			"count": count,
 		},
 	})
 }
