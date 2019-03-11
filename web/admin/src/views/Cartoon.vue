@@ -61,13 +61,28 @@ export default {
       cartoonChapterShow: false,
       cartoon_list: [],
       cartoon_chapter_list: [],
-      cartoon_chapter_content: []
+      cartoon_chapter_content: [],
+      ws: {},
     }
   },
   mounted() {
     this.GetCartonnResource()
   },
   methods: {
+    initWs(){
+      const url = ''
+      this.ws = new WebSocket(url)
+      this.ws.onopen = () => {}
+      this.ws.onmessage = this.wsMessage
+      this.ws.onerror = () => {}
+      this.ws.close = () => {}
+    },
+    wsMessage(msg){
+
+    },
+    wsSend(msg){
+      this.ws.send(msg)
+    },
     async GetCartonnResource(){
       const res = await http.get('/cartoon/resource')
       this.tabsList = res.list
