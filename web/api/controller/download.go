@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"spider/model"
+	"strconv"
 )
 
 /**
@@ -19,7 +19,7 @@ func (controller *Controller) DownloadBook(c *gin.Context){
 	var is_test string = c.Query("is_test") // 是否测试
 	var test bool = false
 
-	if is_test == 1{
+	if is_test == "1" {
 		test = true
 	}
 
@@ -49,7 +49,7 @@ func (controller *Controller) DownloadChapter(c *gin.Context){
 	var is_test string = c.Query("is_test") // 是否测试
 	var test bool = false
 
-	if is_test == 1{
+	if is_test == "1" {
 		test = true
 	}
 
@@ -74,7 +74,7 @@ func (controller *Controller) DownloadChapterContent(c *gin.Context){
 	var is_test string = c.Query("is_test") // 是否测试
 	var test bool = false
 
-	if is_test == 1{
+	if is_test == "1" {
 		test = true
 	}
 
@@ -84,7 +84,7 @@ func (controller *Controller) DownloadChapterContent(c *gin.Context){
 	var cartoon = controller.Model.GetCartoonByResourceNo(cartoonChapter.ResourceNo)
 	
 	go func(){
-		controller.Service.CrawlBookChapterContent(cartoon, cartoonChapter "", test)
+		controller.Service.CrawlBookChapterContent(cartoon, cartoonChapter, "", test)
 	}()
 	
 	c.JSON(200, gin.H{

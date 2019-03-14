@@ -3,23 +3,20 @@ package api
 import (
 	"fmt"
   "spider/model"
+  "spider/service"
   "spider/web/api/controller"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
   "strings"
-  "github.com/gorilla/websocket"
 )
-
-var upGrader = websocket.Upgrader{  
-  CheckOrigin: func (r *http.Request) bool {  
-     return true  
-  },  
-}
 
 func HttpRun(Model *model.Model, listen string) {
   
-  var controllers *controller.Controller = &controller.Controller{Model}
+  var services *service.Service = &service.Service{Models: Model}
+  services.InitService()
+
+  var controllers *controller.Controller = &controller.Controller{Model, services}
 
 	router := gin.Default()
 	router.Use(Cors())
@@ -34,13 +31,7 @@ func HttpRun(Model *model.Model, listen string) {
   })
 
   //监听claw websocket连接
-	router.GET("/crawl", func(c *gin.Context) {
-		c.Request.Header.Add("Origin", "http://localhost:8010")
-		handler := websocket.Handler(func(conn *websocket.Conn) {
-			clawServer.ClawListen(c, conn)
-		})
-		handler.ServeHTTP(c.Writer, c.Request)
-	})
+	
 
 	// 漫画
   cartoon := router.Group("/cartoon")

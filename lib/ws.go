@@ -1,5 +1,5 @@
 package lib
-
+/*
 import (
 	"time"
 	"crypto/md5"
@@ -22,7 +22,7 @@ var upGrader = websocket.Upgrader{
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		fmt.Print("upgrade:", err)
 		return
 	}
 
@@ -42,4 +42,4 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-}
+}*/

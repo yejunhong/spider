@@ -8,12 +8,11 @@ import (
 
 type Service struct{
     Browser Drive.NodeBrowser
-    Models model.Model
+    Models *model.Model
 }
 
 func (service *Service) InitService(){
     service.Browser = Drive.NodeBrowser{}
-    service.Models = model.Model{Db: model.InitDb()}
     service.Browser.CreateBrowserClient() // 创建浏览器客户端
 }
 
@@ -28,11 +27,11 @@ func (service *Service) InitService(){
  */
 func (service *Service) CrawlBookList(cartoon model.CartoonResource, url string, test bool) []map[string]interface{}{
 
-    if url == '' {
+    if url == "" {
         url = cartoon.ResourceUrl
     }
 
-    var list_data *Drive.ListReply = browser.CrawlList(url, cartoon.ConfigName) // 浏览器拉取列表数据
+    var list_data *Drive.ListReply = service.Browser.CrawlList(url, cartoon.ConfigName) // 浏览器拉取列表数据
     var data []map[string]interface{}
     // 获取服务端返回的结果
     for _, v := range list_data.Data {
@@ -52,9 +51,9 @@ func (service *Service) CrawlBookList(cartoon model.CartoonResource, url string,
     }
     
     if test == false {
-        models.BatchInsert("cartoon_list", data, []string{"tags", "author", "detail", "resource_url", "resource_name", "resource_img_url"})
+        service.Models.BatchInsert("cartoon_list", data, []string{"tags", "author", "detail", "resource_url", "resource_name", "resource_img_url"})
         if list_data.Next != "" && len(data) > 0 { // 是否下一页
-            service.GetCartoonList(cartoon, list_data.Next, test)
+            service.CrawlBookList(cartoon, list_data.Next, test)
         }
     }
 
@@ -73,11 +72,11 @@ func (service *Service) CrawlBookList(cartoon model.CartoonResource, url string,
  */
 func (service *Service) CrawlBookChapter(cartoon model.CartoonResource, cartoonInfo model.CartoonList, url string, test bool) []map[string]interface{}{
     
-    if url == '' {
+    if url == "" {
         url = cartoonInfo.ResourceUrl
     }
 
-    var chapter_data *Drive.ChapterReply = browser.CrawlChapter(url, cartoon.ConfigName) // 浏览器拉取列表数据
+    var chapter_data *Drive.ChapterReply = service.Browser.CrawlChapter(url, cartoon.ConfigName) // 浏览器拉取列表数据
     var data []map[string]interface{}
     var cartoon_is_free string = "0" // 是否收费 0免费
 
@@ -100,9 +99,9 @@ func (service *Service) CrawlBookChapter(cartoon model.CartoonResource, cartoonI
     }
     if test == false {
         if chapter_data.Detail != nil {
-            models.UpdateCartoonListById(cartoonInfo.Id, map[string]interface{}{"is_free": cartoon_is_free, "is_end": chapter_data.Detail.IsEnd, "status": 1})
+            service.Models.UpdateCartoonListById(cartoonInfo.Id, map[string]interface{}{"is_free": cartoon_is_free, "is_end": chapter_data.Detail.IsEnd, "status": 1})
         }
-        models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
+        service.Models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
         if chapter_data.Next != "" && len(data) > 0 { // 是否下一页
             service.CrawlBookChapter(cartoon, cartoonInfo, chapter_data.Next, test)
         }
@@ -122,15 +121,15 @@ func (service *Service) CrawlBookChapter(cartoon model.CartoonResource, cartoonI
  */
 func (service *Service) CrawlBookChapterContent(cartoon model.CartoonResource, cartoonChapter model.CartoonChapter, url string, test bool) []map[string]interface{}{
     
-    if url == '' {
+    if url == "" {
         url = cartoonChapter.ResourceUrl
     }
 
-    var chapter_data *Drive.ChapterContentReply = browser.CrawlChapterContent(url, cartoon.ConfigName) // 浏览器拉取列表数据
+    var chapter_data *Drive.ChapterContentReply = service.Browser.CrawlChapterContent(url, cartoon.ConfigName) // 浏览器拉取列表数据
     var data []map[string]interface{}
     // 获取服务端返回的结果
     // 清除现有数据
-    models.DeleteChapterContentByChapterUniqueId(cartoonChapter.UniqueId)
+    service.Models.DeleteChapterContentByChapterUniqueId(cartoonChapter.UniqueId)
     for _, v := range chapter_data.Data {
         data = append(data, map[string]interface{}{
             "resource_no": cartoon.ResourceNo,
@@ -141,8 +140,8 @@ func (service *Service) CrawlBookChapterContent(cartoon model.CartoonResource, c
         })
     }
     if test == false {
-        models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{"status": 1})
-        models.BatchInsert("cartoon_chapter_content", data, []string{})
+        service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{"status": 1})
+        service.Models.BatchInsert("cartoon_chapter_content", data, []string{})
         if chapter_data.Next != "" && len(data) > 0 { // 是否下一页
             service.CrawlBookChapterContent(cartoon, cartoonChapter, chapter_data.Next, test)
         }

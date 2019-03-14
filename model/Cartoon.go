@@ -23,7 +23,7 @@ type CartoonResource struct{
  * @return []CartoonResource{}, count
  *
  */
-func (model *Model) GetCartoonResources(resource_name string, show_num int64, start_num int64) []CartoonResource{
+func (model *Model) GetCartoonResources(resource_name string, show_num int64, start_num int64) ([]CartoonResource, int64){
 	
 	// 分页资源
 	var CartoonResourcesDb *gorm.DB = model.Db.Limit(show_num).Offset(start_num)
@@ -35,7 +35,7 @@ func (model *Model) GetCartoonResources(resource_name string, show_num int64, st
 	var cartoon []CartoonResource = []CartoonResource{}
 	var count int64
 
-	CartoonsDb.Model(&CartoonResource{}).Count(&count)
+	CartoonResourcesDb.Model(&CartoonResource{}).Count(&count)
 	CartoonResourcesDb.Find(&cartoon) // 执行sql
 
 	return cartoon, count
