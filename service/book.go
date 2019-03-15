@@ -36,7 +36,6 @@ func (service *Service) CrawlBookList(cartoon model.CartoonResource, url string,
     // 获取服务端返回的结果
     for _, v := range list_data.Data {
         data = append(data, map[string]interface{}{
-            "cartoon_id": cartoon.Id,
             "resource_no": cartoon.ResourceNo,
             "unique_id": lib.MD5(cartoon.ResourceNo + v.ResourceName),
             "tags": v.Tags,

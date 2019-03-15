@@ -19,11 +19,11 @@ func main(){
     browser.CreateBrowserClient() // 创建浏览器客户端
     
     // 通过资源获取漫画列表
-    /*var cartoon = models.GetCartoonById(2)
-    GetList(cartoon.ResourceUrl, cartoon);*/
+    var cartoon = models.GetCartoonById(1)
+    GetList(cartoon.ResourceUrl, cartoon);
 
     // GetChapter(2)
-    GetChapterContent(2)
+    // GetChapterContent(2)
 }
 
 func GetList(resource_url string, cartoon model.CartoonResource){
@@ -32,10 +32,12 @@ func GetList(resource_url string, cartoon model.CartoonResource){
 
     var list_data *Drive.ListReply = browser.CrawlList(resource_url, cartoon.ConfigName) // 浏览器拉取列表数据
     var data []map[string]interface{}
+    if len(list_data.Data) <= 0 {
+        return
+    }
     // 获取服务端返回的结果
     for _, v := range list_data.Data {
         data = append(data, map[string]interface{}{
-            "cartoon_id": cartoon.Id,
             "resource_no": cartoon.ResourceNo,
             "unique_id": lib.MD5(cartoon.ResourceNo + v.ResourceName),
             "tags": v.Tags,

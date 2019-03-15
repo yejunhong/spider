@@ -3,7 +3,7 @@
 
 module.exports = {
   name: '谦棠科技-漫画',
-  // cookie 信息 Referer: http://c1021.w406.s4694780.5fmj.com.cn/manhua/
+  // cookie 信息 Referer: http://c1021.w406.s4694780.5fmj.com.cn/manhua/books_type.html
   // 伪造浏览器
   user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16D57 MicroMessenger/7.0.3(0x17000321) NetType/WIFI Language/zh_CN",
   // jquery: false,
@@ -30,6 +30,7 @@ module.exports = {
 
 function get_list_data(e) {
   const resource_url = e.getAttribute("onclick");
+
   return {
     resource_name: e.querySelector('.bookshelfListMainTitle').innerHTML,
     resource_url: "http://c1021.w406.s4694780.5fmj.com.cn/manhua/" + resource_url.split('"')[1],

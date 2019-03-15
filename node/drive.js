@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const options = {args: ['--no-sandbox', '--disable-setuid-sandbox', '--process-per-tab', '--disable-images']};
 
 let browser = {};
-const iPhone = devices['iPhone X'];
 
 class Drive{
   
@@ -23,7 +22,7 @@ class Drive{
    */
   async CrawlList(call, callback){
     const request = call.request
-    const config = require(`./config/${request.config_name}`);
+    const config = require(`${__dirname}/config/${request.config_name}`);
     await this.Login(config); // 登录操作
     const resData = await this.OpenPage(request.url, request.config_name, config, config.list);
     callback(null, resData);
@@ -36,7 +35,7 @@ class Drive{
    */
   async CrawlChapter(call, callback){
     const request = call.request;
-    const config = require(`./config/${request.config_name}`);
+    const config = require(`${__dirname}/config/${request.config_name}`);
     await this.Login(config); // 登录操作
     const resData = await this.OpenPage(request.url, request.config_name, config, config.chapter);
     callback(null, resData);
@@ -49,7 +48,7 @@ class Drive{
    */
   async CrawlChapterContent(call, callback){
     const request = call.request;
-    const config = require(`./config/${request.config_name}`);
+    const config = require(`${__dirname}/config/${request.config_name}`);
     await this.Login(config); // 登录操作
     const resData = await this.OpenPage(request.url, request.config_name, config, config.chapter_content);
     callback(null, resData);
@@ -69,7 +68,7 @@ class Drive{
     await page.goto(config.login.url);
     // 注入配置信息
     await page.addScriptTag({
-      path: `config/${config_name}.js`,
+      path: `${__dirname}/config/${config_name}.js`,
     });
     // 待定过期
     await page.waitForNavigation({timeout: 1000});
@@ -122,8 +121,8 @@ class Drive{
       crypto.createHash('md5').update(text).digest('hex')
     );*/
     // 注入配置信息
-    await page.addScriptTag({path: `config/${config_name}.js`});
-
+    await page.addScriptTag({path: `${__dirname}/config/${config_name}.js`});
+    // console.log(await page.content())
     // 滚动操作
     if (config_eval.scroll != undefined && config_eval.scroll != false){
       let preScrollHeight = 0;
