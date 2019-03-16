@@ -10,7 +10,7 @@
       <el-table-column label="操作" fixed="right" width="120">
         <template slot-scope="scope">
           <el-button type="text" size="small">下载</el-button>
-          <el-button type="text" size="small" @click="edit">编辑</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -25,21 +25,25 @@
         <el-tab-pane label="资源基本信息" name="base"></el-tab-pane>
         <el-tab-pane label="爬虫配置" name="config"></el-tab-pane>
       </el-tabs>
-      <el-form :model="form" v-show="resourceActive == 'base'">
+      <el-form class="form" :model="form" v-show="resourceActive == 'base'">
         <el-form-item label="编号" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.ResourceNo" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="资源名称" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.ResourceName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="书籍列表地址" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.ResourceUrl" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="爬虫配置" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
-        </el-form-item>
+
       </el-form>
-      <codemirror v-model="code" v-show="resourceActive == 'config'"></codemirror>
+      <div v-show="resourceActive == 'config'">
+        配置路径：{{form.ConfigName}}
+        <codemirror v-model="code" 
+          :options="{mode: 'javascript',extraKeys: {'Ctrl-Space': 'autocomplete'}}">
+        </codemirror>
+      </div>
+      
       <div slot="footer" class="dialog-footer">
         <el-button @click="resourceDialog = false">取 消</el-button>
         <el-button type="primary" @click="resourceDialog = false">确 定</el-button>
@@ -49,6 +53,11 @@
 </template>
 
 <script>
+require('codemirror/mode/javascript/javascript')
+require('codemirror/mode/vue/vue')
+require('codemirror/addon/hint/show-hint.js')
+require('codemirror/addon/hint/show-hint.css')
+require('codemirror/addon/hint/javascript-hint.js')
 import http from '@/lib/http'
 import { codemirror } from 'vue-codemirror-lite'
 export default {
@@ -60,7 +69,11 @@ export default {
       formLabelWidth: "100px",
       title: "",
       form: {
-
+        Id: 0,
+        ResourceNo: "",
+        ResourceName: "",
+        ResourceUrl: "",
+        ConfigName: "",
       },
       code: ""
     }
@@ -73,11 +86,14 @@ export default {
   },
   methods: {
     async GetResource(page){
-      const res = await http.get('/cartoon/resource')
+      const res = await http.get('/cartoon/resource',)
       this.resource_list = res.list
     },
-    edit() {
+    async edit(v) {
       this.resourceDialog = true
+      const res = await http.get(`/cartoon/resource/${v.Id}`,)
+      this.form = res.info
+      this.code = res.config
     }
   }
 }
@@ -85,6 +101,14 @@ export default {
 <style>
 .el-dialog{
   width: 90vw !important;
+  height: 90vh;
+}
+.el-form{
+  height: 430px !important;
+}
+.CodeMirror{
+  height: 430px !important;
+  border: 1px solid rgb(230, 230, 230);
 }
 .header{
   height: 5vh;

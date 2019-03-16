@@ -35,6 +35,7 @@ func HttpRun(Model *model.Model, listen string) {
 
 	// 漫画
   cartoon := router.Group("/cartoon")
+  cartoon.GET("/resource/:id", controllers.CartoonResourceInfo) // 漫画资源
   cartoon.GET("/resource", controllers.CartoonResource) // 漫画资源
 	cartoon.GET("/list", controllers.CartoonList) // 漫画列表
 	cartoon.GET("/chapter", controllers.CartoonChapter)  // 漫画章节列表

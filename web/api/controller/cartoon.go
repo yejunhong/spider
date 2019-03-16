@@ -4,7 +4,26 @@ import (
 	// "fmt"
 	"spider/model"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"strconv"
 )
+
+func (controller *Controller) CartoonResourceInfo(c *gin.Context){
+
+	var id string = c.Param("id")
+	idInt64, _ := strconv.ParseInt(id, 10, 64)
+	var res model.CartoonResource = controller.Model.GetCartoonById(idInt64)
+
+	contents, _ := ioutil.ReadFile("./node/config/" + res.ConfigName + ".js")
+
+	c.JSON(200, gin.H{
+		"error": 0,
+		"msg": gin.H{
+			"info": res,
+			"config": string(contents),
+		},
+	})
+}
 
 func (controller *Controller) CartoonResource(c *gin.Context){
 	var page, size, num int64 = controller.Page(c)
