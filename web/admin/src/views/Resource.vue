@@ -35,7 +35,6 @@
         <el-form-item label="书籍列表地址" :label-width="formLabelWidth">
           <el-input v-model="form.ResourceUrl" autocomplete="off"></el-input>
         </el-form-item>
-
       </el-form>
       <div v-show="resourceActive == 'config'">
         配置路径：{{form.ConfigName}}
@@ -43,7 +42,6 @@
           :options="{mode: 'javascript',extraKeys: {'Ctrl-Space': 'autocomplete'}}">
         </codemirror>
       </div>
-      
       <div slot="footer" class="dialog-footer">
         <el-button @click="resourceDialog = false">取 消</el-button>
         <el-button type="primary" @click="resourceDialog = false">确 定</el-button>
@@ -85,8 +83,8 @@ export default {
     this.GetResource(1)
   },
   methods: {
-    async GetResource(page){
-      const res = await http.get('/cartoon/resource',)
+    async GetResource(p) {
+      const res = await http.get('/cartoon/resource', {page: p})
       this.resource_list = res.list
     },
     async edit(v) {

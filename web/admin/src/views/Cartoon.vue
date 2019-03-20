@@ -57,6 +57,7 @@ export default {
       tabsName: '',
       tabsList: [],
       total: 0,
+      page: 1,
       pagesize: 0,
       cartoonChapterShow: false,
       cartoon_list: [],
@@ -91,7 +92,7 @@ export default {
     },
     // 获取漫画数据
     async GetCartoonData(no){
-      const res = await http.get('/cartoon/list', {resource_no: no})
+      const res = await http.get('/cartoon/list', {resource_no: no, page: this.page})
       this.cartoon_list = res.list
       this.total = res.count
       this.pagesize = res.size

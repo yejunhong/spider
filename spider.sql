@@ -11,7 +11,7 @@
  Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 14/03/2019 21:46:30
+ Date: 20/03/2019 22:12:11
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `cartoon_chapter` (
   `resource_url` varchar(255) DEFAULT NULL COMMENT '章节列表url',
   `resource_img_url` varchar(255) DEFAULT NULL COMMENT '图片资源',
   `cdate` int(11) DEFAULT NULL COMMENT '书籍章节抓取时间',
-  `resource_no` varchar(32) DEFAULT NULL,
+  `resource_no` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=496936 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -43,7 +43,7 @@ CREATE TABLE `cartoon_chapter` (
 DROP TABLE IF EXISTS `cartoon_chapter_content`;
 CREATE TABLE `cartoon_chapter_content` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `resource_no` int(11) DEFAULT NULL,
+  `resource_no` char(4) DEFAULT NULL,
   `list_unique_id` char(32) NOT NULL COMMENT '漫画列表 唯一标识',
   `chapter_unique_id` char(32) NOT NULL COMMENT '章节唯一标识',
   `resource_url` varchar(255) DEFAULT NULL COMMENT '外部资源url',
@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS `cartoon_list`;
 CREATE TABLE `cartoon_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `unique_id` char(32) NOT NULL COMMENT '章节唯一标识',
-  `resource_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '书籍名称',
+  `resource_no` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '书籍名称',
   `tags` varchar(100) DEFAULT NULL COMMENT '标签',
   `author` varchar(50) DEFAULT NULL COMMENT '作者',
   `detail` varchar(200) DEFAULT NULL COMMENT '详情',
@@ -72,7 +72,7 @@ CREATE TABLE `cartoon_list` (
   `is_free` tinyint(1) DEFAULT NULL COMMENT '是否免费1免费 0收费',
   `is_end` tinyint(1) DEFAULT NULL COMMENT '是否完结 1完结 0未完结',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6484 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6580 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for cartoon_resource
@@ -83,7 +83,7 @@ CREATE TABLE `cartoon_resource` (
   `resource_url` varchar(255) DEFAULT NULL COMMENT 'url资源',
   `resource_name` varchar(50) DEFAULT NULL COMMENT '漫画资源名称',
   `config_name` varchar(50) DEFAULT NULL COMMENT '配置文件名称',
-  `resource_no` int(11) DEFAULT NULL,
+  `resource_no` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6484 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
