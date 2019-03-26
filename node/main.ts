@@ -1,4 +1,4 @@
 require('babel-register') ({
     presets: [ 'env' ]
 });
-module.exports = require('./src/index.ts');
+module.exports = require('./src/index');

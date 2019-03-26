@@ -1,4 +1,39 @@
 
+module.exports.Page = {
+  name: '快看漫画',
+  mobile: "",
+  cookie: "",
+  user_agent: "",
+}
+
+module.exports.Book = {
+  selector: 'div.ItemSpecial', // 列表选择器
+  async handle (res, Element): Promise<any> { // 处理数据
+    const resdata: any = [];
+    for(const v of res){
+      const e = new Element(v);
+      await e.Html('span.itemTitle');
+      resdata.push({
+        tags: await e.Html('span.itemTitle'),
+        detail: await e.Html('span.itemTitle'),
+        resource_name: await e.Html('span.itemTitle'),
+        resource_url: await e.Attr('a', 'href'),
+        resource_img_url: await e.Attr('.img', 'data-src'),
+        author: await e.Html('p .author')
+      })
+    }
+    return resdata
+  },
+}
+
+module.exports.chapter = {
+
+}
+
+module.exports.content = {
+
+}
+/*
 module.exports = {
   name: '快看漫画',
   // jquery: false,
@@ -50,3 +85,4 @@ function get_chapter_content_data(e) {
     author: e.querySelector('p .author').innerHTML
   };
 }
+*/
