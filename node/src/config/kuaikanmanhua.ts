@@ -6,13 +6,13 @@ module.exports.Page = {
   user_agent: "",
 }
 
+// 获取书籍列表
 module.exports.Book = {
   selector: 'div.ItemSpecial', // 列表选择器
   async handle (res, Element): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);
-      await e.Html('span.itemTitle');
       resdata.push({
         tags: await e.Html('span.itemTitle'),
         detail: await e.Html('span.itemTitle'),
@@ -24,65 +24,39 @@ module.exports.Book = {
     }
     return resdata
   },
-}
-
-module.exports.chapter = {
-
-}
-
-module.exports.content = {
-
-}
-/*
-module.exports = {
-  name: '快看漫画',
-  // jquery: false,
-  login: false,
-  list: { // 漫画列表
-    url: 'https://www.kuaikanmanhua.com/tag/0',
-    selector: 'div.ItemSpecial', // 列表选择器
-    datas: 'get_list_data', // 对应当前配置文件 function
+  // 爬取 下一页数据
+  next: {
+    selector: 'ul.pagination', // 列表选择器
+    async handle(e){
+      let maxPage = await e.$$eval('li.itemBten a', e => e[e.length - 1].innerHTML)
+      let page = await e.$eval('li.active a', e => e.innerHTML)
+      if(parseInt(maxPage) > parseInt(page)){
+        return `https://www.kuaikanmanhua.com/tag/0?state=1&page=${(parseInt(page) + 1)}`
+      }
+      return false
+    }
   },
-  chapter: { // 漫画章节
-    selector: 'div.article-list table tr', // 列表选择器
-    datas: 'get_chapter_data', // 对应当前配置文件 function
+  scroll: false,
+}
+
+// 数据章节配置
+module.exports.Chapter = {
+  selector: 'div.article-list table tr', // 列表选择器
+  async handle (res, Element): Promise<any> { // 处理数据
+    const resdata: any = [];
+    for(const v of res){
+      const e = new Element(v);
+      resdata.push({
+        is_free: await e.IsExist('i.ico-lockoff'),
+        resource_name: await e.Attr('.article-img', 'title'),
+        resource_url: await e.Attr('.article-img', 'href'),
+        resource_img_url: await e.Attr('.kk-sub-img', 'src'),
+      })
+    }
+    return resdata
   },
-  chapter_content: {// 漫画章节-内容
-    selector: 'div.ItemSpecial', // 列表选择器
-    datas: 'get_chapter_content_data', // 对应当前配置文件 function
-  }
 }
 
-function get_list_data(e) {
-  return {
-    tags: e.querySelector('span.itemTitle').innerHTML,
-    detail: e.querySelector('span.itemTitle').innerHTML,
-    resource_name: e.querySelector('span.itemTitle').innerHTML,
-    resource_url: e.querySelector('a').getAttribute('href'),
-    resource_img_url: e.querySelector('.img').getAttribute('data-src'),
-    author: e.querySelector('p .author').innerHTML
-  };
-}
+module.exports.Content = {
 
-function get_chapter_data(e) {
-  const res = e.querySelector('.article-img');
-  return {
-    is_free: e.querySelector('i.ico-lockoff'),
-    resource_name: res.getAttribute('title'),
-    resource_url: res.getAttribute('href'),
-    resource_img_url: e.querySelector('.kk-sub-img').getAttribute('src'),
-  };
 }
-
-
-function get_chapter_content_data(e) {
-  return {
-    tags: e.querySelector('span.itemTitle').innerHTML,
-    detail: e.querySelector('span.itemTitle').innerHTML,
-    resource_name: e.querySelector('span.itemTitle').innerHTML,
-    resource_url: e.querySelector('a').getAttribute('href'),
-    resource_img_url: e.querySelector('.img').getAttribute('data-src'),
-    author: e.querySelector('p .author').innerHTML
-  };
-}
-*/

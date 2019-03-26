@@ -105,14 +105,6 @@ class Pages{
     }
   }
 
-  public async Html(res: any, selector: string): Promise<any> {
-    return await res.$eval(selector, e => e.innerHTML);
-  }
-
-  public async AttrText(res: any, selector: string): Promise<any> {
-    return await res.$eval(selector, e => e.innerHTML);
-  }
-
   public async close(){
     await this.page.close();
   }
