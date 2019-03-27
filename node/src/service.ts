@@ -35,3 +35,22 @@ grpcService.Run();
   server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure())
   server.start()
 })();
+
+/*
+function routeChat(call) {
+  call.on('data', function(note) {
+    var key = pointKey(note.location);
+    if (route_notes.hasOwnProperty(key)) {
+      _.each(route_notes[key], function(note) {
+        call.write(note);
+      });
+    } else {
+      route_notes[key] = [];
+    }
+    // Then add the new note to the list
+    route_notes[key].push(JSON.parse(JSON.stringify(note)));
+  });
+  call.on('end', function() {
+    call.end();
+  });
+}*/
