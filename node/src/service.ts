@@ -8,9 +8,9 @@ class GrpcServer {
   public Run() {
     const server = new grpc.Server();
     server.addProtoService(node_rpc.browser.service, {
-      CrawlList: async (call, callback) => { await drive_.CrawlList(call, callback) },
-      CrawlChapter: async (call, callback) => { await drive_.CrawlChapter(call, callback) },
-      CrawlChapterContent: async (call, callback) => { await drive_.CrawlChapterContent(call, callback) },
+      Book: async (call, callback) => { await drive_.CrawlList(call, callback) },
+      Chapter: async (call, callback) => { await drive_.CrawlChapter(call, callback) },
+      Content: async (call, callback) => { await drive_.CrawlChapterContent(call, callback) },
     })
     server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure())
     server.start()

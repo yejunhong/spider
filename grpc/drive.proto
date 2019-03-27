@@ -3,20 +3,17 @@ syntax = "proto3";
 package grpc;
  
 service browser {
-  rpc CrawlList (Request) returns (ListReply) {}
-  rpc CrawlChapter (Request) returns (ChapterReply) {}
-  rpc CrawlChapterContent (Request) returns (ChapterContentReply) {}
+  rpc Book (stream Request) returns (stream Res) {}
+  rpc Chapter (stream Request) returns (stream ResChapterReply) {}
+  rpc Content (stream Request) returns (stream ResContent) {}
 }
  
 message Request {
   string url = 1;
   string config_name = 2;
 }
-message Detail{
-  string is_end = 1; // 是否完结
-}
 
-message List{ // 漫画列表
+message Book{ // 漫画列表
   string tags = 1;
   string detail = 2;
   string resource_name = 3;
@@ -24,9 +21,12 @@ message List{ // 漫画列表
   string resource_img_url = 5;
   string author = 6;
 }
-message ListReply {
-  repeated List data = 1;
-  string next = 2;
+message Detail {
+  string is_end = 1;
+}
+message Res {
+  repeated Book data = 1;
+  Detail detail = 3; // 详情信息
 }
 
 message Chapter{  // 漫画章节列表
@@ -36,16 +36,13 @@ message Chapter{  // 漫画章节列表
   string resource_img_url = 4;
 }
 
-message ChapterReply {
+message ResChapterReply {
   repeated Chapter data = 1;
-  Detail detail = 3; // 详情信息
-  string next = 2;
 }
 
-message ChapterContent{ // 章节内容
+message Content{ // 章节内容
   repeated string resource_img_url = 1;
 }
-message ChapterContentReply {
-  repeated ChapterContent data = 1;
-  string next = 2;
+message ResContent {
+  repeated Content data = 1;
 }

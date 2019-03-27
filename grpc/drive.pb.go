@@ -35,7 +35,7 @@ func (m *Request) Reset()         { *m = Request{} }
 func (m *Request) String() string { return proto.CompactTextString(m) }
 func (*Request) ProtoMessage()    {}
 func (*Request) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{0}
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{0}
 }
 func (m *Request) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Request.Unmarshal(m, b)
@@ -69,6 +69,84 @@ func (m *Request) GetConfigName() string {
 	return ""
 }
 
+type Book struct {
+	Tags                 string   `protobuf:"bytes,1,opt,name=tags,proto3" json:"tags,omitempty"`
+	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
+	ResourceName         string   `protobuf:"bytes,3,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
+	ResourceUrl          string   `protobuf:"bytes,4,opt,name=resource_url,json=resourceUrl,proto3" json:"resource_url,omitempty"`
+	ResourceImgUrl       string   `protobuf:"bytes,5,opt,name=resource_img_url,json=resourceImgUrl,proto3" json:"resource_img_url,omitempty"`
+	Author               string   `protobuf:"bytes,6,opt,name=author,proto3" json:"author,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Book) Reset()         { *m = Book{} }
+func (m *Book) String() string { return proto.CompactTextString(m) }
+func (*Book) ProtoMessage()    {}
+func (*Book) Descriptor() ([]byte, []int) {
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{1}
+}
+func (m *Book) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Book.Unmarshal(m, b)
+}
+func (m *Book) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Book.Marshal(b, m, deterministic)
+}
+func (dst *Book) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Book.Merge(dst, src)
+}
+func (m *Book) XXX_Size() int {
+	return xxx_messageInfo_Book.Size(m)
+}
+func (m *Book) XXX_DiscardUnknown() {
+	xxx_messageInfo_Book.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Book proto.InternalMessageInfo
+
+func (m *Book) GetTags() string {
+	if m != nil {
+		return m.Tags
+	}
+	return ""
+}
+
+func (m *Book) GetDetail() string {
+	if m != nil {
+		return m.Detail
+	}
+	return ""
+}
+
+func (m *Book) GetResourceName() string {
+	if m != nil {
+		return m.ResourceName
+	}
+	return ""
+}
+
+func (m *Book) GetResourceUrl() string {
+	if m != nil {
+		return m.ResourceUrl
+	}
+	return ""
+}
+
+func (m *Book) GetResourceImgUrl() string {
+	if m != nil {
+		return m.ResourceImgUrl
+	}
+	return ""
+}
+
+func (m *Book) GetAuthor() string {
+	if m != nil {
+		return m.Author
+	}
+	return ""
+}
+
 type Detail struct {
 	IsEnd                string   `protobuf:"bytes,1,opt,name=is_end,json=isEnd,proto3" json:"is_end,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -80,7 +158,7 @@ func (m *Detail) Reset()         { *m = Detail{} }
 func (m *Detail) String() string { return proto.CompactTextString(m) }
 func (*Detail) ProtoMessage()    {}
 func (*Detail) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{1}
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{2}
 }
 func (m *Detail) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Detail.Unmarshal(m, b)
@@ -107,128 +185,50 @@ func (m *Detail) GetIsEnd() string {
 	return ""
 }
 
-type List struct {
-	Tags                 string   `protobuf:"bytes,1,opt,name=tags,proto3" json:"tags,omitempty"`
-	Detail               string   `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
-	ResourceName         string   `protobuf:"bytes,3,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
-	ResourceUrl          string   `protobuf:"bytes,4,opt,name=resource_url,json=resourceUrl,proto3" json:"resource_url,omitempty"`
-	ResourceImgUrl       string   `protobuf:"bytes,5,opt,name=resource_img_url,json=resourceImgUrl,proto3" json:"resource_img_url,omitempty"`
-	Author               string   `protobuf:"bytes,6,opt,name=author,proto3" json:"author,omitempty"`
+type Res struct {
+	Data                 []*Book  `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Detail               *Detail  `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *List) Reset()         { *m = List{} }
-func (m *List) String() string { return proto.CompactTextString(m) }
-func (*List) ProtoMessage()    {}
-func (*List) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{2}
+func (m *Res) Reset()         { *m = Res{} }
+func (m *Res) String() string { return proto.CompactTextString(m) }
+func (*Res) ProtoMessage()    {}
+func (*Res) Descriptor() ([]byte, []int) {
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{3}
 }
-func (m *List) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_List.Unmarshal(m, b)
+func (m *Res) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Res.Unmarshal(m, b)
 }
-func (m *List) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_List.Marshal(b, m, deterministic)
+func (m *Res) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Res.Marshal(b, m, deterministic)
 }
-func (dst *List) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_List.Merge(dst, src)
+func (dst *Res) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Res.Merge(dst, src)
 }
-func (m *List) XXX_Size() int {
-	return xxx_messageInfo_List.Size(m)
+func (m *Res) XXX_Size() int {
+	return xxx_messageInfo_Res.Size(m)
 }
-func (m *List) XXX_DiscardUnknown() {
-	xxx_messageInfo_List.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_List proto.InternalMessageInfo
-
-func (m *List) GetTags() string {
-	if m != nil {
-		return m.Tags
-	}
-	return ""
+func (m *Res) XXX_DiscardUnknown() {
+	xxx_messageInfo_Res.DiscardUnknown(m)
 }
 
-func (m *List) GetDetail() string {
-	if m != nil {
-		return m.Detail
-	}
-	return ""
-}
+var xxx_messageInfo_Res proto.InternalMessageInfo
 
-func (m *List) GetResourceName() string {
-	if m != nil {
-		return m.ResourceName
-	}
-	return ""
-}
-
-func (m *List) GetResourceUrl() string {
-	if m != nil {
-		return m.ResourceUrl
-	}
-	return ""
-}
-
-func (m *List) GetResourceImgUrl() string {
-	if m != nil {
-		return m.ResourceImgUrl
-	}
-	return ""
-}
-
-func (m *List) GetAuthor() string {
-	if m != nil {
-		return m.Author
-	}
-	return ""
-}
-
-type ListReply struct {
-	Data                 []*List  `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
-	Next                 string   `protobuf:"bytes,2,opt,name=next,proto3" json:"next,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ListReply) Reset()         { *m = ListReply{} }
-func (m *ListReply) String() string { return proto.CompactTextString(m) }
-func (*ListReply) ProtoMessage()    {}
-func (*ListReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{3}
-}
-func (m *ListReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListReply.Unmarshal(m, b)
-}
-func (m *ListReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListReply.Marshal(b, m, deterministic)
-}
-func (dst *ListReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListReply.Merge(dst, src)
-}
-func (m *ListReply) XXX_Size() int {
-	return xxx_messageInfo_ListReply.Size(m)
-}
-func (m *ListReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListReply.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListReply proto.InternalMessageInfo
-
-func (m *ListReply) GetData() []*List {
+func (m *Res) GetData() []*Book {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-func (m *ListReply) GetNext() string {
+func (m *Res) GetDetail() *Detail {
 	if m != nil {
-		return m.Next
+		return m.Detail
 	}
-	return ""
+	return nil
 }
 
 type Chapter struct {
@@ -245,7 +245,7 @@ func (m *Chapter) Reset()         { *m = Chapter{} }
 func (m *Chapter) String() string { return proto.CompactTextString(m) }
 func (*Chapter) ProtoMessage()    {}
 func (*Chapter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{4}
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{4}
 }
 func (m *Chapter) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Chapter.Unmarshal(m, b)
@@ -293,153 +293,129 @@ func (m *Chapter) GetResourceImgUrl() string {
 	return ""
 }
 
-type ChapterReply struct {
+type ResChapterReply struct {
 	Data                 []*Chapter `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
-	Detail               *Detail    `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
-	Next                 string     `protobuf:"bytes,2,opt,name=next,proto3" json:"next,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
 	XXX_unrecognized     []byte     `json:"-"`
 	XXX_sizecache        int32      `json:"-"`
 }
 
-func (m *ChapterReply) Reset()         { *m = ChapterReply{} }
-func (m *ChapterReply) String() string { return proto.CompactTextString(m) }
-func (*ChapterReply) ProtoMessage()    {}
-func (*ChapterReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{5}
+func (m *ResChapterReply) Reset()         { *m = ResChapterReply{} }
+func (m *ResChapterReply) String() string { return proto.CompactTextString(m) }
+func (*ResChapterReply) ProtoMessage()    {}
+func (*ResChapterReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{5}
 }
-func (m *ChapterReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ChapterReply.Unmarshal(m, b)
+func (m *ResChapterReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ResChapterReply.Unmarshal(m, b)
 }
-func (m *ChapterReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ChapterReply.Marshal(b, m, deterministic)
+func (m *ResChapterReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ResChapterReply.Marshal(b, m, deterministic)
 }
-func (dst *ChapterReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChapterReply.Merge(dst, src)
+func (dst *ResChapterReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResChapterReply.Merge(dst, src)
 }
-func (m *ChapterReply) XXX_Size() int {
-	return xxx_messageInfo_ChapterReply.Size(m)
+func (m *ResChapterReply) XXX_Size() int {
+	return xxx_messageInfo_ResChapterReply.Size(m)
 }
-func (m *ChapterReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChapterReply.DiscardUnknown(m)
+func (m *ResChapterReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResChapterReply.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ChapterReply proto.InternalMessageInfo
+var xxx_messageInfo_ResChapterReply proto.InternalMessageInfo
 
-func (m *ChapterReply) GetData() []*Chapter {
+func (m *ResChapterReply) GetData() []*Chapter {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-func (m *ChapterReply) GetDetail() *Detail {
-	if m != nil {
-		return m.Detail
-	}
-	return nil
-}
-
-func (m *ChapterReply) GetNext() string {
-	if m != nil {
-		return m.Next
-	}
-	return ""
-}
-
-type ChapterContent struct {
+type Content struct {
 	ResourceImgUrl       []string `protobuf:"bytes,1,rep,name=resource_img_url,json=resourceImgUrl,proto3" json:"resource_img_url,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ChapterContent) Reset()         { *m = ChapterContent{} }
-func (m *ChapterContent) String() string { return proto.CompactTextString(m) }
-func (*ChapterContent) ProtoMessage()    {}
-func (*ChapterContent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{6}
+func (m *Content) Reset()         { *m = Content{} }
+func (m *Content) String() string { return proto.CompactTextString(m) }
+func (*Content) ProtoMessage()    {}
+func (*Content) Descriptor() ([]byte, []int) {
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{6}
 }
-func (m *ChapterContent) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ChapterContent.Unmarshal(m, b)
+func (m *Content) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Content.Unmarshal(m, b)
 }
-func (m *ChapterContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ChapterContent.Marshal(b, m, deterministic)
+func (m *Content) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Content.Marshal(b, m, deterministic)
 }
-func (dst *ChapterContent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChapterContent.Merge(dst, src)
+func (dst *Content) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Content.Merge(dst, src)
 }
-func (m *ChapterContent) XXX_Size() int {
-	return xxx_messageInfo_ChapterContent.Size(m)
+func (m *Content) XXX_Size() int {
+	return xxx_messageInfo_Content.Size(m)
 }
-func (m *ChapterContent) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChapterContent.DiscardUnknown(m)
+func (m *Content) XXX_DiscardUnknown() {
+	xxx_messageInfo_Content.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ChapterContent proto.InternalMessageInfo
+var xxx_messageInfo_Content proto.InternalMessageInfo
 
-func (m *ChapterContent) GetResourceImgUrl() []string {
+func (m *Content) GetResourceImgUrl() []string {
 	if m != nil {
 		return m.ResourceImgUrl
 	}
 	return nil
 }
 
-type ChapterContentReply struct {
-	Data                 []*ChapterContent `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
-	Next                 string            `protobuf:"bytes,2,opt,name=next,proto3" json:"next,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+type ResContent struct {
+	Data                 []*Content `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
-func (m *ChapterContentReply) Reset()         { *m = ChapterContentReply{} }
-func (m *ChapterContentReply) String() string { return proto.CompactTextString(m) }
-func (*ChapterContentReply) ProtoMessage()    {}
-func (*ChapterContentReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_drive_5b335228c5116ae5, []int{7}
+func (m *ResContent) Reset()         { *m = ResContent{} }
+func (m *ResContent) String() string { return proto.CompactTextString(m) }
+func (*ResContent) ProtoMessage()    {}
+func (*ResContent) Descriptor() ([]byte, []int) {
+	return fileDescriptor_drive_6007d1cafdc3b800, []int{7}
 }
-func (m *ChapterContentReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ChapterContentReply.Unmarshal(m, b)
+func (m *ResContent) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ResContent.Unmarshal(m, b)
 }
-func (m *ChapterContentReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ChapterContentReply.Marshal(b, m, deterministic)
+func (m *ResContent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ResContent.Marshal(b, m, deterministic)
 }
-func (dst *ChapterContentReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChapterContentReply.Merge(dst, src)
+func (dst *ResContent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResContent.Merge(dst, src)
 }
-func (m *ChapterContentReply) XXX_Size() int {
-	return xxx_messageInfo_ChapterContentReply.Size(m)
+func (m *ResContent) XXX_Size() int {
+	return xxx_messageInfo_ResContent.Size(m)
 }
-func (m *ChapterContentReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChapterContentReply.DiscardUnknown(m)
+func (m *ResContent) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResContent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ChapterContentReply proto.InternalMessageInfo
+var xxx_messageInfo_ResContent proto.InternalMessageInfo
 
-func (m *ChapterContentReply) GetData() []*ChapterContent {
+func (m *ResContent) GetData() []*Content {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-func (m *ChapterContentReply) GetNext() string {
-	if m != nil {
-		return m.Next
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*Request)(nil), "grpc.Request")
+	proto.RegisterType((*Book)(nil), "grpc.Book")
 	proto.RegisterType((*Detail)(nil), "grpc.Detail")
-	proto.RegisterType((*List)(nil), "grpc.List")
-	proto.RegisterType((*ListReply)(nil), "grpc.ListReply")
+	proto.RegisterType((*Res)(nil), "grpc.Res")
 	proto.RegisterType((*Chapter)(nil), "grpc.Chapter")
-	proto.RegisterType((*ChapterReply)(nil), "grpc.ChapterReply")
-	proto.RegisterType((*ChapterContent)(nil), "grpc.ChapterContent")
-	proto.RegisterType((*ChapterContentReply)(nil), "grpc.ChapterContentReply")
+	proto.RegisterType((*ResChapterReply)(nil), "grpc.ResChapterReply")
+	proto.RegisterType((*Content)(nil), "grpc.Content")
+	proto.RegisterType((*ResContent)(nil), "grpc.ResContent")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -454,9 +430,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BrowserClient interface {
-	CrawlList(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ListReply, error)
-	CrawlChapter(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ChapterReply, error)
-	CrawlChapterContent(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ChapterContentReply, error)
+	Book(ctx context.Context, opts ...grpc.CallOption) (Browser_BookClient, error)
+	Chapter(ctx context.Context, opts ...grpc.CallOption) (Browser_ChapterClient, error)
+	Content(ctx context.Context, opts ...grpc.CallOption) (Browser_ContentClient, error)
 }
 
 type browserClient struct {
@@ -467,149 +443,244 @@ func NewBrowserClient(cc *grpc.ClientConn) BrowserClient {
 	return &browserClient{cc}
 }
 
-func (c *browserClient) CrawlList(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ListReply, error) {
-	out := new(ListReply)
-	err := c.cc.Invoke(ctx, "/grpc.browser/CrawlList", in, out, opts...)
+func (c *browserClient) Book(ctx context.Context, opts ...grpc.CallOption) (Browser_BookClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Browser_serviceDesc.Streams[0], "/grpc.browser/Book", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &browserBookClient{stream}
+	return x, nil
 }
 
-func (c *browserClient) CrawlChapter(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ChapterReply, error) {
-	out := new(ChapterReply)
-	err := c.cc.Invoke(ctx, "/grpc.browser/CrawlChapter", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+type Browser_BookClient interface {
+	Send(*Request) error
+	Recv() (*Res, error)
+	grpc.ClientStream
 }
 
-func (c *browserClient) CrawlChapterContent(ctx context.Context, in *Request, opts ...grpc.CallOption) (*ChapterContentReply, error) {
-	out := new(ChapterContentReply)
-	err := c.cc.Invoke(ctx, "/grpc.browser/CrawlChapterContent", in, out, opts...)
+type browserBookClient struct {
+	grpc.ClientStream
+}
+
+func (x *browserBookClient) Send(m *Request) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *browserBookClient) Recv() (*Res, error) {
+	m := new(Res)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *browserClient) Chapter(ctx context.Context, opts ...grpc.CallOption) (Browser_ChapterClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Browser_serviceDesc.Streams[1], "/grpc.browser/Chapter", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &browserChapterClient{stream}
+	return x, nil
+}
+
+type Browser_ChapterClient interface {
+	Send(*Request) error
+	Recv() (*ResChapterReply, error)
+	grpc.ClientStream
+}
+
+type browserChapterClient struct {
+	grpc.ClientStream
+}
+
+func (x *browserChapterClient) Send(m *Request) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *browserChapterClient) Recv() (*ResChapterReply, error) {
+	m := new(ResChapterReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *browserClient) Content(ctx context.Context, opts ...grpc.CallOption) (Browser_ContentClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Browser_serviceDesc.Streams[2], "/grpc.browser/Content", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &browserContentClient{stream}
+	return x, nil
+}
+
+type Browser_ContentClient interface {
+	Send(*Request) error
+	Recv() (*ResContent, error)
+	grpc.ClientStream
+}
+
+type browserContentClient struct {
+	grpc.ClientStream
+}
+
+func (x *browserContentClient) Send(m *Request) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *browserContentClient) Recv() (*ResContent, error) {
+	m := new(ResContent)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // BrowserServer is the server API for Browser service.
 type BrowserServer interface {
-	CrawlList(context.Context, *Request) (*ListReply, error)
-	CrawlChapter(context.Context, *Request) (*ChapterReply, error)
-	CrawlChapterContent(context.Context, *Request) (*ChapterContentReply, error)
+	Book(Browser_BookServer) error
+	Chapter(Browser_ChapterServer) error
+	Content(Browser_ContentServer) error
 }
 
 func RegisterBrowserServer(s *grpc.Server, srv BrowserServer) {
 	s.RegisterService(&_Browser_serviceDesc, srv)
 }
 
-func _Browser_CrawlList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BrowserServer).CrawlList(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.browser/CrawlList",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BrowserServer).CrawlList(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
+func _Browser_Book_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BrowserServer).Book(&browserBookServer{stream})
 }
 
-func _Browser_CrawlChapter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BrowserServer).CrawlChapter(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.browser/CrawlChapter",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BrowserServer).CrawlChapter(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
+type Browser_BookServer interface {
+	Send(*Res) error
+	Recv() (*Request, error)
+	grpc.ServerStream
 }
 
-func _Browser_CrawlChapterContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
-	if err := dec(in); err != nil {
+type browserBookServer struct {
+	grpc.ServerStream
+}
+
+func (x *browserBookServer) Send(m *Res) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *browserBookServer) Recv() (*Request, error) {
+	m := new(Request)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(BrowserServer).CrawlChapterContent(ctx, in)
+	return m, nil
+}
+
+func _Browser_Chapter_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BrowserServer).Chapter(&browserChapterServer{stream})
+}
+
+type Browser_ChapterServer interface {
+	Send(*ResChapterReply) error
+	Recv() (*Request, error)
+	grpc.ServerStream
+}
+
+type browserChapterServer struct {
+	grpc.ServerStream
+}
+
+func (x *browserChapterServer) Send(m *ResChapterReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *browserChapterServer) Recv() (*Request, error) {
+	m := new(Request)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
 	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.browser/CrawlChapterContent",
+	return m, nil
+}
+
+func _Browser_Content_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BrowserServer).Content(&browserContentServer{stream})
+}
+
+type Browser_ContentServer interface {
+	Send(*ResContent) error
+	Recv() (*Request, error)
+	grpc.ServerStream
+}
+
+type browserContentServer struct {
+	grpc.ServerStream
+}
+
+func (x *browserContentServer) Send(m *ResContent) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *browserContentServer) Recv() (*Request, error) {
+	m := new(Request)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
 	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BrowserServer).CrawlChapterContent(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 var _Browser_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.browser",
 	HandlerType: (*BrowserServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "CrawlList",
-			Handler:    _Browser_CrawlList_Handler,
+			StreamName:    "Book",
+			Handler:       _Browser_Book_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 		{
-			MethodName: "CrawlChapter",
-			Handler:    _Browser_CrawlChapter_Handler,
+			StreamName:    "Chapter",
+			Handler:       _Browser_Chapter_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 		{
-			MethodName: "CrawlChapterContent",
-			Handler:    _Browser_CrawlChapterContent_Handler,
+			StreamName:    "Content",
+			Handler:       _Browser_Content_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "grpc/drive.proto",
 }
 
-func init() { proto.RegisterFile("grpc/drive.proto", fileDescriptor_drive_5b335228c5116ae5) }
+func init() { proto.RegisterFile("grpc/drive.proto", fileDescriptor_drive_6007d1cafdc3b800) }
 
-var fileDescriptor_drive_5b335228c5116ae5 = []byte{
-	// 444 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0xcb, 0x6e, 0xd4, 0x40,
-	0x10, 0xc4, 0xb1, 0x63, 0x6b, 0xdb, 0x4e, 0x58, 0x4d, 0x20, 0x18, 0x0e, 0x24, 0x31, 0x1c, 0x7c,
-	0x61, 0x91, 0x36, 0x37, 0x84, 0x84, 0xd0, 0x02, 0x12, 0x12, 0xe2, 0xb0, 0x88, 0xb3, 0x35, 0x59,
-	0x77, 0x9c, 0x11, 0x7e, 0x31, 0x33, 0x26, 0xf0, 0x1f, 0x7c, 0x08, 0x1f, 0xc0, 0xc7, 0xa1, 0x79,
-	0xd8, 0x8a, 0x77, 0x8d, 0xb4, 0xb7, 0x99, 0xee, 0xaa, 0xe9, 0xaa, 0x2e, 0x1b, 0xe6, 0x05, 0x6f,
-	0x37, 0x2f, 0x73, 0xce, 0x7e, 0xe0, 0xa2, 0xe5, 0x8d, 0x6c, 0x88, 0xa7, 0x2a, 0xc9, 0x6b, 0x08,
-	0xd6, 0xf8, 0xbd, 0x43, 0x21, 0xc9, 0x1c, 0xdc, 0x8e, 0x97, 0xb1, 0x73, 0xee, 0xa4, 0xb3, 0xb5,
-	0x3a, 0x92, 0x33, 0x08, 0x37, 0x4d, 0x7d, 0xcd, 0x8a, 0xac, 0xa6, 0x15, 0xc6, 0x07, 0xba, 0x03,
-	0xa6, 0xf4, 0x99, 0x56, 0x98, 0x9c, 0x81, 0xff, 0x0e, 0x25, 0x65, 0x25, 0x79, 0x08, 0x3e, 0x13,
-	0x19, 0xd6, 0xb9, 0xe5, 0x1f, 0x32, 0xf1, 0xbe, 0xce, 0x93, 0xbf, 0x0e, 0x78, 0x9f, 0x98, 0x90,
-	0x84, 0x80, 0x27, 0x69, 0x21, 0x6c, 0x57, 0x9f, 0xc9, 0x29, 0xf8, 0xb9, 0x66, 0xdb, 0x97, 0xed,
-	0x8d, 0x3c, 0x83, 0x23, 0x8e, 0xa2, 0xe9, 0xf8, 0x06, 0xcd, 0x60, 0x57, 0xb7, 0xa3, 0xbe, 0xa8,
-	0x46, 0x93, 0x0b, 0x18, 0xee, 0x99, 0x92, 0xed, 0x69, 0x4c, 0xd8, 0xd7, 0xbe, 0xf2, 0x92, 0xa4,
-	0x30, 0x1f, 0x20, 0xac, 0x2a, 0x34, 0xec, 0x50, 0xc3, 0x8e, 0xfb, 0xfa, 0xc7, 0xaa, 0x50, 0xc8,
-	0x53, 0xf0, 0x69, 0x27, 0x6f, 0x1a, 0x1e, 0xfb, 0x46, 0x89, 0xb9, 0x25, 0x6f, 0x60, 0xa6, 0xd4,
-	0xaf, 0xb1, 0x2d, 0x7f, 0x91, 0xa7, 0xe0, 0xe5, 0x54, 0xd2, 0xd8, 0x39, 0x77, 0xd3, 0x70, 0x09,
-	0x0b, 0xb5, 0xbf, 0x85, 0x6e, 0xeb, 0xba, 0xb2, 0x58, 0xe3, 0x4f, 0x69, 0xcd, 0xe8, 0x73, 0xf2,
-	0xdb, 0x81, 0x60, 0x75, 0x43, 0x5b, 0x89, 0x9c, 0x3c, 0x82, 0x80, 0x89, 0xec, 0x9a, 0x23, 0xda,
-	0x2d, 0xf8, 0x4c, 0x7c, 0xe0, 0x88, 0xbb, 0x7e, 0x0f, 0xf6, 0xf0, 0xeb, 0xee, 0xe7, 0xd7, 0x9b,
-	0xf2, 0x9b, 0x7c, 0x83, 0xc8, 0xaa, 0x32, 0xd6, 0x2e, 0x46, 0xd6, 0x8e, 0x8c, 0xb5, 0x1e, 0x61,
-	0xdc, 0x3d, 0x1f, 0xc2, 0x52, 0x93, 0xc3, 0x65, 0x64, 0x40, 0x26, 0xfe, 0x21, 0xba, 0xa9, 0x1d,
-	0xbc, 0x82, 0x63, 0xfb, 0xd4, 0xaa, 0xa9, 0x25, 0xd6, 0x72, 0x52, 0xa8, 0x1a, 0xbd, 0x2b, 0xf4,
-	0x0b, 0x9c, 0x8c, 0xb9, 0x46, 0x6f, 0x3a, 0xd2, 0xfb, 0x60, 0xa4, 0xb7, 0x07, 0xfe, 0x37, 0x94,
-	0xe5, 0x1f, 0x07, 0x82, 0x2b, 0xde, 0xdc, 0x0a, 0xe4, 0xe4, 0x05, 0xcc, 0x56, 0x9c, 0xde, 0x96,
-	0xfa, 0x23, 0xb5, 0xc6, 0xed, 0x0f, 0xf1, 0xe4, 0xfe, 0x9d, 0x88, 0xd5, 0xd8, 0xe4, 0x1e, 0xb9,
-	0x84, 0x48, 0xc3, 0xfb, 0x4c, 0xb7, 0x18, 0x64, 0xbc, 0x39, 0x4b, 0x7a, 0x0b, 0x27, 0x77, 0x49,
-	0xfd, 0x16, 0xb6, 0xb8, 0x8f, 0x27, 0x5d, 0x98, 0x27, 0xae, 0x7c, 0xfd, 0xcf, 0x5e, 0xfe, 0x0b,
-	0x00, 0x00, 0xff, 0xff, 0x50, 0xeb, 0x81, 0x5b, 0xc7, 0x03, 0x00, 0x00,
+var fileDescriptor_drive_6007d1cafdc3b800 = []byte{
+	// 418 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4d, 0x6f, 0xd4, 0x30,
+	0x10, 0xc5, 0x4d, 0x9a, 0xa8, 0xb3, 0x2d, 0x44, 0x96, 0x5a, 0x22, 0x0e, 0xb4, 0x35, 0x08, 0xe5,
+	0xb4, 0xad, 0xb6, 0x70, 0xe3, 0x44, 0x01, 0x09, 0x21, 0x71, 0x88, 0xc4, 0x39, 0x72, 0x37, 0xd3,
+	0xd4, 0x22, 0x89, 0x83, 0xed, 0x80, 0xf8, 0x1f, 0x9c, 0xf8, 0x2d, 0xfc, 0x38, 0xe4, 0x8f, 0x64,
+	0x69, 0xbb, 0x87, 0xde, 0x32, 0x33, 0xef, 0xcd, 0x9b, 0xf7, 0xe4, 0x40, 0xd6, 0xa8, 0x61, 0x7d,
+	0x56, 0x2b, 0xf1, 0x03, 0x97, 0x83, 0x92, 0x46, 0xd2, 0xd8, 0x76, 0xd8, 0x5b, 0x48, 0x4b, 0xfc,
+	0x3e, 0xa2, 0x36, 0x34, 0x83, 0x68, 0x54, 0x6d, 0x4e, 0x4e, 0x48, 0xb1, 0x57, 0xda, 0x4f, 0x7a,
+	0x0c, 0x8b, 0xb5, 0xec, 0xaf, 0x45, 0x53, 0xf5, 0xbc, 0xc3, 0x7c, 0xc7, 0x4d, 0xc0, 0xb7, 0xbe,
+	0xf0, 0x0e, 0xd9, 0x5f, 0x02, 0xf1, 0x3b, 0x29, 0xbf, 0x51, 0x0a, 0xb1, 0xe1, 0x8d, 0x0e, 0x64,
+	0xf7, 0x4d, 0x8f, 0x20, 0xa9, 0xd1, 0x70, 0xd1, 0x06, 0x62, 0xa8, 0xe8, 0x0b, 0x38, 0x50, 0xa8,
+	0xe5, 0xa8, 0xd6, 0xe8, 0xf7, 0x46, 0x6e, 0xbc, 0x3f, 0x35, 0xed, 0x66, 0x7a, 0x0a, 0x73, 0x5d,
+	0xd9, 0xab, 0x62, 0x87, 0x59, 0x4c, 0xbd, 0xaf, 0xaa, 0xa5, 0x05, 0x64, 0x33, 0x44, 0x74, 0x8d,
+	0x83, 0xed, 0x3a, 0xd8, 0xe3, 0xa9, 0xff, 0xa9, 0x6b, 0x2c, 0xf2, 0x08, 0x12, 0x3e, 0x9a, 0x1b,
+	0xa9, 0xf2, 0xc4, 0x5f, 0xe2, 0x2b, 0x76, 0x0c, 0xc9, 0x7b, 0x7f, 0xd3, 0x21, 0x24, 0x42, 0x57,
+	0xd8, 0xd7, 0xc1, 0xc1, 0xae, 0xd0, 0x1f, 0xfa, 0x9a, 0x7d, 0x86, 0xa8, 0x44, 0x4d, 0x9f, 0x43,
+	0x5c, 0x73, 0xc3, 0x73, 0x72, 0x12, 0x15, 0x8b, 0x15, 0x2c, 0x6d, 0x72, 0x4b, 0xeb, 0xbb, 0x74,
+	0x7d, 0xfa, 0x72, 0x76, 0x6a, 0xad, 0x2c, 0x56, 0xfb, 0x1e, 0xe1, 0x77, 0x4f, 0xbe, 0xd9, 0x6f,
+	0x02, 0xe9, 0xe5, 0x0d, 0x1f, 0x0c, 0x2a, 0xfa, 0x14, 0x52, 0xa1, 0xab, 0x6b, 0x85, 0x18, 0x04,
+	0x13, 0xa1, 0x3f, 0x2a, 0xc4, 0xfb, 0xe1, 0xec, 0x3c, 0x20, 0x9c, 0xe8, 0x61, 0xe1, 0xc4, 0xdb,
+	0xc2, 0x61, 0xaf, 0xe1, 0x49, 0x89, 0x3a, 0x1c, 0x56, 0xe2, 0xd0, 0xfe, 0xa2, 0xa7, 0xb7, 0xfc,
+	0x1e, 0x78, 0x37, 0x13, 0xc2, 0x8d, 0xd8, 0x05, 0xa4, 0x97, 0xb2, 0x37, 0xd8, 0x9b, 0xad, 0x52,
+	0x96, 0x79, 0x5f, 0xea, 0x0c, 0xc0, 0x4a, 0x05, 0xde, 0x76, 0x15, 0x3f, 0xf4, 0x2a, 0xab, 0x3f,
+	0x04, 0xd2, 0x2b, 0x25, 0x7f, 0x6a, 0x54, 0xf4, 0x55, 0x78, 0x6a, 0x01, 0x18, 0x5e, 0xed, 0xb3,
+	0xbd, 0xa9, 0xd4, 0xec, 0x51, 0x41, 0xce, 0x09, 0x7d, 0xb3, 0x49, 0xf9, 0x0e, 0xf4, 0x70, 0x86,
+	0xfe, 0xef, 0x36, 0xd0, 0xce, 0x37, 0x86, 0xee, 0xd0, 0xb2, 0x0d, 0xcd, 0x03, 0x3c, 0xe3, 0x2a,
+	0x71, 0xff, 0xd1, 0xc5, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5d, 0x81, 0x01, 0xc6, 0x5b, 0x03,
+	0x00, 0x00,
 }
