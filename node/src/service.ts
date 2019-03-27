@@ -1,36 +1,61 @@
- 
-const grpc = require('grpc');
-const DriveClass = require('./drive');
-const node_rpc = grpc.load(`${__dirname}/../grpc/drive.proto`).grpc;
+ import grpc from 'grpc';
 
 class GrpcServer {
 
+  /**
+   * 启动服务器
+   */
   public Run() {
     const server = new grpc.Server();
+    const node_rpc = grpc.load(`${__dirname}/../grpc/drive.proto`).grpc;
     server.addProtoService(node_rpc.browser.service, {
       Book: this.Book,
-      Chapter: async (call, callback) => { await drive_.CrawlChapter(call, callback) },
-      Content: async (call, callback) => { await drive_.CrawlChapterContent(call, callback) },
-    })
-    server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure())
+      Chapter: this.Chapter,
+      Content: this.Content,
+    });
+    server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
     server.start()
   }
 
-  public Book(call) {
-    call.on('data', function(note) {
-      var key = pointKey(note.location);
-      if (route_notes.hasOwnProperty(key)) {
-        _.each(route_notes[key], function(note) {
-          call.write(note);
-        });
-      } else {
-        route_notes[key] = [];
-      }
-      // Then add the new note to the list
-      route_notes[key].push(JSON.parse(JSON.stringify(note)));
+  /**
+   * 书籍列表
+   * @param steam
+   */
+  public Book(steam: any) {
+    steam.on('data', (note: any) => {
+      console.log(note)
+      steam.write(note);
     });
-    call.on('end', function() {
-      call.end();
+    steam.on('end', () => {
+      steam.end();
+    });
+  }
+
+  /**
+   * 书籍章节
+   * @param steam  
+   */
+  public Chapter(steam: any){
+    steam.on('data', (note: any) => {
+      console.log(note)
+      steam.write(note);
+    });
+    steam.on('end', () => {
+      steam.end();
+    });
+  }
+
+  /**
+   * 书籍章节内容
+   * @param steam  
+   */
+  public Content(steam: any){
+    steam.on('data', (note: any) =>{
+      console.log(note)
+      steam.write(note);
+    });
+    steam.on('end', () => {
+      steam.end();
     });
   }
 
@@ -38,38 +63,3 @@ class GrpcServer {
 
 const grpcService = new GrpcServer();
 grpcService.Run();
-
-(async function () {
-  const drive_ = new DriveClass();
-  await drive_.CreateBrowser(); // 创建浏览器
-  
-  const server = new grpc.Server();
-  // testProto.browser.service .proto 设置的service
-  // {ping: test} ping提供的函数 test回调的函数
-  server.addProtoService(node_rpc.browser.service, {
-      CrawlList: async (call, callback) => { await drive_.CrawlList(call, callback) },
-      CrawlChapter: async (call, callback) => { await drive_.CrawlChapter(call, callback) },
-      CrawlChapterContent: async (call, callback) => { await drive_.CrawlChapterContent(call, callback) },
-    })
-  server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure())
-  server.start()
-})();
-
-/*
-function routeChat(call) {
-  call.on('data', function(note) {
-    var key = pointKey(note.location);
-    if (route_notes.hasOwnProperty(key)) {
-      _.each(route_notes[key], function(note) {
-        call.write(note);
-      });
-    } else {
-      route_notes[key] = [];
-    }
-    // Then add the new note to the list
-    route_notes[key].push(JSON.parse(JSON.stringify(note)));
-  });
-  call.on('end', function() {
-    call.end();
-  });
-}*/

@@ -4,56 +4,16 @@ import (
     "google.golang.org/grpc"
     "fmt"
     "context"
+    "sync"
 )
 
 type NodeBrowser struct{
     GrpcBrowserClient BrowserClient
 }
 
-/* 双向流
-// runRouteChat receives a sequence of route notes, while sending notes for various locations.
-func runRouteChat(client pb.RouteGuideClient) {
-	notes := []*pb.RouteNote{
-		{Location: &pb.Point{Latitude: 0, Longitude: 1}, Message: "First message"},
-		{Location: &pb.Point{Latitude: 0, Longitude: 2}, Message: "Second message"},
-		{Location: &pb.Point{Latitude: 0, Longitude: 3}, Message: "Third message"},
-		{Location: &pb.Point{Latitude: 0, Longitude: 1}, Message: "Fourth message"},
-		{Location: &pb.Point{Latitude: 0, Longitude: 2}, Message: "Fifth message"},
-		{Location: &pb.Point{Latitude: 0, Longitude: 3}, Message: "Sixth message"},
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	stream, err := client.RouteChat(ctx)
-	if err != nil {
-		log.Fatalf("%v.RouteChat(_) = _, %v", client, err)
-	}
-	waitc := make(chan struct{})
-	go func() {
-		for {
-			in, err := stream.Recv()
-			if err == io.EOF {
-				// read done.
-				close(waitc)
-				return
-			}
-			if err != nil {
-				log.Fatalf("Failed to receive a note : %v", err)
-			}
-			log.Printf("Got message %s at point(%d, %d)", in.Message, in.Location.Latitude, in.Location.Longitude)
-		}
-	}()
-	for _, note := range notes {
-		if err := stream.Send(note); err != nil {
-			log.Fatalf("Failed to send a note: %v", err)
-		}
-	}
-	stream.CloseSend()
-	<-waitc
-}*/
-
-/**
+/** 
  *
- * 创建grpc客户端
+ * 创建grpc客户端双向流
  *
  */
 func(browser *NodeBrowser) CreateBrowserClient(){
@@ -74,17 +34,55 @@ func(browser *NodeBrowser) CreateBrowserClient(){
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) CrawlList(url, user_config_name string) *ListReply{
+ func(browser *NodeBrowser) Book(client BrowserClient, request chan *Request) {
     // 客户端向grpc服务端发起请求
-    var result, err = browser.GrpcBrowserClient.CrawlList(context.Background(), &Request{
-        Url: url,
-        ConfigName: user_config_name,
-    })
-   
-    if err != nil{
-        panic(err)
+    ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	stream, err := client.Book(ctx)
+	if err != nil {
+        panic("连接grpc服务失败：", client, err)
     }
-    return result
+    
+    defer func(){ // 函数结束后执行
+        stream.CloseSend()
+        cancel()
+    }()
+
+    var waitGroup sync.WaitGroup
+	waitGroup.Add(1) // 增加计算器
+	go func() {
+        loop:
+            for {
+                in, err := stream.Recv()
+                if err == io.EOF {
+                    // read done.
+                    return
+                }
+                if err != nil {
+                    fmt.Println("Failed to receive a note : %v", err)
+                    return
+                }
+                if over == true {
+                    break loop
+                }
+                fmt.Println(in)
+            }
+        waitGroup.Done()
+    }()
+    go func(){
+        for{
+            select{ // 发送需要爬取的url，及配置
+                case res := <-request:
+                    err := stream.Send(request)
+                    if err != nil {
+                        fmt.Println(err)
+                    }
+                    fmt.Println("发生成功")
+                default:
+            }
+        }
+    }()
+    waitGroup.Wait()
+    fmt.Println("抓取结束")
 }
 
 /**
@@ -94,17 +92,55 @@ func(browser *NodeBrowser) CreateBrowserClient(){
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) CrawlChapter(url, user_config_name string) *ChapterReply{
+ func(browser *NodeBrowser) Chapter(client BrowserClient, request chan *Request){
     // 客户端向grpc服务端发起请求
-    var result, err = browser.GrpcBrowserClient.CrawlChapter(context.Background(), &Request{
-        Url: url,
-        ConfigName: user_config_name,
-    })
-   
-    if err != nil{
-        panic(err)
+    ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	stream, err := client.Chapter(ctx)
+	if err != nil {
+        panic("连接grpc服务失败：", client, err)
     }
-    return result
+    
+    defer func(){ // 函数结束后执行
+        stream.CloseSend()
+        cancel()
+    }()
+
+    var waitGroup sync.WaitGroup
+	waitGroup.Add(1) // 增加计算器
+	go func() {
+        loop:
+            for {
+                in, err := stream.Recv()
+                if err == io.EOF {
+                    // read done.
+                    return
+                }
+                if err != nil {
+                    fmt.Println("Failed to receive a note : %v", err)
+                    return
+                }
+                if over == true {
+                    break loop
+                }
+                fmt.Println(in)
+            }
+        waitGroup.Done()
+    }()
+    go func(){
+        for{
+            select{ // 发送需要爬取的url，及配置
+                case res := <-request:
+                    err := stream.Send(request)
+                    if err != nil {
+                        fmt.Println(err)
+                    }
+                    fmt.Println("发生成功")
+                default:
+            }
+        }
+    }()
+    waitGroup.Wait()
+    fmt.Println("抓取结束")
 }
 
 /**
@@ -114,15 +150,53 @@ func(browser *NodeBrowser) CreateBrowserClient(){
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) CrawlChapterContent(url, user_config_name string) *ChapterContentReply{
+ func(browser *NodeBrowser) Content(client BrowserClient, request chan *Request){
     // 客户端向grpc服务端发起请求
-    var result, err = browser.GrpcBrowserClient.CrawlChapterContent(context.Background(), &Request{
-        Url: url,
-        ConfigName: user_config_name,
-    })
-   
-    if err != nil{
-        panic(err)
+    ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	stream, err := client.Chapter(ctx)
+	if err != nil {
+        panic("连接grpc服务失败：", client, err)
     }
-    return result
+    
+    defer func(){ // 函数结束后执行
+        stream.CloseSend()
+        cancel()
+    }()
+
+    var waitGroup sync.WaitGroup
+	waitGroup.Add(1) // 增加计算器
+	go func() {
+        loop:
+            for {
+                in, err := stream.Recv()
+                if err == io.EOF {
+                    // read done.
+                    return
+                }
+                if err != nil {
+                    fmt.Println("Failed to receive a note : %v", err)
+                    return
+                }
+                if over == true {
+                    break loop
+                }
+                fmt.Println(in)
+            }
+        waitGroup.Done()
+    }()
+    go func(){
+        for{
+            select{ // 发送需要爬取的url，及配置
+                case res := <-request:
+                    err := stream.Send(request)
+                    if err != nil {
+                        fmt.Println(err)
+                    }
+                    fmt.Println("发生成功")
+                default:
+            }
+        }
+    }()
+    waitGroup.Wait()
+    fmt.Println("抓取结束")
 }
