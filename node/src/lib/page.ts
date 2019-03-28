@@ -1,6 +1,3 @@
-import puppeteer from 'puppeteer';
-import devices from 'puppeteer/DeviceDescriptors';
-
 // 配置
 interface cfg {
   name?: string;
