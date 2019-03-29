@@ -20,7 +20,7 @@ class Request{
     if (res.next === false) {
       return
     }
-    console.log(res.next)
+    console.log(`${res.data.length}：${res.next}`)
     await this.Write(steam, spider, page, res.next, config)
   }
 }

@@ -15,12 +15,11 @@ func main(){
     models = &model.Model{Db: model.InitDb()}
     go CommandNode()
     api.HttpRun(models, "4321")
-
     // fmt.Println(models.GetCartoonResources("酷", 1, 0))
 }
 
 func CommandNode(){
-    cmd := exec.Command("node", "./node/server.js")  
+    cmd := exec.Command("node", "./node/server.ts")  
     cmd.Stdout = os.Stdout
     cmd.Stderr = os.Stderr
     err := cmd.Run()
