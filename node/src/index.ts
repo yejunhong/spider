@@ -16,12 +16,19 @@ let newBrowser: any;
 class Request{
   public async Write(steam: any, spider: any, page: any, url: string, config: any) {
     const res = await spider.Request(page, url, config);
-    steam.write({data: res.data});
-    if (res.next === false) {
+    // console.log(res)
+    console.log(`获取数量：${res.data.length}`)
+    if(res.data.length > 0) {
+      steam.write({data: res.data});
+      if (res.next === false) {
+        steam.end();
+        return
+      }
+      console.log(`下一页：${res.next}`)
+      await this.Write(steam, spider, page, res.next, config)
       return
     }
-    console.log(`${res.data.length}：${res.next}`)
-    await this.Write(steam, spider, page, res.next, config)
+    steam.end();
   }
 }
 
@@ -33,9 +40,7 @@ class GrpcServer {
   public async Run() {
     const server = new grpc.Server();
     const node_rpc = grpc.load(`${__dirname}/../../grpc/drive.proto`).grpc;
-
     newBrowser = await browser.Create()
-
     server.addProtoService(node_rpc.browser.service, {
       Book: this.Book,
       Chapter: this.Chapter,
@@ -52,9 +57,10 @@ class GrpcServer {
   public Book(steam: any) {
     steam.on('data', async (note: any) => {
       const {Page, Book} = require(`${__dirname}/config/${note.config_name}`);
+      // console.log(note)
       const spider = new NewSpider();
       const page = await spider.newPage(newBrowser, Page);
-
+      
       const res = new Request()
       await res.Write(steam, spider, page, note.url, Book)
       

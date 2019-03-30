@@ -20,17 +20,27 @@ class Spider {
    * @param config
    */
   public async Request(page: any, url: string, config: any){
-    await page.RequestUrl(url);
-    const res = await page.QuerySelector({selector: config.selector});
+    const content = await page.RequestUrl(url);
+    
     // console.log(res)
     let resdata: any = [];
-    let next: any = '';
+    let next: any = false;
+
+    if (config.jsonHandle != undefined) {
+      // console.log(content)
+      const res = await page.JsonContent({selector: config.selector});
+      resdata = await config.jsonHandle(JSON.parse(res));
+    }
+
     if (config.handle != undefined) {
+      const res = await page.QuerySelectors({selector: config.selector});
       resdata = await config.handle(res, Element);
     }
-    if (config.next != undefined) {
+
+    // 有数据情况下尝试爬取下一页
+    if (config.next != undefined && resdata.length > 0) {
       const resNext = await page.QuerySelector({selector: config.next.selector});
-      next = await config.next.handle(resNext[0]);
+      next = await config.next.handle(resNext, page.GetUrl());
     }
     return {data: resdata, next: next}
   }

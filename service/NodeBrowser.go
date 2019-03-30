@@ -71,6 +71,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             
             if err == io.EOF {
                 fmt.Println(err)
+                waitGroup.Done()
                 return
             }
             if err != nil {
@@ -79,7 +80,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             }
             browser.Service.RecordBook(data, spiderRequset.CartoonResource)
         }
-        waitGroup.Done()
     }()
     go func(){
         for{
@@ -125,6 +125,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             data, err := stream.Recv()
             if err == io.EOF {
                 fmt.Println(err)
+                waitGroup.Done()
                 return
             }
             if err != nil {
@@ -133,7 +134,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             }
             browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList)
         }
-        waitGroup.Done()
     }()
     go func(){
         for{
@@ -179,6 +179,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             data, err := stream.Recv()
             if err == io.EOF {
                 fmt.Println(err)
+                waitGroup.Done()
                 return
             }
             if err != nil {
@@ -187,7 +188,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             }
             browser.Service.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter)
         }
-        waitGroup.Done()
     }()
     go func(){
         for{

@@ -22,17 +22,20 @@ class Pages{
    */
   public async OpenTabPage(browser: any, config: cfg): Promise<any> {
     this.page = await browser.newPage();
-    if ( config.cookie != undefined && config.cookie == true ){
+    if ( config.cookie != undefined && config.cookie != "" ){
+      console.log('设置cookie')
       for (let e of config.cookie) {
         await this.page.setCookie(e);     // 设置cookie
       }
     }
     // 伪造浏览器 
     if ( config.user_agent != undefined && config.user_agent != "" ){
+      console.log('设置user_agent')
       await this.page.setUserAgent(config.user_agent);
     }
     // 是否启用手机模式
     if ( config.mobile != undefined && config.mobile != "" ){
+      console.log('开启手机模式')
       await this.page.emulate(config.mobile); // 手机浏览器模式
     }
     return this
@@ -46,6 +49,8 @@ class Pages{
    */
   public async RequestUrl(url: string) {
     await this.page.goto(url);
+    return await this.page.content();
+    // console.log(await this.page.content())
     // page.on('console', msg => console.log(msg.text()));
     // 注入函数到浏览器
     /*await page.exposeFunction('md5', text =>
@@ -57,19 +62,39 @@ class Pages{
     // await page.close(); // 关闭当前标签页
   }
 
-  /**
+   /**
    * get 内容
-   * @param page 页面标签对象
    * @param config 配置{selector?: 选择器; func: 回调函数}
    */
   public async QuerySelector(config: {selector?: string}): Promise<any> {
-    const res = await this.page.$$(config.selector);
+    const res = await this.page.$(config.selector);
     return res
   }
 
   /**
+   * get json内容
+   * @param config 配置{selector?: 选择器; func: 回调函数}
+   */
+  public async JsonContent(config: {selector?: string}): Promise<any> {
+    const res = await this.page.$eval(config.selector, (e: any) => e.innerHTML);
+    return res
+  }
+
+  /**
+   * get 内容
+   * @param config 配置{selector?: 选择器; func: 回调函数}
+   */
+  public async QuerySelectors(config: {selector?: string}): Promise<any> {
+    const res = await this.page.$$(config.selector);
+    return res
+  }
+
+  public GetUrl(): string {
+    return this.page.url();
+  }
+
+  /**
    * 自动滚动页面
-   * @param page 页面标签对象
    * @param scroll 是否进行滚动
    */
   public async PageScroll(scroll?: boolean) {
