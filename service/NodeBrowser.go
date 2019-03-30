@@ -1,21 +1,23 @@
-package grpc
+package service
  
 import (
     "google.golang.org/grpc"
     "fmt"
     "context"
     "sync"
-    "time"
+    // "time"
     "io"
+    Drive "spider/grpc"
     "spider/model"
 )
 
 type NodeBrowser struct{
-    GrpcBrowserClient BrowserClient
+    Service Service
+    GrpcBrowserClient Drive.BrowserClient
 }
 
 type SpiderRequset struct {
-    Request chan *Request
+    Request chan *Drive.Request
     CartoonResource model.CartoonResource
     CartoonList model.CartoonList
     CartoonChapter model.CartoonChapter
@@ -26,15 +28,18 @@ type SpiderRequset struct {
  * 创建grpc客户端双向流
  *
  */
-func(browser *NodeBrowser) CreateBrowserClient(){
+func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
     // 创建一个grpc连接器
-    var conn, err = grpc.Dial("0.0.0.0:50051", grpc.WithInsecure())
+    var conn *grpc.ClientConn
+    var err error
+    conn, err = grpc.Dial("0.0.0.0:50051", grpc.WithInsecure())
     if err != nil{
         fmt.Println(err)
     }
     // 当请求完毕后记得关闭连接,否则大量连接会占用资源
     // defer conn.Close()
-    browser.GrpcBrowserClient = NewBrowserClient(conn)
+    browser.GrpcBrowserClient = Drive.NewBrowserClient(conn)
+    return conn
 }
 
 /**
@@ -72,7 +77,7 @@ func(browser *NodeBrowser) CreateBrowserClient(){
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            model.RecordBook(data, spiderRequset.CartoonResource)
+            browser.Service.RecordBook(data, spiderRequset.CartoonResource)
         }
         waitGroup.Done()
     }()
@@ -126,14 +131,14 @@ func(browser *NodeBrowser) CreateBrowserClient(){
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            model.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList)
+            browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList)
         }
         waitGroup.Done()
     }()
     go func(){
         for{
             select{ // 发送需要爬取的url，及配置
-                case res := <-spiderRequset.Requset:
+                case res := <-spiderRequset.Request:
                     err := stream.Send(res)
                     if err != nil {
                         fmt.Println(err)
@@ -157,7 +162,7 @@ func(browser *NodeBrowser) CreateBrowserClient(){
  func(browser *NodeBrowser) Content(spiderRequset *SpiderRequset){
     // 客户端向grpc服务端发起请求
     ctx, cancel := context.WithCancel(context.Background())
-	stream, err := browser.GrpcBrowserClient.Chapter(ctx)
+	stream, err := browser.GrpcBrowserClient.Content(ctx)
 	if err != nil {
         panic(err)
     }
@@ -180,14 +185,14 @@ func(browser *NodeBrowser) CreateBrowserClient(){
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            model.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter)
+            browser.Service.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter)
         }
         waitGroup.Done()
     }()
     go func(){
         for{
             select{ // 发送需要爬取的url，及配置
-                case res := <-spiderRequset.Requset:
+                case res := <-spiderRequset.Request:
                     err := stream.Send(res)
                     if err != nil {
                         fmt.Println(err)

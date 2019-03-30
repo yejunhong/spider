@@ -17,7 +17,7 @@ type Service struct{
  * @param cartoon 资源配置信息
  *
  */
-func (service *Service) RecordBook(book Drive.Book, cartoon model.CartoonResource){
+func (service *Service) RecordBook(book *Drive.Res, cartoon model.CartoonResource){
     // 获取服务端返回的结果
     var data []map[string]interface{}
     for _, v := range book.Data {
@@ -49,10 +49,11 @@ func (service *Service) RecordBook(book Drive.Book, cartoon model.CartoonResourc
  *
  */
 func (service *Service) RecordChapter(
-                        chapter Drive.Chapter, 
+                        chapter *Drive.ResChapterReply, 
                         cartoon model.CartoonResource, 
                         cartoonInfo model.CartoonList) {
 
+    var cartoon_is_free string = "0"
     var data []map[string]interface{}
     for _, v := range chapter.Data {
         if v.IsFree == "1" && cartoon_is_free == "0" {
@@ -85,7 +86,7 @@ func (service *Service) RecordChapter(
  *
  */
 func (service *Service) RecordContent(
-                        content Drive.Content, 
+                        content *Drive.ResContent, 
                         cartoon model.CartoonResource, 
                         cartoonChapter model.CartoonChapter) {
 
