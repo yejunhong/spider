@@ -20,7 +20,7 @@ module.exports.Page = {
 module.exports.Book = {
   selector: 'body', // 列表选择器
   // selector: 'table.bookshelfListMain', // 列表选择器
-  async jsonHandle(res): Promise<any> {
+  async jsonHandle(res: any): Promise<any> {
     // const json = await res.$eval()
     const resdata: any = [];
     res.data.map((v: any) => {
@@ -55,7 +55,7 @@ module.exports.Book = {
 // 数据章节配置
 module.exports.chapter = {
   selector: 'div.titleDiv', // 列表选择器
-  async handle (res, Element): Promise<any> { // 处理数据
+  async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);
@@ -75,7 +75,7 @@ module.exports.chapter = {
 
 module.exports.content = {
   selector: 'div.readMain img', // 列表选择器
-  async handle (res, Element): Promise<any> { // 处理数据
+  async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);

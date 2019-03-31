@@ -9,7 +9,7 @@ module.exports.Page = {
 // 获取书籍列表
 module.exports.Book = {
   selector: 'div.ItemSpecial', // 列表选择器
-  async handle (res, Element): Promise<any> { // 处理数据
+  async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);
@@ -27,7 +27,7 @@ module.exports.Book = {
   // 爬取 下一页数据
   next: {
     selector: 'ul.pagination', // 列表选择器
-    async handle(e){
+    async handle(e: any){
       let maxPage = await e.$$eval('li.itemBten a', e => e[e.length - 1].innerHTML)
       let page = await e.$eval('li.active a', e => e.innerHTML)
       if(parseInt(maxPage) > parseInt(page)){
@@ -42,7 +42,7 @@ module.exports.Book = {
 // 数据章节配置
 module.exports.Chapter = {
   selector: 'div.article-list table tr', // 列表选择器
-  async handle (res, Element): Promise<any> { // 处理数据
+  async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);

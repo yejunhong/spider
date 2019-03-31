@@ -17,6 +17,7 @@ type NodeBrowser struct{
 }
 
 type SpiderRequset struct {
+    End chan int // 程序结束
     Request chan *Drive.Request
     CartoonResource model.CartoonResource
     CartoonList model.CartoonList
@@ -95,7 +96,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
-    fmt.Println("抓取结束")
+    spiderRequset.End <- 1
 }
 
 /**
@@ -149,7 +150,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
-    fmt.Println("抓取结束")
 }
 
 /**
@@ -203,5 +203,4 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
-    fmt.Println("抓取结束")
 }

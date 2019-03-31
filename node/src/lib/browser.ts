@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import devices from 'puppeteer/DeviceDescriptors';
+// import devices from 'puppeteer/DeviceDescriptors';
 
 class Browser{
   /**
@@ -11,7 +11,8 @@ class Browser{
                       '--disable-setuid-sandbox', 
                       '--process-per-tab', 
                       '--disable-images'
-                    ]};
+                    ],
+                    headless: true};
     return await puppeteer.launch(options);
   }
 }

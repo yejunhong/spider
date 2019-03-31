@@ -21,6 +21,7 @@ class Request{
     if(res.data.length > 0) {
       steam.write({data: res.data});
       if (res.next === false) {
+        await page.close() // 关闭页面
         steam.end();
         return
       }
@@ -28,6 +29,7 @@ class Request{
       await this.Write(steam, spider, page, res.next, config)
       return
     }
+    await page.close() // 关闭页面
     steam.end();
   }
 }

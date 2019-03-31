@@ -31,7 +31,10 @@ class Spider {
       const res = await page.JsonContent({selector: config.selector});
       resdata = await config.jsonHandle(JSON.parse(res));
     }
-
+    
+    if (config.scroll != undefined) {
+      await page.PageScroll(config.scroll);
+    }
     if (config.handle != undefined) {
       const res = await page.QuerySelectors({selector: config.selector});
       resdata = await config.handle(res, Element);
