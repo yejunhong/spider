@@ -1,5 +1,5 @@
 import url from 'url';
-
+// print 打印
 module.exports.Page = {
   name: '谦棠科技-漫画',
   mobile: "",
@@ -11,7 +11,7 @@ module.exports.Page = {
     token=3300330093007300030083006300160057008600E6001600D600*/
     {name: "sid", value:"6807933", domain: "c1021.w406.s1388630.ririyue.cn"},
     {name: "token", value: "3300330093007300030083006300160057008600E6001600D600", domain: "c1021.w406.s1388630.ririyue.cn"},
-    {name: "UM_distinctid", value: "169ce00b0d412d-0fc3f772ab10708-7e145f62-4a574-169ce00b0d5b5", domain: "c1021.w406.s1388630.ririyue.cn"}
+    {name: "UM_distinctid", value: "169cea84a504ee-04126d843f683-7e145f62-4a574-169cea84a51541", domain: "c1021.w406.s1388630.ririyue.cn"}
   ],
   user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16D57 MicroMessenger/7.0.3(0x17000321) NetType/WIFI Language/zh_CN",
 }
@@ -27,7 +27,7 @@ module.exports.Book = {
     res.data.map((v: any) => {
       resdata.push({
         resource_name: v.title,
-        resource_url: `http://c1021.w406.s4694780.5fmj.com.cn/manhua/info.html?id=${v.bid}`,
+        resource_url: `http://c1021.w406.s1388630.ririyue.cn/manhua/info.html?id=${v.bid}`,
         resource_img_url: v.litpicd,
         detail: v.description,
         author: v.author
@@ -54,7 +54,7 @@ module.exports.Book = {
 }
 
 // 数据章节配置
-module.exports.chapter = {
+module.exports.Chapter = {
   selector: 'div.titleDiv', // 列表选择器
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
@@ -67,14 +67,14 @@ module.exports.chapter = {
       resdata.push({
         is_free: is_free,
         resource_name: await e.Html('.title'),
-        resource_url: "http://c1021.w406.s4694780.5fmj.com.cn/manhua/" + await e.Attr('a', 'href'),
+        resource_url: "http://c1021.w406.s1388630.ririyue.cn/manhua/" + await e.Attr('a', 'href'),
       })
     }
     return resdata
   },
 }
 
-module.exports.content = {
+module.exports.Content = {
   selector: 'div.readMain img', // 列表选择器
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];

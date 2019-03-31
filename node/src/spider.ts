@@ -41,7 +41,9 @@ class Spider {
    */
   public async Request(page: any, url: string, config: any){
     const content = await page.RequestUrl(url);
-    
+    if (config.print != undefined && config.print == true) {
+      console.log(content)
+    }
     // console.log(res)
     let resdata: any = [];
     let next: any = false;

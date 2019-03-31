@@ -88,3 +88,15 @@ type CartoonList struct{
 
 	return cartoons, count
 }
+
+/**
+ *
+ * 通过UniqueId 获取漫画资源书籍
+ * @return CartoonResource{}
+ *
+ */
+ func (model *Model) GetCartoonInfoByUniqueId(UniqueId int64) CartoonList{
+	var cartoon_list CartoonList = CartoonList{}
+	model.Db.Where("unique_id = ?", UniqueId).First(&cartoon_list)
+	return cartoon_list
+}

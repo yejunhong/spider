@@ -134,6 +134,9 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 return
             }
             browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList)
+            if data.Next == false {
+                spiderRequset.End <- 1
+            }
         }
     }()
     go func(){
@@ -150,6 +153,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
+    spiderRequset.End <- 1
 }
 
 /**

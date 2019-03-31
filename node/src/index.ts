@@ -19,10 +19,10 @@ class Request{
     // console.log(res)
     console.log(`获取数量：${res.data.length}`)
     if(res.data.length > 0) {
-      steam.write({data: res.data});
+      steam.write({data: res.data, next: res.next?true: false});
       if (res.next === false) {
         await page.close() // 关闭页面
-        steam.end();
+        // steam.end();
         return
       }
       console.log(`下一页：${res.next}`)
@@ -30,7 +30,7 @@ class Request{
       return
     }
     await page.close() // 关闭页面
-    steam.end();
+    // steam.end();
   }
 }
 
@@ -58,6 +58,7 @@ class GrpcServer {
    */
   public Book(steam: any) {
     steam.on('data', async (note: any) => {
+      // 删除缓冲区 重新加载文件
       delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Login, Book} = require(`${__dirname}/config/${note.config_name}`);
       // console.log(note)
@@ -71,6 +72,7 @@ class GrpcServer {
       
     });
     steam.on('end', () => {
+      console.log('end')
       steam.end();
     });
   }
@@ -81,6 +83,8 @@ class GrpcServer {
    */
   public Chapter(steam: any){
     steam.on('data', async (note: any) => {
+      // console.log(note)
+      delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Chapter} = require(`${__dirname}/config/${note.config_name}`);
       const spider = new NewSpider();
       const page = await spider.newPage(newBrowser, Page);
@@ -98,20 +102,17 @@ class GrpcServer {
    */
   public Content(steam: any){
     steam.on('data', async (note: any) =>{
+      delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Content} = require(`${__dirname}/config/${note.config_name}`);
       const spider = new NewSpider();
       const page = await spider.newPage(newBrowser, Page);
       const res = new Request()
       await res.Write(steam, spider, page, note.url, Content)
-      
     });
     steam.on('end', () => {
       steam.end();
     });
   }
-
-  
-
 }
 
 const grpcService = new GrpcServer();

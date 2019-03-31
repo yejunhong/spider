@@ -38,6 +38,7 @@ message Chapter{  // 漫画章节列表
 
 message ResChapterReply {
   repeated Chapter data = 1;
+  bool next = 2;
 }
 
 message Content{ // 章节内容
