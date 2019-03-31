@@ -25,7 +25,7 @@ func main(){
     // var cartoon = models.GetCartoonById(1)
     // var cartoonList = models.GetCartoonListByNo(cartoon.ResourceNo)
     // var cartoonList = models.GetCartoonChapterListByNo(cartoon.ResourceNo)
-    var resource model.CartoonResource = models.GetCartoonById(2)
+    var resource model.CartoonResource = models.GetCartoonById(1)
     var spiderRequset *service.SpiderRequset = &service.SpiderRequset{
         End: end,
         Request: request,

@@ -23,6 +23,7 @@ module.exports.Book = {
   async jsonHandle(res: any): Promise<any> {
     // const json = await res.$eval()
     const resdata: any = [];
+    console.log(3)
     res.data.map((v: any) => {
       resdata.push({
         resource_name: v.title,
