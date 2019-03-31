@@ -6,8 +6,19 @@ module.exports.Page = {
   user_agent: "",
 }
 
+module.exports.Login = {
+  url: 'https://www.kuaikanmanhua.com/webs/loginh',
+  user: {selector: 'div.inputPhone input', value: '18320777006'},
+  pass: {selector: 'div.password div.inputBox input', value: 'junchun153259'},
+  click: 'div.submit input.loginhBtn', // 
+  async handle (res: any): Promise<any> { // 处理数据
+    // loginhBtn//
+  },
+}
+
 // 获取书籍列表
 module.exports.Book = {
+  islogin: true,
   selector: 'div.ItemSpecial', // 列表选择器
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
@@ -41,6 +52,7 @@ module.exports.Book = {
 
 // 数据章节配置
 module.exports.Chapter = {
+  islogin: false,
   selector: 'div.article-list table tr', // 列表选择器
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
@@ -58,5 +70,5 @@ module.exports.Chapter = {
 }
 
 module.exports.Content = {
-
+  islogin: false,
 }

@@ -58,11 +58,13 @@ class GrpcServer {
    */
   public Book(steam: any) {
     steam.on('data', async (note: any) => {
-      const {Page, Book} = require(`${__dirname}/config/${note.config_name}`);
+      const {Page, Login, Book} = require(`${__dirname}/config/${note.config_name}`);
       // console.log(note)
       const spider = new NewSpider();
       const page = await spider.newPage(newBrowser, Page);
-      
+      if (Book.islogin != undefined) {
+        await spider.LoginPage(page, Login, Book.islogin);
+      }
       const res = new Request()
       await res.Write(steam, spider, page, note.url, Book)
       

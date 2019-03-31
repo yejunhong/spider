@@ -33,7 +33,7 @@ class Element{
    * @return Promise<boolean>
    */
   public async IsExist(selector: string): Promise<boolean> {
-    const e = await this.handle.$eval(selector)
+    const e = await this.handle.$(selector)
     if (e != null) {
       return true;
     }

@@ -12,7 +12,7 @@ class Browser{
                       '--process-per-tab', 
                       '--disable-images'
                     ],
-                    headless: true};
+                    headless: true}; // headless true 无头浏览器
     return await puppeteer.launch(options);
   }
 }

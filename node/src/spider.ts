@@ -13,6 +13,26 @@ class Spider {
     return page
   }
 
+  public async LoginPage(browserPage: any, config: any, islogin: boolean) {
+    if (islogin === true) {
+      await browserPage.RequestUrl(config.url);
+      await browserPage.page.waitFor(1000)
+      console.log("检查是否需要登录");
+      const e = await browserPage.page.$(config.click)
+      if (e == null) {
+        return;
+      }
+      console.log("输入账号");
+      await browserPage.page.type(config.user.selector, config.user.value); // 立即输入账号
+      console.log("输入密码");
+      await browserPage.page.type(config.pass.selector, config.pass.value); // 立即输入密码
+      await browserPage.page.waitFor(600)
+      console.log("点击进行登录");
+      await browserPage.page.tap(config.click); // 点击登录
+      await browserPage.page.waitFor(10000)
+    }
+  }
+
   /**
    * 请求url
    * @param page
