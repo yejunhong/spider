@@ -70,7 +70,6 @@ func (spider *Spider) Chapter(bookId int64) {
     var end chan int = make(chan int, 1)
 
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
-    
    
     var spiderRequset *SpiderRequset = &SpiderRequset{
         End: end,
@@ -79,24 +78,33 @@ func (spider *Spider) Chapter(bookId int64) {
     }
     go spider.Browser.Chapter(spiderRequset)
     var next chan int = make(chan int, 1)
+    var spiderEnd chan int = make(chan int, 1)
+    var isend bool = false // 是否结束程序
     go func() {
         var cartoonInfo = spider.Models.GetCartoonListByNo(resource.ResourceNo)
         for _, v := range cartoonInfo {
             spiderRequset.CartoonList = v
-            request <- &Drive.Request{Url: v.ResourceUrl, ConfigName: resource.ConfigName}
             next <- 1
+            request <- &Drive.Request{Url: v.ResourceUrl, ConfigName: resource.ConfigName}
         }
+        isend = true
     }()
 
-    for {
-        select{
-            case <-spiderRequset.End:
-                n := <- next
-                fmt.Println("执行完成1", n)
-            default:
+    Loop:
+        for {
+            select{
+                case <-spiderRequset.End:
+                    if isend == true {
+                        spiderEnd <- 1 // 中断程序
+                    }
+                    fmt.Println("next url", <- next)
+                case <-spiderEnd:
+                    request <- &Drive.Request{Url: "end", ConfigName: ""}
+                    break Loop
+                default:
+            }
         }
-    }
-    
+    fmt.Println("爬虫程序结束")
 }
 
 /**

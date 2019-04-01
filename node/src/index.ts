@@ -17,7 +17,7 @@ class Request{
   public async Write(steam: any, spider: any, page: any, url: string, config: any) {
     const res = await spider.Request(page, url, config);
     // console.log(res)
-    console.log(`获取数量：${res.data.length}`)
+    console.log(`获取数量：${res.data.length}，url：${url}`)
     if(res.data.length > 0) {
       steam.write({data: res.data, next: res.next?true: false});
       if (res.next === false) {
@@ -29,6 +29,7 @@ class Request{
       await this.Write(steam, spider, page, res.next, config)
       return
     }
+    steam.write({data: [], next: false});
     await page.close() // 关闭页面
     // steam.end();
   }
@@ -58,6 +59,10 @@ class GrpcServer {
    */
   public Book(steam: any) {
     steam.on('data', async (note: any) => {
+      if(note.url == 'end') {
+        steam.end();
+        return
+      }
       // 删除缓冲区 重新加载文件
       delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Login, Book} = require(`${__dirname}/config/${note.config_name}`);
@@ -69,10 +74,9 @@ class GrpcServer {
       }
       const res = new Request()
       await res.Write(steam, spider, page, note.url, Book)
-      
     });
     steam.on('end', () => {
-      console.log('end')
+      console.log('book steam end')
       steam.end();
     });
   }
@@ -83,6 +87,10 @@ class GrpcServer {
    */
   public Chapter(steam: any){
     steam.on('data', async (note: any) => {
+      if(note.url == 'end') {
+        steam.end();
+        return
+      }
       // console.log(note)
       delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Chapter} = require(`${__dirname}/config/${note.config_name}`);
@@ -92,6 +100,7 @@ class GrpcServer {
       await res.Write(steam, spider, page, note.url, Chapter)
     });
     steam.on('end', () => {
+      console.log('chapter steam end')
       steam.end();
     });
   }
@@ -102,6 +111,10 @@ class GrpcServer {
    */
   public Content(steam: any){
     steam.on('data', async (note: any) =>{
+      if(note.url == 'end') {
+        steam.end();
+        return
+      }
       delete require.cache[require.resolve(`${__dirname}/config/${note.config_name}`)];
       const {Page, Content} = require(`${__dirname}/config/${note.config_name}`);
       const spider = new NewSpider();
@@ -110,6 +123,7 @@ class GrpcServer {
       await res.Write(steam, spider, page, note.url, Content)
     });
     steam.on('end', () => {
+      console.log('content steam end')
       steam.end();
     });
   }

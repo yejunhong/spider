@@ -23,19 +23,19 @@ class Pages{
   public async OpenTabPage(browser: any, config: cfg): Promise<any> {
     this.page = await browser.newPage();
     if ( config.cookie != undefined && config.cookie != "" ){
-      console.log('设置cookie')
+      // console.log('设置cookie')
       for (let e of config.cookie) {
         await this.page.setCookie(e);     // 设置cookie
       }
     }
     // 伪造浏览器 
     if ( config.user_agent != undefined && config.user_agent != "" ){
-      console.log('设置user_agent')
+      // console.log('设置user_agent')
       await this.page.setUserAgent(config.user_agent);
     }
     // 是否启用手机模式
     if ( config.mobile != undefined && config.mobile != "" ){
-      console.log('开启手机模式')
+      // console.log('开启手机模式')
       await this.page.emulate(config.mobile); // 手机浏览器模式
     }
     return this

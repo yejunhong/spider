@@ -153,6 +153,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
+    fmt.Println("退出爬虫")
     spiderRequset.End <- 1
 }
 
