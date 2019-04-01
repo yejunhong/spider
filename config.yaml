@@ -1,0 +1,23 @@
+# kafka 队列
+kafka:
+ host: log.radio1964.com
+ port: 9092
+ topics: test- # 前缀
+
+# 日志数据库
+logs_db:
+ user: root
+ pass: yundong#sQQ1982
+ host: 106.15.204.237
+ port: 3306
+ name: ohplay-logs
+ prefix: t_
+
+# 日志数据库
+ohplay_db:
+ user: root
+ pass: yundong#sQQ1982
+ host: 106.15.204.237
+ port: 3306
+ name: lumen
+ prefix: t_
