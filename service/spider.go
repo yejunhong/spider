@@ -80,7 +80,7 @@ func (spider *Spider) Chapter(bookId int64) {
     var next chan int = make(chan int, 1)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
-    go func() {
+    go func() { // 协程 发送爬虫信息
         var cartoonInfo = spider.Models.GetCartoonListByNo(resource.ResourceNo)
         for _, v := range cartoonInfo {
             spiderRequset.CartoonList = v
@@ -96,11 +96,12 @@ func (spider *Spider) Chapter(bookId int64) {
                 case <-spiderRequset.End:
                     if isend == true {
                         spiderEnd <- 1 // 中断程序
-                    }
+                        return
+                    } 
                     fmt.Println("next url", <- next)
                 case <-spiderEnd:
                     request <- &Drive.Request{Url: "end", ConfigName: ""}
-                    break Loop
+                    break Loop // 中断循环
                 default:
             }
         }
