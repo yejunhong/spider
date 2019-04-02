@@ -3,6 +3,7 @@
 interface cfg {
   name?: string;
   mobile?: string;
+  js?: string;
   cookie?: any;
   login?: string;
   user_agent?: string;
@@ -38,7 +39,24 @@ class Pages{
     if ( config.mobile != undefined && config.mobile != "" ){
       // console.log('开启手机模式')
       await this.page.emulate(config.mobile); // 手机浏览器模式
-    }
+    } 
+    /*
+    await this.page.setRequestInterception(true);
+    await this.page.on('request', async (res: any) => {
+      const urlstr = await res.url()
+      if ( urlstr.indexOf('recharge/chapeterid') > 0) {
+        await res.abort()
+      }else {
+        res.continue();
+      }
+    });
+    await this.page.on('load', e => console.log(1111))
+    await this.page.on('response', async (res: any) => {
+      const urlstr = await res.url()
+      if ( urlstr.indexOf('bookcontent/chapeterid') > 0) {
+        console.log(await res.text())
+      }
+    });*/
     return this
   }
 

@@ -138,3 +138,58 @@ func (spider *Spider) Content(chapterId int64){
     }
     
 }
+
+
+/**
+ *
+ * 根据书籍Id 获取章节列表
+ * @param bookId int64 书籍Id
+ *
+ */
+ func (spider *Spider) ContentList(resourceId int64) {
+    var request chan *Drive.Request = make(chan *Drive.Request, 1)
+    var end chan int = make(chan int, 1)
+
+    var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
+   
+    var spiderRequset *SpiderRequset = &SpiderRequset{
+        End: end,
+        Request: request,
+        CartoonResource: resource,
+    }
+    go spider.Browser.Content(spiderRequset)
+    var next chan int = make(chan int, 1)
+    var spiderEnd chan int = make(chan int, 1)
+    var isend bool = false // 是否结束程序
+    go func() { // 协程 发送爬虫信息
+        var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 1)
+        for _, info := range cartoonInfo {
+            fmt.Println("编号：", info.ResourceNo, "-书籍名称：", info.ResourceName, "-", info.UniqueId)
+            var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(info.UniqueId)
+            for _, v := range cartoonChapter {
+                fmt.Println("编号：", info.ResourceNo, "-书籍名称：", info.ResourceName, "-", v.ResourceUrl)
+                spiderRequset.CartoonChapter = v
+                next <- 1
+                request <- &Drive.Request{Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+            }
+        }
+        isend = true
+    }()
+
+    Loop:
+        for {
+            select{
+                case <-spiderRequset.End:
+                    if isend == true {
+                        spiderEnd <- 1 // 中断程序
+                        return
+                    } 
+                    fmt.Println("next url", <- next)
+                case <-spiderEnd:
+                    request <- &Drive.Request{Url: "end", ConfigName: ""}
+                    break Loop // 中断循环
+                default:
+            }
+        }
+    fmt.Println("爬虫程序结束")
+}

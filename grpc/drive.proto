@@ -43,7 +43,7 @@ message ResChapterReply {
 }
 
 message Content{ // 章节内容
-  repeated string resource_img_url = 1;
+  string resource_img_url = 1;
 }
 message ResContent {
   repeated Content data = 1;

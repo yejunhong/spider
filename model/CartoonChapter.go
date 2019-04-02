@@ -59,6 +59,6 @@ type CartoonChapter struct{
  */
  func (model *Model) GetChaptersFindByListUniqueId(list_unique_id string) []CartoonChapter{
 	var cartoonChapters []CartoonChapter = []CartoonChapter{}
-	model.Db.Where("list_unique_id = ?", list_unique_id).Find(&cartoonChapters) // 执行sql
+	model.Db.Where("list_unique_id = ? AND status = 0 AND is_free = 0", list_unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
 }

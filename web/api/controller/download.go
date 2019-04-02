@@ -1,9 +1,9 @@
 package controller
-
+/*
 import (
 	"github.com/gin-gonic/gin"
 	"strconv"
-)
+)*/
 
 /**
  *
@@ -12,7 +12,7 @@ import (
  * @query is_test 是否下载测试 1测试 默认 非测试
  * @return json{error: 0, msg: interface{}}
  *
- */
+
 func (controller *Controller) DownloadBook(c *gin.Context){
 
 	var resourceNo string = c.Query("resource_no")
@@ -34,7 +34,7 @@ func (controller *Controller) DownloadBook(c *gin.Context){
 		"msg": "已经提交",
 	})
 }
-
+ */
 /**
  *
  * 根据数据资源id 下载书籍章节列表, 异步下载 提供ws实时数据
@@ -42,7 +42,7 @@ func (controller *Controller) DownloadBook(c *gin.Context){
  * @query is_test 是否下载测试 1测试 默认 非测试
  * @return json{error: 0, msg: interface{}}
  *
- */
+ 
 func (controller *Controller) DownloadChapter(c *gin.Context){
 
 	var listId string = c.Query("id")
@@ -91,4 +91,4 @@ func (controller *Controller) DownloadChapterContent(c *gin.Context){
 		"error": 0,
 		"msg": "下载资源漫画章节内容",
 	})
-}
+}*/

@@ -3,6 +3,12 @@ import url from 'url';
 module.exports.Page = {
   name: '芒果书坊-小说',
   mobile: "",
+  js: `
+    $(function() {
+      $("#go_next").unbind('click'); 
+      window.location = ''
+    })
+  `,
   cookie: [
     {name: "_novelOpenid", value:"oFFzA514uRnqPLc908Y1Zwn8sizc", domain: "c976.yinsha5.com"},
   ],
@@ -97,11 +103,13 @@ module.exports.Chapter = {
 
 module.exports.Content = {
   selector: 'body', // 列表选择器
+  print: false,
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     resdata.push({
       resource_img_url: await res[0].$eval("div.chapterBox", e => e.innerHTML),
     })
+    // console.log(resdata)
     return resdata
   },
 }

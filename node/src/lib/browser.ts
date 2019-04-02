@@ -10,7 +10,9 @@ class Browser{
                       '--no-sandbox', 
                       '--disable-setuid-sandbox', 
                       '--process-per-tab', 
-                      '--disable-images'
+                      '--disable-images',
+                      // '--disable-javascript',
+                      '--start-maximized'
                     ],
                     headless: true}; // headless true 无头浏览器
     return await puppeteer.launch(options);

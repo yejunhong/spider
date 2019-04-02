@@ -50,6 +50,17 @@ type CartoonList struct{
 
 /**
  *
+ * 通过id 获取漫画资源书籍
+ * @return CartoonResource{}
+ *
+ */
+ func (model *Model) GetCartoonListByNoStatus(no string, status int64) []CartoonList{
+	var cartoon_list []CartoonList = []CartoonList{}
+	model.Db.Where("resource_no = ? AND status = ?", no, status).Find(&cartoon_list)
+	return cartoon_list
+}
+/**
+ *
  * 通过id 修改漫画是否完结状态
  * @param id int64 漫画id
  * @param udata string 漫画是否完结

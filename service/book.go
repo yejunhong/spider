@@ -112,8 +112,8 @@ func (service *Service) RecordContent(
     
     if cartoon.BookType == 2 {
         service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{
+            "status": 1,
             "conent": content.Data[0].ResourceImgUrl})
-        
     }
 
 }   
