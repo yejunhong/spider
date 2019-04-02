@@ -27,6 +27,7 @@ message Detail {
 message Res {
   repeated Book data = 1;
   Detail detail = 3; // 详情信息
+  bool next = 2;
 }
 
 message Chapter{  // 漫画章节列表
@@ -46,4 +47,5 @@ message Content{ // 章节内容
 }
 message ResContent {
   repeated Content data = 1;
+  bool next = 2;
 }

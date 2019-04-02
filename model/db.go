@@ -12,9 +12,9 @@ type Model struct{
 }
 
 func InitDb() *gorm.DB {
-  var err error
-	//db, err := gorm.Open("mysql", "caiji:caijishiwo7788dd@tcp(202.43.91.26)/caiji?charset=utf8")
-	db, err := gorm.Open("mysql", "test:test@/spider?charset=utf8")
+  	var err error
+	db, err := gorm.Open("mysql", "caiji:caijishiwo7788dd@tcp(202.43.91.26)/caiji?charset=utf8")
+	// db, err := gorm.Open("mysql", "test:test@/spider?charset=utf8")
 	if err != nil {
 		panic(err)
 	}

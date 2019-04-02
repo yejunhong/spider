@@ -18,6 +18,7 @@ type CartoonList struct{
 	ResourceName string
 	ResourceImgUrl string
 	DownloadImgUrl string
+	BookType int64
 	IsFree int64
 	IsEnd int64
 	Cdate int64

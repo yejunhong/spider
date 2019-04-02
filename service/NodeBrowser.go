@@ -69,10 +69,8 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
 	go func() {
         for {
             data, err := stream.Recv()
-            
             if err == io.EOF {
                 fmt.Println(err)
-                waitGroup.Done()
                 return
             }
             if err != nil {
@@ -80,6 +78,9 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 return
             }
             browser.Service.RecordBook(data, spiderRequset.CartoonResource)
+            if data.Next == false {
+                spiderRequset.End <- 1
+            }
         }
     }()
     go func(){
@@ -87,6 +88,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
             select{ // 发送需要爬取的url，及配置
                 case res := <-spiderRequset.Request:
                     err := stream.Send(res)
+                    
                     if err != nil {
                         fmt.Println(err)
                     }
@@ -96,7 +98,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         }
     }()
     waitGroup.Wait()
-    spiderRequset.End <- 1
 }
 
 /**

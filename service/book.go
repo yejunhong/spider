@@ -73,6 +73,7 @@ func (service *Service) RecordChapter(
         })
     }
     if len(data) > 0 {
+        service.Models.UpdateCartoonListById(cartoonInfo.Id, map[string]interface{}{"status": 1})
         service.Models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
     }
 }
@@ -89,22 +90,30 @@ func (service *Service) RecordContent(
                         content *Drive.ResContent, 
                         cartoon model.CartoonResource, 
                         cartoonChapter model.CartoonChapter) {
+    if cartoon.BookType == 1 {
+        var data []map[string]interface{}
+        // 获取服务端返回的结果
+        // 清除现有数据
+        service.Models.DeleteChapterContentByChapterUniqueId(cartoonChapter.UniqueId)
+        for _, v := range content.Data {
+            data = append(data, map[string]interface{}{
+                "resource_no": cartoon.ResourceNo,
+                "list_unique_id": cartoonChapter.ListUniqueId,
+                "chapter_unique_id": cartoonChapter.UniqueId,
+                "resource_url": v.ResourceImgUrl,
+                "cdate": lib.Time(),
+            })
+        }
+        if len(data) > 0 {
+            service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{"status": 1})
+            service.Models.BatchInsert("cartoon_chapter_content", data, []string{})
+        }
+    }
+    
+    if cartoon.BookType == 2 {
+        service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{
+            "conent": content.Data[0].ResourceImgUrl})
+        
+    }
 
-    var data []map[string]interface{}
-    // 获取服务端返回的结果
-    // 清除现有数据
-    service.Models.DeleteChapterContentByChapterUniqueId(cartoonChapter.UniqueId)
-    for _, v := range content.Data {
-        data = append(data, map[string]interface{}{
-            "resource_no": cartoon.ResourceNo,
-            "list_unique_id": cartoonChapter.ListUniqueId,
-            "chapter_unique_id": cartoonChapter.UniqueId,
-            "resource_url": v.ResourceImgUrl,
-            "cdate": lib.Time(),
-        })
-    }
-    if len(data) > 0 {
-        service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{"status": 1})
-        service.Models.BatchInsert("cartoon_chapter_content", data, []string{})
-    }
-}
+}   
