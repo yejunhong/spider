@@ -1,3 +1,4 @@
+
 // 配置
 interface cfg {
   name?: string;
@@ -40,7 +41,7 @@ class Pages{
     }
     return this
   }
-  
+
   /**
    * 打开一个标签页面
    * @param url // 访问http-url
@@ -48,18 +49,9 @@ class Pages{
    * @param config // 配置信息
    */
   public async RequestUrl(url: string) {
-    await this.page.goto(url);
+    const response = await this.page.goto(url);
+    // console.log(await response.text());
     return await this.page.content();
-    // console.log(await this.page.content())
-    // page.on('console', msg => console.log(msg.text()));
-    // 注入函数到浏览器
-    /*await page.exposeFunction('md5', text =>
-      crypto.createHash('md5').update(text).digest('hex')
-    );*/
-    // 注入配置信息
-    // await page.addScriptTag({path: `${__dirname}/config/${config_name}.js`});
-    // console.log(await page.content())
-    // await page.close(); // 关闭当前标签页
   }
 
    /**
@@ -104,7 +96,7 @@ class Pages{
     await this.page.waitFor(1000)
     console.log("滚动开始")
     let scrollEnable: boolean = true;
-    let scrollStep: number = 300; //每次滚动的步长
+    let scrollStep: number = 800; //每次滚动的步长
     let scrollTop: number = 0;
     const window = await this.page.evaluateHandle('window'); // 'window'对象
     const document = await this.page.evaluateHandle('document'); // 'document'对象
@@ -116,6 +108,10 @@ class Pages{
         return document.body.scrollTop
       }, document)*/
       scrollTop = scrollTop + scrollStep;
+      /*if (scrollTop > 3000){
+        scrollEnable = false
+        break
+      }*/
       console.log(`滚动高度：${scrollTop}, 最大高度：${scrollHeight}`)
       if (scrollTop < scrollHeight) {
         scrollTop = scrollTop + scrollStep

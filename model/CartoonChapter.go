@@ -11,6 +11,7 @@ type CartoonChapter struct{
 	ResourceName string
 	ResourceImgUrl string
 	DownloadImgUrl string
+	BookType int64
 	Cdate int64
 }
 

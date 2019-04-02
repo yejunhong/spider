@@ -25,8 +25,10 @@ func (spider *Spider) Book(resourceId int64){
     go func() {
         request <- &Drive.Request{Url: resource.ResourceUrl, ConfigName: resource.ConfigName}
     }()
+    
     select{
         case <-spiderRequset.End:
+            request <- &Drive.Request{Url: "end", ConfigName: ""}
             fmt.Println("执行完成")
     }
 }

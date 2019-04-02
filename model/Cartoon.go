@@ -12,6 +12,7 @@ type CartoonResource struct{
 	ResourceUrl string
 	ResourceName string
 	ConfigName string
+	BookType int64
 }
 
 /**

@@ -1,5 +1,6 @@
 import Pages from './lib/page';
 import Element from './lib/element';
+import url from 'url';
 
 class Spider {
 
@@ -40,10 +41,12 @@ class Spider {
    * @param config
    */
   public async Request(page: any, url: string, config: any){
+    
     const content = await page.RequestUrl(url);
     if (config.print != undefined && config.print == true) {
       console.log(content)
     }
+
     // console.log(res)
     let resdata: any = [];
     let next: any = false;

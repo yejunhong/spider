@@ -19,6 +19,7 @@
     "grpc": "^1.18.0",
     "lodash": "^4.17.11",
     "minimist": "^1.2.0",
+    "node-fetch": "^2.3.0",
     "puppeteer": "^1.13.0"
   }
 }

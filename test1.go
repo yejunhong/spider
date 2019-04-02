@@ -14,6 +14,6 @@ func main(){
 
     browser.CreateBrowserClient() // 创建浏览器客户端
     var spider service.Spider = service.Spider{Models: models, Browser: browser}
-    // spider.Book(1)
-    spider.ChapterList(1)
+    // spider.Book(4)
+    spider.ChapterList(4)
 }
