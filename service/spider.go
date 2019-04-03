@@ -4,6 +4,7 @@ import (
     "fmt"
     Drive "spider/grpc"
     "spider/model"
+    "strconv"
     // "os/exec"
 )
 
@@ -49,7 +50,7 @@ func (spider *Spider) Chapter(bookId int64) {
         End: end,
         Request: request,
         CartoonResource: resource,
-        CartoonList: cartoonInfo,
+        // CartoonList: cartoonInfo,
     }
     go spider.Browser.Chapter(spiderRequset)
     go func() {
@@ -68,7 +69,7 @@ func (spider *Spider) Chapter(bookId int64) {
  *
  */
  func (spider *Spider) ChapterList(resourceId int64) {
-    var request chan *Drive.Request = make(chan *Drive.Request, 1)
+    var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
 
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
@@ -77,17 +78,20 @@ func (spider *Spider) Chapter(bookId int64) {
         End: end,
         Request: request,
         CartoonResource: resource,
+        CartoonList: make(map[string]model.CartoonList),
     }
     go spider.Browser.Chapter(spiderRequset)
-    var next chan int = make(chan int, 1)
+    var next chan int = make(chan int, 5)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息
-        var cartoonInfo = spider.Models.GetCartoonListByNo(resource.ResourceNo)
+        var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 0)
         for _, v := range cartoonInfo {
-            spiderRequset.CartoonList = v
+            var IdStr string = strconv.FormatInt(v.Id,10)
             next <- 1
-            request <- &Drive.Request{Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+            spiderRequset.CartoonList[IdStr] = v
+            // spiderRequset.CartoonList = v
+            request <- &Drive.Request{Id: IdStr, Url: v.ResourceUrl, ConfigName: resource.ConfigName}
         }
         isend = true
     }()
@@ -96,13 +100,13 @@ func (spider *Spider) Chapter(bookId int64) {
         for {
             select{
                 case <-spiderRequset.End:
-                    if isend == true {
+                    if isend == true && len(spiderRequset.CartoonList) == 0 {
                         spiderEnd <- 1 // 中断程序
                         return
                     } 
                     fmt.Println("next url", <- next)
                 case <-spiderEnd:
-                    request <- &Drive.Request{Url: "end", ConfigName: ""}
+                    request <- &Drive.Request{Url: "end", ConfigName: "", Id: "0"}
                     break Loop // 中断循环
                 default:
             }
@@ -126,7 +130,7 @@ func (spider *Spider) Content(chapterId int64){
         End: end,
         Request: request,
         CartoonResource: resource,
-        CartoonChapter: chapterInfo,
+        // CartoonChapter: chapterInfo,
     }
     go spider.Browser.Content(spiderRequset)
     go func() {
@@ -147,7 +151,7 @@ func (spider *Spider) Content(chapterId int64){
  *
  */
  func (spider *Spider) ContentList(resourceId int64) {
-    var request chan *Drive.Request = make(chan *Drive.Request, 1)
+    var request chan *Drive.Request = make(chan *Drive.Request, 10)
     var end chan int = make(chan int, 1)
 
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
@@ -156,21 +160,22 @@ func (spider *Spider) Content(chapterId int64){
         End: end,
         Request: request,
         CartoonResource: resource,
+        CartoonChapter: make(map[string]model.CartoonChapter),
     }
     go spider.Browser.Content(spiderRequset)
-    var next chan int = make(chan int, 1)
+    var next chan int = make(chan int, 10)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息
         var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 1)
         for _, info := range cartoonInfo {
-            fmt.Println("编号：", info.ResourceNo, "-书籍名称：", info.ResourceName, "-", info.UniqueId)
             var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(info.UniqueId)
+            fmt.Println("编号：", info.ResourceNo, "-书籍数量：", len(cartoonChapter), "-名称：", info.ResourceName, "-", info.UniqueId)
             for _, v := range cartoonChapter {
-                fmt.Println("编号：", info.ResourceNo, "-书籍名称：", info.ResourceName, "-", v.ResourceUrl)
-                spiderRequset.CartoonChapter = v
+                var IdStr string = strconv.FormatInt(v.Id,10)
                 next <- 1
-                request <- &Drive.Request{Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+                spiderRequset.CartoonChapter[IdStr] = v
+                request <- &Drive.Request{Id: IdStr, Url: v.ResourceUrl, ConfigName: resource.ConfigName}
             }
         }
         isend = true
@@ -180,13 +185,14 @@ func (spider *Spider) Content(chapterId int64){
         for {
             select{
                 case <-spiderRequset.End:
-                    if isend == true {
+                    <-next
+                    if isend == true && len(spiderRequset.CartoonChapter) == 0 {
                         spiderEnd <- 1 // 中断程序
                         return
                     } 
-                    fmt.Println("next url", <- next)
+                    // fmt.Println("next url", <- next)
                 case <-spiderEnd:
-                    request <- &Drive.Request{Url: "end", ConfigName: ""}
+                    request <- &Drive.Request{Url: "end", ConfigName: "", Id: "0"}
                     break Loop // 中断循环
                 default:
             }

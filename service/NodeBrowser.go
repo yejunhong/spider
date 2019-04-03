@@ -20,8 +20,8 @@ type SpiderRequset struct {
     End chan int // 程序结束
     Request chan *Drive.Request
     CartoonResource model.CartoonResource
-    CartoonList model.CartoonList
-    CartoonChapter model.CartoonChapter
+    CartoonList map[string]model.CartoonList
+    CartoonChapter map[string]model.CartoonChapter
 }
 
 /** 
@@ -134,7 +134,8 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList)
+            browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList[data.Id])
+            delete(spiderRequset.CartoonChapter, data.Id)
             if data.Next == false {
                 spiderRequset.End <- 1
             }
@@ -144,18 +145,17 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         for{
             select{ // 发送需要爬取的url，及配置
                 case res := <-spiderRequset.Request:
+                    fmt.Println("抓取章节-编号：", res.Id, "-书籍Url：", res.Url)
                     err := stream.Send(res)
                     if err != nil {
                         fmt.Println(err)
                     }
-                    fmt.Println("发生成功")
                 default:
             }
         }
     }()
     waitGroup.Wait()
     fmt.Println("退出爬虫")
-    spiderRequset.End <- 1
 }
 
 /**
@@ -192,7 +192,8 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            browser.Service.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter)
+            browser.Service.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter[data.Id])
+            delete(spiderRequset.CartoonChapter, data.Id)
             if data.Next == false {
                 spiderRequset.End <- 1
             }
@@ -202,11 +203,12 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         for{
             select{ // 发送需要爬取的url，及配置
                 case res := <-spiderRequset.Request:
+                    fmt.Println("抓取内容-编号：", res.Id, "-书籍Url：", res.Url)
                     err := stream.Send(res)
                     if err != nil {
                         fmt.Println(err)
                     }
-                    fmt.Println("发生成功")
+                    // fmt.Println("发生成功")
                 default:
             }
         }

@@ -49,7 +49,7 @@ func (service *Service) RecordBook(book *Drive.Res, cartoon model.CartoonResourc
  *
  */
 func (service *Service) RecordChapter(
-                        chapter *Drive.ResChapterReply, 
+                        chapter *Drive.ResChapter, 
                         cartoon model.CartoonResource, 
                         cartoonInfo model.CartoonList) {
 

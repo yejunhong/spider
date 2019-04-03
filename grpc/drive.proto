@@ -4,11 +4,12 @@ package grpc;
  
 service browser {
   rpc Book (stream Request) returns (stream Res) {}
-  rpc Chapter (stream Request) returns (stream ResChapterReply) {}
+  rpc Chapter (stream Request) returns (stream ResChapter) {}
   rpc Content (stream Request) returns (stream ResContent) {}
 }
  
 message Request {
+  string id = 3;
   string url = 1;
   string config_name = 2;
 }
@@ -24,11 +25,6 @@ message Book{ // 漫画列表
 message Detail {
   string is_end = 1;
 }
-message Res {
-  repeated Book data = 1;
-  Detail detail = 3; // 详情信息
-  bool next = 2;
-}
 
 message Chapter{  // 漫画章节列表
   string is_free = 1;
@@ -37,15 +33,26 @@ message Chapter{  // 漫画章节列表
   string resource_img_url = 4;
 }
 
-message ResChapterReply {
-  repeated Chapter data = 1;
-  bool next = 2;
-}
+
 
 message Content{ // 章节内容
   string resource_img_url = 1;
 }
-message ResContent {
-  repeated Content data = 1;
+
+message Res {
+  string id = 4;
+  repeated Book data = 1;
+  Detail detail = 3; // 详情信息
   bool next = 2;
+}
+
+message ResChapter {
+  string id = 3;
+  repeated Chapter data = 1;
+  bool next = 2;
+}
+message ResContent {
+  string id = 2;
+  repeated Content data = 1;
+  bool next = 3;
 }

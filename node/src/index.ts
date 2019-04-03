@@ -16,12 +16,12 @@ import NewSpider from './spider';
 let newBrowser: any;
 
 class Request{
-  public async Write(steam: any, spider: any, page: any, url: string, config: any, PageCfg: any) {
-    const res = await spider.Request(page, url, config, PageCfg);
+  public async Write(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
+    const res = await spider.Request(page, note.url, config, PageCfg);
     // console.log(res)
-    console.log(`获取数量：${res.data.length}，url：${url}`)
+    console.log(`获取数量：${res.data.length}，url：${note.url}`)
     if(res.data.length > 0) {
-      steam.write({data: res.data, next: res.next?true: false});
+      steam.write({data: res.data, next: res.next?true: false, id: note.id});
       if (res.next === false) {
         await page.close() // 关闭页面
         // steam.end();
@@ -31,7 +31,7 @@ class Request{
       await this.Write(steam, spider, page, res.next, config, PageCfg)
       return
     }
-    steam.write({data: [], next: false});
+    steam.write({data: [], next: false, id: note.id});
     await page.close() // 关闭页面
     // steam.end();
   }
@@ -75,7 +75,7 @@ class GrpcServer {
         await spider.LoginPage(spiderPage, Login, Book.islogin);
       }
       const res = new Request()
-      await res.Write(steam, spider, spiderPage, note.url, Book, Page)
+      await res.Write(steam, spider, spiderPage, note, Book, Page)
     });
     steam.on('end', () => {
       console.log('book steam end')
@@ -99,7 +99,7 @@ class GrpcServer {
       const spider = new NewSpider();
       const spiderPage = await spider.newPage(newBrowser, Page);
       const res = new Request()
-      await res.Write(steam, spider, spiderPage, note.url, Chapter, Page)
+      await res.Write(steam, spider, spiderPage, note, Chapter, Page)
     });
     steam.on('end', () => {
       console.log('chapter steam end')
@@ -122,7 +122,7 @@ class GrpcServer {
       const spider = new NewSpider();
       const spiderPage = await spider.newPage(newBrowser, Page);
       const res = new Request()
-      await res.Write(steam, spider, spiderPage, note.url, Content, Page)
+      await res.Write(steam, spider, spiderPage, note, Content, Page)
     });
     steam.on('end', () => {
       console.log('content steam end')
