@@ -40,9 +40,15 @@ class Spider {
    * @param url
    * @param config
    */
-  public async Request(page: any, url: string, config: any){
-    
-    const content = await page.RequestUrl(url);
+  public async Request(page: any, url: string, config: any, PageCfg: any){
+
+    let content: string = '';
+    if(config.browser_request == undefined || config.browser_request == true){
+      content = await page.RequestUrl(url);
+    } else {
+      content = await page.SuperagentRequest(url, PageCfg)
+    }
+
     if (config.print != undefined && config.print == true) {
       console.log(content)
     }

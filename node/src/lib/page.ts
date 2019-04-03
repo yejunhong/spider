@@ -1,4 +1,5 @@
-
+import request from 'superagent';
+require('superagent-proxy')(request);
 // 配置
 interface cfg {
   name?: string;
@@ -40,23 +41,7 @@ class Pages{
       // console.log('开启手机模式')
       await this.page.emulate(config.mobile); // 手机浏览器模式
     } 
-    /*
-    await this.page.setRequestInterception(true);
-    await this.page.on('request', async (res: any) => {
-      const urlstr = await res.url()
-      if ( urlstr.indexOf('recharge/chapeterid') > 0) {
-        await res.abort()
-      }else {
-        res.continue();
-      }
-    });
-    await this.page.on('load', e => console.log(1111))
-    await this.page.on('response', async (res: any) => {
-      const urlstr = await res.url()
-      if ( urlstr.indexOf('bookcontent/chapeterid') > 0) {
-        console.log(await res.text())
-      }
-    });*/
+    
     return this
   }
 
@@ -67,10 +52,48 @@ class Pages{
    * @param config // 配置信息
    */
   public async RequestUrl(url: string) {
-    const response = await this.page.goto(url);
+    // const response = await this.page.goto(url);
+    await this.page.goto(url);
     // console.log(await response.text());
     return await this.page.content();
   }
+
+  /**
+   * 直接http请求
+   * @param url 请求的url
+   * @param config 配置信息
+   */
+  public async SuperagentRequest(url: string, config: any) {
+    
+    let httpRequest = request.get(url);
+    
+    if ( config.cookie != undefined && config.cookie != "" ){
+      // console.log('设置cookie')
+      let cookieStr = '';
+      for (let e of config.cookie) {
+        cookieStr += `${e.name}=${e.value};`;
+      }
+      httpRequest = httpRequest.set("Cookie", cookieStr)
+    }
+  
+    // 伪造浏览器 
+    if ( config.user_agent != undefined && config.user_agent != "" ){
+      // console.log('设置user_agent')
+      httpRequest = httpRequest.set('User-Agent', config.user_agent);
+    }
+    
+    var text: string = '';
+    
+    await httpRequest.redirects(0).then((res: any) => {
+      text = res.text
+    }).catch((err: any) => {
+      text = err.response.text
+    });
+    await this.page.setContent(text);
+    return await this.page.content();
+  }
+
+  
 
    /**
    * get 内容
