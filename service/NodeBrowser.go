@@ -116,8 +116,12 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
     }
     
     defer func(){ // 函数结束后执行
-        stream.CloseSend()
-        cancel()
+        if r := recover(); r!= nil {
+            fmt.Println("Recover from r : ",r)
+        } else {
+            stream.CloseSend()
+            cancel()
+        }
     }()
 
     var waitGroup sync.WaitGroup
@@ -134,8 +138,11 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            browser.Service.RecordChapter(data, spiderRequset.CartoonResource, spiderRequset.CartoonList[data.Id])
-            delete(spiderRequset.CartoonChapter, data.Id)
+            if val, ok := spiderRequset.CartoonList[data.Id]; ok {
+                browser.Service.RecordChapter(data, spiderRequset.CartoonResource, val)
+                delete(spiderRequset.CartoonChapter, data.Id)
+            }
+            
             if data.Next == false {
                 spiderRequset.End <- 1
             }
@@ -166,6 +173,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
  *
  */
  func(browser *NodeBrowser) Content(spiderRequset *SpiderRequset){
+
     // 客户端向grpc服务端发起请求
     ctx, cancel := context.WithCancel(context.Background())
 	stream, err := browser.GrpcBrowserClient.Content(ctx)
@@ -174,8 +182,12 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
     }
     
     defer func(){ // 函数结束后执行
-        stream.CloseSend()
-        cancel()
+        if r := recover(); r!= nil {
+            fmt.Println("Recover from r : ",r)
+        } else {
+            stream.CloseSend()
+            cancel()
+        }
     }()
 
     var waitGroup sync.WaitGroup
@@ -192,8 +204,11 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 fmt.Println("Failed to receive a note : %v", err)
                 return
             }
-            browser.Service.RecordContent(data, spiderRequset.CartoonResource, spiderRequset.CartoonChapter[data.Id])
-            delete(spiderRequset.CartoonChapter, data.Id)
+            fmt.Println(data.Id)
+            if val, ok := spiderRequset.CartoonChapter[data.Id]; ok {
+                browser.Service.RecordContent(data, spiderRequset.CartoonResource, val)
+                delete(spiderRequset.CartoonChapter, data.Id)
+            }
             if data.Next == false {
                 spiderRequset.End <- 1
             }

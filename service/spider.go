@@ -151,7 +151,7 @@ func (spider *Spider) Content(chapterId int64){
  *
  */
  func (spider *Spider) ContentList(resourceId int64) {
-    var request chan *Drive.Request = make(chan *Drive.Request, 10)
+    var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
 
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
@@ -163,11 +163,11 @@ func (spider *Spider) Content(chapterId int64){
         CartoonChapter: make(map[string]model.CartoonChapter),
     }
     go spider.Browser.Content(spiderRequset)
-    var next chan int = make(chan int, 10)
+    var next chan int = make(chan int, 5)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息
-        var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 1)
+        var cartoonInfo = spider.Models.GetSqlCartoonListByNoStatus(resource.ResourceNo, 1)
         for _, info := range cartoonInfo {
             var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(info.UniqueId)
             fmt.Println("编号：", info.ResourceNo, "-书籍数量：", len(cartoonChapter), "-名称：", info.ResourceName, "-", info.UniqueId)

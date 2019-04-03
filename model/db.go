@@ -18,8 +18,8 @@ func InitDb() *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
+	db.DB().SetMaxIdleConns(5)
+	db.DB().SetMaxOpenConns(10)
 	db.SingularTable(true) // 不进行转换表名
 	return db
 }
