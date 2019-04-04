@@ -9,8 +9,9 @@ class Http {
     return this.recover(res)
   }
   
-  async post(){
-  
+  async post(uri, data){
+    const res = await axios.post(`${prefix}${uri}`, data)
+    return res.data
   }
 
   recover(res){

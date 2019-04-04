@@ -7,7 +7,6 @@ import (
 
 type CartoonResource struct{
 	Id int64
-	UniqueId string
 	ResourceNo string
 	ResourceUrl string
 	ResourceName string
@@ -82,5 +81,17 @@ func (model *Model) GetCartoonById(id int64) CartoonResource{
  func (model *Model) GetCartoonByResourceNo(ResourceNo string) CartoonResource{
 	var cartoon CartoonResource = CartoonResource{}
 	model.Db.Where("resource_no = ?", ResourceNo).First(&cartoon)
+	return cartoon
+}
+
+/**
+ *
+ * 通过资源对象 创建|修改信息
+ * @return CartoonResource{}
+ *
+ */
+func (model *Model) SetCartoonResource(resource CartoonResource) CartoonResource{
+	var cartoon CartoonResource = CartoonResource{}
+	model.Db.Where(CartoonResource{ResourceNo: resource.ResourceNo}).Assign(resource).FirstOrCreate(&cartoon)
 	return cartoon
 }

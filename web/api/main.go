@@ -14,7 +14,7 @@ import (
 func HttpRun(Model *model.Model, listen string) {
   
   var services *service.Service = &service.Service{Models: Model}
-
+  
   var controllers *controller.Controller = &controller.Controller{Model, services}
 
 	router := gin.Default()
@@ -36,16 +36,16 @@ func HttpRun(Model *model.Model, listen string) {
   cartoon := router.Group("/cartoon")
   cartoon.GET("/resource/:id", controllers.CartoonResourceInfo) // 漫画资源
   cartoon.GET("/resource", controllers.CartoonResource) // 漫画资源
+  cartoon.POST("/resource", controllers.SetCartoonResource) // 漫画资源
 	cartoon.GET("/list", controllers.CartoonList) // 漫画列表
 	cartoon.GET("/chapter", controllers.CartoonChapter)  // 漫画章节列表
   cartoon.GET("/chapter/content", controllers.CartoonChapterContent)  // 漫画章节内容
-  /*
+  
   // 下载
   download := router.Group("/download")
   download.GET("/book", controllers.DownloadBook)  // 下载指定资源-书籍
   download.GET("/chapter", controllers.DownloadChapter)  // 下载指定书籍-章节
-  download.GET("/chapter/content", controllers.DownloadChapterContent)  // 下载指定书籍-章节内容
-  */
+  
   fmt.Println("开启0.0.0.0:", listen)
 	router.Run(":" + listen) // listen and serve on 0.0.0.0:8080
 }

@@ -89,6 +89,10 @@ type CartoonList struct{
 	model.Db.Table("cartoon_list").Where("id = ?", id).Updates(udata)
 }
 
+type ResCartoonList struct {
+	CartoonList
+	CdateText string
+}
 /**
  *
  * 获取漫画资列表
@@ -99,10 +103,10 @@ type CartoonList struct{
  * @return []CartoonResource{}, count
  *
  */
- func (model *Model) GetCartoons(resource_no string, resource_name string, show_num int64, start_num int64) ([]CartoonList, int64){
+ func (model *Model) GetCartoons(resource_no string, resource_name string, show_num int64, start_num int64) ([]ResCartoonList, int64){
 	
 	// 分页资源
-	var CartoonsDb *gorm.DB = model.Db.Limit(show_num).Offset(start_num)
+	var CartoonsDb *gorm.DB = model.Db
 
 	if resource_name != "" { // 检索资源名称
 		CartoonsDb = CartoonsDb.Where("resource_name LIKE ?", "%" + resource_name + "%")
@@ -112,10 +116,10 @@ type CartoonList struct{
 		CartoonsDb = CartoonsDb.Where("resource_no = ?", resource_no)
 	}
 
-	var cartoons []CartoonList = []CartoonList{}
+	var cartoons []ResCartoonList = []ResCartoonList{}
 	var count int64
 	CartoonsDb.Model(&CartoonList{}).Count(&count)
-	CartoonsDb.Find(&cartoons) // 执行sql
+	CartoonsDb.Table("cartoon_list").Limit(show_num).Offset(start_num).Find(&cartoons) // 执行sql
 
 	return cartoons, count
 }
@@ -130,4 +134,22 @@ type CartoonList struct{
 	var cartoon_list CartoonList = CartoonList{}
 	model.Db.Where("unique_id = ?", UniqueId).First(&cartoon_list)
 	return cartoon_list
+}
+
+type BookCount struct {
+	Number int64
+	ResourceNo string
+}
+/**
+ *
+ * 通过ListUniqueId 获取漫画资源书籍
+ * @param list_unique_id 漫画ID
+ * @return []chaptersCount{}
+ *
+ */
+ func (model *Model) GetBookByResourceNoCount(ResourceNo []interface{}) []BookCount{
+	var bookCount []BookCount = []BookCount{}
+	model.Db.Table("cartoon_list").Raw(`SELECT count(resource_no) number, resource_no FROM cartoon_list 
+					WHERE resource_no IN (?) GROUP BY resource_no`, ResourceNo).Find(&bookCount)
+	return bookCount
 }

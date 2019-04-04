@@ -18,6 +18,19 @@ func Time() int64{
 
 /**
  *
+ * 返回当前时间戳 转换后的日期格式
+ * @param t int64 时间戳
+ * @return string
+ *
+ */
+func DateTime(t int64) string {
+	//时间戳转日期
+	//设置时间戳 使用模板格式化为日期字符串
+	return time.Unix(t, 0).Format("2006-01-02 15:04:05") 
+}
+
+/**
+ *
  * md5加密
  * @param encrypt string 需要加密的字符串
  * @return "加密后的字符串"

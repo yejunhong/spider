@@ -1,5 +1,8 @@
 package model
 
+import (
+	"github.com/jinzhu/gorm"
+)
 type CartoonChapter struct{
 	Id int64
 	ResourceNo string
@@ -7,6 +10,7 @@ type CartoonChapter struct{
 	ListUniqueId string
 	IsFree int64
 	Status int64
+	Content string
 	ResourceUrl string
 	ResourceName string
 	ResourceImgUrl string
@@ -57,8 +61,31 @@ type CartoonChapter struct{
  * @return []CartoonChapter{}
  *
  */
- func (model *Model) GetChaptersFindByListUniqueId(list_unique_id string) []CartoonChapter{
+ func (model *Model) GetChaptersFindByListUniqueId(list_unique_id string, status int64) []CartoonChapter{
 	var cartoonChapters []CartoonChapter = []CartoonChapter{}
-	model.Db.Where("list_unique_id = ? AND status = 0", list_unique_id).Find(&cartoonChapters) // 执行sql
+	var CartoonsDb *gorm.DB = model.Db.Where("list_unique_id = ?", list_unique_id)
+	if status != -1 {
+		CartoonsDb = CartoonsDb.Where("status = ?", status)
+	}
+	CartoonsDb.Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
+}
+
+type ChaptersCount struct {
+	Number int64
+	ListUniqueId string
+}
+/**
+ *
+ * 通过ListUniqueId 获取漫画资源书籍
+ * @param list_unique_id 漫画ID
+ * @return []chaptersCount{}
+ *
+ */
+ func (model *Model) GetChaptersFindByListUniqueIdCount(list_unique_id []interface{}) []ChaptersCount{
+	var chaptersCount []ChaptersCount = []ChaptersCount{}
+	model.Db.Table("cartoon_chapter").Raw(`SELECT count(list_unique_id) number, list_unique_id FROM cartoon_chapter 
+					WHERE list_unique_id IN (?) GROUP BY list_unique_id`, 
+					list_unique_id).Find(&chaptersCount)
+	return chaptersCount
 }
