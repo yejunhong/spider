@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="90">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="downloadResource(scope.row)">下载</el-button>
+          <el-button type="text" size="small" @click="SpiderBook(scope.row)">下载书籍</el-button>
           <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
@@ -116,12 +116,13 @@ export default {
       this.form = res.info
       this.code = res.config
     },
-    async downloadResource(resource) {
+    // 爬去 书籍章节
+    async SpiderBook(resource) {
       await http.get('/download/book', {resource_no: resource.ResourceNo})
     },
     async SetResource() {
       this.form.ConfigText = this.code
-      const res = await http.post(`/cartoon/resource`, this.form)
+      await http.post(`/cartoon/resource`, this.form)
       this.resourceDialog = false
       this.GetResource(1)
     }

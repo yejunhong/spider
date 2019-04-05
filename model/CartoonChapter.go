@@ -73,6 +73,7 @@ type CartoonChapter struct{
 
 type ChaptersCount struct {
 	Number int64
+	NotNumber int64
 	ListUniqueId string
 }
 /**
@@ -84,7 +85,7 @@ type ChaptersCount struct {
  */
  func (model *Model) GetChaptersFindByListUniqueIdCount(list_unique_id []interface{}) []ChaptersCount{
 	var chaptersCount []ChaptersCount = []ChaptersCount{}
-	model.Db.Table("cartoon_chapter").Raw(`SELECT count(list_unique_id) number, list_unique_id FROM cartoon_chapter 
+	model.Db.Table("cartoon_chapter").Raw(`SELECT count(list_unique_id) number, COUNT(IF(status = 0, true, null)) not_number, list_unique_id FROM cartoon_chapter 
 					WHERE list_unique_id IN (?) GROUP BY list_unique_id`, 
 					list_unique_id).Find(&chaptersCount)
 	return chaptersCount

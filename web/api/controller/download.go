@@ -17,13 +17,6 @@ import (
 func (controller *Controller) DownloadBook(c *gin.Context){
 
 	var resourceNo string = c.Query("resource_no")
-	var is_test string = c.Query("is_test") // 是否测试
-	var test bool = false
-
-	if is_test == "1" {
-		test = true
-	}
-	fmt.Println(test)
 	var cartoon = controller.Model.GetCartoonByResourceNo(resourceNo)
 
 	go func(){
@@ -32,7 +25,7 @@ func (controller *Controller) DownloadBook(c *gin.Context){
 		}
 		browser.CreateBrowserClient() // 创建浏览器客户端
 		var spider service.Spider = service.Spider{Models: controller.Model, Browser: browser}
-		spider.Book(cartoon.Id)
+		spider.BookResourceId(cartoon.Id)
 	}()
 	
 	c.JSON(200, gin.H{

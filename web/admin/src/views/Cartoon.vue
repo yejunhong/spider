@@ -8,18 +8,21 @@
         <el-col :xs="12" :sm="8" :lg="6" :xl="4" v-for="(v, k) in cartoon_list" :key="k" class="info">
           <el-card>
             <div class="card-img">
-              <div class="status status-131345" v-if="v.IsEnd == 0">连载 {{chapters_count[v.UniqueId]}}</div>
-              <div class="status status-01730" v-else>完结 {{chapters_count[v.UniqueId]}}</div>
+              <div :class="['status', v.IsEnd == 0?'status-131345': 'status-01730']">
+                {{v.IsEnd == 0 ? '连载': '完结'}} 
+                {{chapters_count[v.UniqueId].Number}}
+              </div>
               <img :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="height: 150%;position: relative;">
             </div>
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
-              <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">更新</el-button>
+              <el-button type="text" @click="SpiderBookChapter(v)" size="mini">更新</el-button>
+              <span v-if="chapters_count[v.UniqueId].NotNumber > 0">未抓取：{{chapters_count[v.UniqueId].NotNumber}}</span>
             </div>
             <div class="row">
-              <el-button type="text" @click="SelectCartoonChapter(v)" size="mini">同步到生产库</el-button>
+              <el-button type="text" @click="DataAsyncProduce(v)" size="mini">同步到生产库</el-button>
             </div>
-            <div class="row">0000-00-00</div>
+            <div class="row">{{v.CdateText}}</div>
           </el-card>
         </el-col>
       </el-row>
@@ -35,7 +38,7 @@
         <div style="width: 40vw;" class="scroll">
           <el-row :gutter="10">
             <el-col :xs="8" :sm="7" :lg="6" :xl="5" v-for="(v, k) in cartoon_chapter_list" :key="k" class="info">
-              <el-button @click="SelectChapterContent(v)">{{v.ResourceName}}</el-button>
+              <el-button :type="v.Id == chapterId?'primary': ''" @click="SelectChapterContent(v)" plain>{{v.ResourceName}}</el-button>
             </el-col>
           </el-row>
         </div>
@@ -69,6 +72,7 @@ export default {
       cartoon_chapter_list: [],
       cartoon_chapter_content: [],
       ws: {},
+      chapterId: 0,
     }
   },
   mounted() {
@@ -100,6 +104,7 @@ export default {
     async GetCartoonData(no){
       const res = await http.get('/cartoon/list', {resource_no: no, page: this.page})
       this.chapters_count = res.chapters_count
+      // console.log(this.chapters_count)
       this.cartoon_list = res.list
       // this.pagesize = res.size
       this.total = res.count
@@ -114,15 +119,17 @@ export default {
       })
     },
     async SelectCartoonChapter(row){
+      // this.cartoon_chapter_list = []
       this.cartoon_chapter_content = []
       this.cartoonChapterShow = true
       this.dialogTitle = row.ResourceName
       const res = await http.get('/cartoon/chapter', {list_unique_id: row.UniqueId})
       this.cartoon_chapter_list = res
       await this.SelectChapterContent(res[0])
+
     },
     async SelectChapterContent(row){
-
+      this.chapterId = row.Id
       if (this.resource.BookType === 1) {
         this.cartoon_chapter_content = []
         this.loading = true
@@ -132,9 +139,15 @@ export default {
         this.loading = false
         return
       }
-
       this.cartoon_chapter = row
-      console.log(this.cartoon_chapter)
+    },
+    // 爬去 书籍章节
+    SpiderBookChapter() {
+
+    },
+    // 同步书籍到生产库
+    DataAsyncProduce () {
+
     }
   }
 }

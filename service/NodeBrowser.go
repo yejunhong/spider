@@ -5,7 +5,6 @@ import (
     "fmt"
     "context"
     "sync"
-    // "time"
     "io"
     Drive "spider/grpc"
     "spider/model"
@@ -93,7 +92,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                         fmt.Println(err)
                     }
                     fmt.Println("发生成功")
-                default:
             }
         }
     }()
@@ -157,7 +155,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                     if err != nil {
                         fmt.Println(err)
                     }
-                default:
             }
         }
     }()
@@ -201,7 +198,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                 return
             }
             if err != nil {
-                fmt.Println("Failed to receive a note : %v", err)
+                fmt.Println("Failed to receive a note", err)
                 return
             }
             // fmt.Println(data.Id)
@@ -224,7 +221,6 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
                         fmt.Println(err)
                     }
                     // fmt.Println("发生成功")
-                default:
             }
         }
     }()

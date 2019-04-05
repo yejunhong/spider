@@ -114,16 +114,16 @@ func (controller *Controller) CartoonList(c *gin.Context){
 	list, count = controller.Model.GetCartoons(resource_no, search, size, num)
 	
 	var uniqueId []interface{}
-	for _, v := range list {
+	for k, v := range list {
 		uniqueId = append(uniqueId, v.UniqueId)
-		v.CdateText = lib.DateTime(v.Cdate)
+		list[k].CdateText = lib.DateTime(v.Cdate)
 	}
 
 	var chaptersCount []model.ChaptersCount = controller.Model.GetChaptersFindByListUniqueIdCount(uniqueId)
-	var resChaptersCount map[string]int64 = map[string]int64{}
+	var resChaptersCount map[string]interface{} = map[string]interface{}{}
 	
 	for _, v := range chaptersCount {
-		resChaptersCount[v.ListUniqueId] = v.Number
+		resChaptersCount[v.ListUniqueId] = v
 	}
 
 	c.JSON(200, gin.H{
