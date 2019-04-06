@@ -77,8 +77,6 @@ export default {
   },
   mounted() {
     this.GetCartonnResource()
-    
-    
   },
   methods: {
     initWs(){
@@ -96,7 +94,6 @@ export default {
     async GetCartonnResource(){
       const res = await http.get('/cartoon/resource')
       this.tabsList = res.list
-      // this.GetCartoonData(this.tabsList[0].ResourceNo)
       this.tabsName = this.tabsList[0].ResourceNo
       this.tabsClick({name: this.tabsName})
     },
@@ -104,9 +101,7 @@ export default {
     async GetCartoonData(no){
       const res = await http.get('/cartoon/list', {resource_no: no, page: this.page})
       this.chapters_count = res.chapters_count
-      // console.log(this.chapters_count)
       this.cartoon_list = res.list
-      // this.pagesize = res.size
       this.total = res.count
     },
     // 标签选择
@@ -142,12 +137,12 @@ export default {
       this.cartoon_chapter = row
     },
     // 爬去 书籍章节
-    SpiderBookChapter() {
-
+    async SpiderBookChapter(row) {
+      await http.get('/download/chapter', {bookId: row.Id})
     },
     // 同步书籍到生产库
-    DataAsyncProduce () {
-
+    async DataAsyncProduce (row) {
+      await http.get('/async/book', {bookId: row.Id})
     }
   }
 }

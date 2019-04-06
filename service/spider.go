@@ -5,26 +5,11 @@ import (
     Drive "spider/grpc"
     "spider/model"
     "strconv"
-    // "os/exec"
-    // "time"
 )
 
 type Spider struct{
     Models *model.Model
     Browser NodeBrowser
-}
-
-// 资源 爬虫
-type Resource interface { 
-    SpiderBookByResourceId(resourceId int64) // 根据资源爬取书籍列表
-    SpiderChapterByResourceId(resourceId int64) // 根据资源爬取书籍章节列表
-    SpiderContentByResourceId(resourceId int64) // 根据资源爬取书籍章节内容
-}
-
-// 书籍 爬虫
-type Book interface { 
-    SpiderChapterByBookId(bookId int64) // 根据书籍Id爬取章节列表
-    SpiderContentByBookId(bookId int64) // 根据书籍Id爬取章节内容
 }
 
 /**
@@ -33,7 +18,7 @@ type Book interface {
  * @param resourceId int64 资源Id
  *
  */
-func (spider *Spider) SpiderBookResourceId(resourceId int64){
+func (spider *Spider) SpiderBookByResourceId(resourceId int64){
     var request chan *Drive.Request = make(chan *Drive.Request, 1)
     var end chan int = make(chan int, 1)
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
@@ -205,6 +190,11 @@ func (spider *Spider) SpiderBookResourceId(resourceId int64){
     var spiderEnd chan int = make(chan int, 1)
     go func() { // 协程 发送爬虫信息
         var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(bookInfo.UniqueId, 0)
+        
+        if len(cartoonChapter) == 0 {
+            spiderEnd <- 1
+            return
+        }
         fmt.Println("编号：", bookInfo.ResourceNo, "-名称：", bookInfo.ResourceName, "-", bookInfo.UniqueId, "-书籍章节：", len(cartoonChapter))
         for _, v := range cartoonChapter {
             var IdStr string = strconv.FormatInt(v.Id,10)

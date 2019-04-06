@@ -118,7 +118,7 @@ export default {
     },
     // 爬去 书籍章节
     async SpiderBook(resource) {
-      await http.get('/download/book', {resource_no: resource.ResourceNo})
+      await http.get('/download/book', {resourceId: resource.Id})
     },
     async SetResource() {
       this.form.ConfigText = this.code

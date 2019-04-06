@@ -31,3 +31,16 @@ type CartoonChapterContent struct{
 	model.Db.Where("chapter_unique_id = ?", unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
 }
+
+/**
+ *
+ * 获取漫画章节 内容
+ * @param list_unique_id 漫画d
+ * @return []CartoonChapterContent{}
+ *
+ */
+ func (model *Model) GetContentsFindByChapterListUniqueId(list_unique_id string) []CartoonChapterContent{
+	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
+	model.Db.Where("list_unique_id = ?", list_unique_id).Find(&cartoonChapters) // 执行sql
+	return cartoonChapters
+}

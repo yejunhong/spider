@@ -30,8 +30,6 @@ func HttpRun(Model *model.Model, listen string) {
   })
 
   //监听claw websocket连接
-	
-
 	// 漫画
   cartoon := router.Group("/cartoon")
   cartoon.GET("/resource/:id", controllers.CartoonResourceInfo) // 漫画资源
@@ -43,8 +41,11 @@ func HttpRun(Model *model.Model, listen string) {
   
   // 下载
   download := router.Group("/download")
-  download.GET("/book", controllers.DownloadBook)  // 下载指定资源-书籍
-  download.GET("/chapter", controllers.DownloadChapter)  // 下载指定书籍-章节
+  download.GET("/book", controllers.DownloadBookByResourceId)  // 下载指定资源-书籍
+  download.GET("/chapter", controllers.DownloadChapterByBookId)  // 下载指定书籍-章节
+  
+  async := router.Group("/async")
+  async.GET("/book", controllers.AsyncBookProduce)  // 同步书籍到生产库
   
   fmt.Println("开启0.0.0.0:", listen)
 	router.Run(":" + listen) // listen and serve on 0.0.0.0:8080

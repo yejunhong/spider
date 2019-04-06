@@ -14,7 +14,7 @@ func main(){
     
     browser.CreateBrowserClient() // 创建浏览器客户端
    
-    var resource service.Resource = service.Spider{Models: models, Browser: browser}
+    var resource service.Spider = service.Spider{Models: models, Browser: browser}
     // spider.ChapterList(4)
     resource.SpiderContentByResourceId(4)
 }

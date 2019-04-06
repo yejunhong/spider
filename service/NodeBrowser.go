@@ -69,11 +69,12 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         for {
             data, err := stream.Recv()
             if err == io.EOF {
-                fmt.Println(err)
+                fmt.Println("关闭-爬虫书籍列表-Grpc双向流连接", err)
+                waitGroup.Done()
                 return
             }
             if err != nil {
-                fmt.Println("Failed to receive a note : %v", err)
+                fmt.Println("Failed to receive a note :", err)
                 return
             }
             browser.Service.RecordBook(data, spiderRequset.CartoonResource)
@@ -128,12 +129,12 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         for {
             data, err := stream.Recv()
             if err == io.EOF {
-                fmt.Println(err)
+                fmt.Println("关闭-爬虫章节-Grpc双向流连接", err)
                 waitGroup.Done()
                 return
             }
             if err != nil {
-                fmt.Println("Failed to receive a note : %v", err)
+                fmt.Println("Failed to receive a note ", err)
                 return
             }
             if val, ok := spiderRequset.CartoonList[data.Id]; ok {
@@ -193,7 +194,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
         for {
             data, err := stream.Recv()
             if err == io.EOF {
-                fmt.Println(err)
+                fmt.Println("关闭-爬虫内容-Grpc双向流连接", err)
                 waitGroup.Done()
                 return
             }

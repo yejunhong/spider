@@ -10,6 +10,11 @@ import (
 	"os"
 )
 
+/**
+ *
+ * 书籍资源
+ *
+ */
 func (controller *Controller) CartoonResourceInfo(c *gin.Context) {
 	var id string = c.Param("id")
 	idInt64, _ := strconv.ParseInt(id, 10, 64)
@@ -103,6 +108,11 @@ func (controller *Controller) CartoonResource(c *gin.Context){
 	})
 }
 
+/**
+ *
+ * 书籍列表
+ *
+ */
 func (controller *Controller) CartoonList(c *gin.Context){
 	var page, size, num int64 = controller.Page(c)
 	var resource_no string = c.Query("resource_no")
@@ -138,6 +148,11 @@ func (controller *Controller) CartoonList(c *gin.Context){
 	})
 }
 
+/**
+ *
+ * 书籍章节
+ *
+ */
 func (controller *Controller) CartoonChapter(c *gin.Context){
 	var list_unique_id string = c.Query("list_unique_id")
 	var list []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(list_unique_id, -1)
@@ -147,6 +162,11 @@ func (controller *Controller) CartoonChapter(c *gin.Context){
 	})
 }
 
+/**
+ *
+ * 书籍章节内容
+ *
+ */
 func (controller *Controller) CartoonChapterContent(c *gin.Context){
 	var chapter_unique_id string = c.Query("chapter_unique_id")
 	var list []model.CartoonChapterContent = controller.Model.GetContentsFindByChapterUniqueId(chapter_unique_id)

@@ -63,12 +63,13 @@ func (service *Service) RecordChapter(
             "resource_no": cartoon.ResourceNo,
             "unique_id": lib.MD5(cartoonInfo.UniqueId + cartoon.ResourceNo + v.ResourceName),
             "list_unique_id": cartoonInfo.UniqueId,
-            "conent": "",
+            "content": "",
             "is_free": v.IsFree,
             "status": 0,
             "resource_url": v.ResourceUrl,
             "resource_name": v.ResourceName,
             "resource_img_url": v.ResourceImgUrl,
+            "book_type": cartoon.BookType,
             "cdate": lib.Time(),
         })
     }
