@@ -7,10 +7,12 @@ import (
     "os"
     "os/exec"
 )
-
 var models *model.Model
 func main(){
-    models = &model.Model{Db: model.InitDb()}
+    models = &model.Model{
+        Db: model.InitDb("202.43.91.26", "caiji", "caijishiwo7788dd", "caiji"),
+        Db61: model.InitDb("103.232.190.61", "xiaoshuo", "Manhua778899dd+-", "xiaoshuo"),
+    }
     go CommandNode()
     api.HttpRun(models, "4321")
 }

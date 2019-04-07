@@ -77,6 +77,22 @@ type CartoonList struct{
 	return cartoon_list
 }
 
+/**
+ *
+ * 通过id 获取已经爬取的漫画资源书籍
+ * @return CartoonResource{}
+ *
+ */
+ func (model *Model) GetSqlCartoonListByNo(no string) []CartoonList{
+	var cartoon_list []CartoonList = []CartoonList{}
+	model.Db.Raw(`SELECT * FROM cartoon_list list
+			LEFT JOIN (
+				SELECT list_unique_id FROM cartoon_chapter WHERE resource_no = ? AND status = 1 GROUP BY list_unique_id
+			) chapter ON (chapter.list_unique_id = list.unique_id)
+			WHERE list.resource_no = ? AND chapter.list_unique_id IS NOT NULL`, 
+		no, no).Find(&cartoon_list)
+	return cartoon_list
+}
 
 /**
  *
