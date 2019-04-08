@@ -133,21 +133,34 @@ type CmfPortalCategory struct {
 		Status int64
 }
 
+/**
+ *
+ * 分类列表
+ *
+ */
+func (controller *Controller) CategoryList() []map[string]CmfPortalCategory {
+		var category []CmfPortalCategory
+		controller.Model.Db61.Find(&category)
+		var categoryMap []map[string]CmfPortalCategory
+		for _, v := range category {
+			categoryMap = append(CmfPortalCategory, []map[string]CmfPortalCategory{v.Name: v})
+		}
+		return categoryMap
+}
+
 type CmfPortalCategoryPost struct {
 	Id int64
 	PostId int64
 }
-func (controller *Controller) ayncPortalCategory(book model.CartoonList, pid int64) {
+
+/**
+ *
+ * 同步分类数据
+ *
+ */
+func (controller *Controller) ayncPortalCategory(book model.CartoonList, pid int64, categoryMap []map[string]CmfPortalCategory) {
 		// Tags
 		var tags []string = strings.Split(book.Tags, ",")
-
-		var category []CmfPortalCategory
-		controller.Model.Db61.Find(&category)
-		
-		var categoryMap []map[string]categoryMap
-		for _, v := range category {
-			categoryMap = append(categoryMap, []map[string]categoryMap{v.Name: v})
-		}
 
 		var data []map[string]interface{}
     for _, v := range tags {
