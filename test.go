@@ -2,11 +2,16 @@ package main
  
 import (
     "fmt"
-    "github.com/satori/go.uuid"
-    "reflect"
+    "net/http"
+    "strings"
+    "os"
+    "bytes"
+    "io"
+    "io/ioutil"
 )
 
 func main(){
-    var a = uuid.NewV4().String()
-    fmt.Println(reflect.TypeOf(a))
+    var path = "./static/upload/book/2/1.txt"
+    WriteFile(path, "http://img.ufo666.cn/upload/BookCoverH//20190222051500163.jpg")
+    fmt.Println(1)
 }
