@@ -19,7 +19,6 @@ func main(){
 
 // 阻塞直到该命令执行完成，该命令必须是被Start方法开始执行的
 func CommandNode(){
-    
     cmd := exec.Command("./spider.sh")  
     fmt.Println("创建Grpc 爬虫浏览器")
     cmd.Stdout = os.Stdout

@@ -50,8 +50,19 @@ type CartoonChapter struct{
  * @param udata string 漫画是否完结
  *
  */
- func (model *Model) UpdateCartoonChapterById(id int64, udata map[string]interface{}){
+func (model *Model) UpdateCartoonChapterById(id int64, udata map[string]interface{}){
 	model.Db.Table("cartoon_chapter").Where("id = ?", id).Updates(udata)
+}
+
+/**
+ *
+ * 通过id 修改漫画涨价是否完结状态
+ * @param id int64 漫画id
+ * @param udata string 漫画是否完结
+ *
+ */
+func (model *Model) UpdateCartoonChapterByIds(ids []int64, udata map[string]interface{}){
+	model.Db.Table("cartoon_chapter").Where("id IN (?)", ids).Updates(udata)
 }
 
 /**
@@ -67,7 +78,7 @@ type CartoonChapter struct{
 	if status != -1 {
 		CartoonsDb = CartoonsDb.Where("status = ?", status)
 	}
-	CartoonsDb.Find(&cartoonChapters) // 执行sql
+	CartoonsDb.Order("LPAD(resource_name, 10, '序')").Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
 }
 

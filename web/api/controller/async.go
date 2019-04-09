@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"fmt"
 	"strings"
+	"os"
+	"sync"
 )
 
 /**
@@ -33,13 +35,25 @@ import (
 			var bookList = controller.Model.GetSqlCartoonListByNo(bookInfo.ResourceNo)
 			fmt.Println("需要同步：", len(bookList))
 			var category map[string]CmfPortalCategory  = controller.CategoryList()
+
+			var wait sync.WaitGroup
+			var next chan int = make(chan int, 10) // 并发5
 			for k, v := range bookList {
-				var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(v.UniqueId, 1)
-				var portalBook CmfPortalPost = controller.ayncPortalPost(v, len(chapterLists)) // 同步书籍
-				controller.ayncPortalChapter(v, chapterLists, portalBook) // 同步章节
-				controller.ayncPortalCategory(v, portalBook.Id, category) // 同步分类
-				fmt.Println("已同步：", k)
+				wait.Add(1)
+				go func(info model.CartoonList) {
+					var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(info.UniqueId, 1)
+					var portalBook CmfPortalPost = controller.ayncPortalPost(info) // 同步书籍
+					controller.ayncPortalChapter(info, chapterLists, portalBook) // 同步章节
+					controller.ayncPortalCategory(info, portalBook.Id, category) // 同步分类
+					<-next
+					wait.Done()
+				}(v)
+				fmt.Printf("\r已同步：%d", k)
+				os.Stdout.Sync()
+				next <- 1
 			}
+			wait.Wait()
+			fmt.Println("同步完毕")
 		}()
 	}
 
@@ -56,7 +70,7 @@ type CmfPortalPost struct {
 
 var src = "./static/"
 // 小说文章管理
-func(controller *Controller) ayncPortalPost(book model.CartoonList, chapterLen int) CmfPortalPost {
+func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPost {
 
 	var path = "upload/bookcover/" + book.UniqueId + ".jpg"
 	lib.DonwloadFile(src + path, book.ResourceImgUrl)
@@ -70,7 +84,7 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList, chapterLen i
 			"comment_status": 0, // '评论状态;1:允许;0:不允许',
 			"is_top": 0, // '是否置顶;1:置顶;0:不置顶',
 			"recommended": 0, //'是否推荐;1:推荐;0:不推荐',
-			"post_bookcase": chapterLen, // '书柜量',
+			"post_bookcase": 0, // '书柜量',
 			"create_time": lib.Time(), // '创建时间',
 			"update_time": lib.Time(), // '更新时间',
 			"chapter_update_time": lib.Time(), //'章节更新时间',
@@ -78,14 +92,18 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList, chapterLen i
 			"post_excerpt": book.Detail,// 'post摘要',
 			"post_source": "", // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
 			"more": `{"thumbnail":"` + path + `"}`,// '扩展属性,如缩略图;格式为json',
-			"isfinish": 0, // '写作进度是否完成 0连载中 1已完成',
+			"isfinish": book.IsEnd, // '写作进度是否完成 0连载中 1已完成',
 			"isfree": 0, // '是否免费 1免费 0收费',
 			"post_tag": 2, // '文章标识：1、漫画，2、小说',
+			"adult": 1, // 18X--1：是，0：否
 			// "file_path": "", // '小说文本存放的位置',
 			"unique_id": book.UniqueId, // '数据同步唯一标识',
 		},
 	}
-	model.DbBatchInsert(controller.Model.Db61, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt"})
+	model.DbBatchInsert(controller.Model.Db61, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt", "isfinish"})
+
+	// 修改同步信息
+	controller.Model.UpdateCartoonListById(book.Id, map[string]interface{}{"is_async": 1})
 
 	var bookInfo CmfPortalPost
 	controller.Model.Db61.Where("unique_id = ?", book.UniqueId).Find(&bookInfo)
@@ -102,33 +120,43 @@ type CmfSpiderPost struct {
 // cmf_portal_category_post
 func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter []model.CartoonChapter, portalBook CmfPortalPost) {
 	
-	var data []map[string]interface{}
+		var data []map[string]interface{}
 
-	var chapter_price int = 0
-    for k, v := range chapter {
-		var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
-		if k >= 5 {
-			chapter_price = 48
-		}
-		data = append(data, map[string]interface{}{
-			"status": 1, // '状态;1:显示;0:不显示',
-			"price": chapter_price,// '价格 、观看金币。0为免费',
-			"list_order": 0, // '排序',
-			"chapter_excerpt":  book.Detail, // '摘要',
-			"chapter_keywords": book.Detail,
-			"chapter_content": path,
-			"create_time": lib.Time(),
-			"update_time": lib.Time(),
-			"name": v.ResourceName, // '章节名称',
-			"published_time": lib.Time(), // '发布时间',
-			"pid": portalBook.Id, // '对应的上级ID',
-			"unique_id": v.UniqueId, // '数据同步唯一标识',
-		})
-		lib.WriteFile(src + path, v.Content)
+		var chapter_price int = 0
+		
+		var ids []int64
+    for _, v := range chapter {
+
+			ids = append(ids, v.Id)
+
+			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
+			
+			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
+
+			if sort > 5 {
+				chapter_price = 48
+			}
+
+			data = append(data, map[string]interface{}{
+				"status": 1, // '状态;1:显示;0:不显示',
+				"price": chapter_price,// '价格 、观看金币。0为免费',
+				"list_order": sort, // '排序',
+				"chapter_excerpt":  book.Detail, // '摘要',
+				"chapter_keywords": book.Detail,
+				"chapter_content": path,
+				"create_time": lib.Time(),
+				"update_time": lib.Time(),
+				"name": v.ResourceName, // '章节名称',
+				"published_time": lib.Time(), // '发布时间',
+				"pid": portalBook.Id, // '对应的上级ID',
+				"unique_id": v.UniqueId, // '数据同步唯一标识',
+			})
+			lib.WriteFile(src + path, v.Content)
     }
     if len(data) > 0 {
-		model.DbBatchInsert(controller.Model.Db61, "cmf_portal_chapter", data, []string{"name", "chapter_excerpt", "chapter_content", "chapter_keywords"})
-	}
+			model.DbBatchInsert(controller.Model.Db61, "cmf_portal_chapter", data, []string{"name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+		}
+		controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
 }
 
 type CmfPortalCategory struct {
@@ -177,7 +205,7 @@ func (controller *Controller) ayncPortalCategory(book model.CartoonList, pid int
 		}
 	}
 	controller.Model.Db61.Where("post_id = ?", pid).Delete(CmfPortalCategoryPost{})
-    if len(data) > 0 {
+	if len(data) > 0 {
 		model.DbBatchInsert(controller.Model.Db61, "cmf_portal_category_post", data, []string{})
 	}
 

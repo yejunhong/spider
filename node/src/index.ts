@@ -19,7 +19,7 @@ class Request{
   public async Write(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
     const res = await spider.Request(page, note.url, config, PageCfg);
     // console.log(res)
-    console.log(`获取数量：${res.data.length}，url：${note.url}`)
+    // console.log(`获取数量：${res.data.length}，url：${note.url}`)
     if(res.data.length > 0) {
       steam.write({data: res.data, next: res.next?true: false, id: note.id});
       if (res.next === false) {
@@ -27,7 +27,7 @@ class Request{
         // steam.end();
         return
       }
-      console.log(`下一页：${res.next}`)
+      // console.log(`下一页：${res.next}`)
       await this.Write(steam, spider, page, res.next, config, PageCfg)
       return
     }
