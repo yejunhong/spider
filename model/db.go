@@ -108,6 +108,6 @@ func(model *Model) BatchInsert(table string, data []map[string]interface{}, dupl
 		// fmt.Println(sql)
 	}
 
-	err := Db.Exec(sql, values...)
-	fmt.Println(err)
+	Db.Exec(sql, values...)
+	// fmt.Println(err)
 }

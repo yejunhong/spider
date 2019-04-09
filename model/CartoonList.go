@@ -68,11 +68,11 @@ type CartoonList struct{
  */
  func (model *Model) GetSqlCartoonListByNoStatus(no string, status int64) []CartoonList{
 	var cartoon_list []CartoonList = []CartoonList{}
-	model.Db.Raw(`SELECT * FROM cartoon_list list
-			LEFT JOIN (
-				SELECT list_unique_id FROM cartoon_chapter WHERE resource_no = ? AND status = ? GROUP BY list_unique_id
-			) chapter ON (chapter.list_unique_id = list.unique_id)
-			WHERE list.resource_no = ? AND chapter.list_unique_id IS NULL`, 
+	model.Db.Raw(`SELECT list.* FROM cartoon_list list
+				INNER JOIN (
+					SELECT list_unique_id FROM cartoon_chapter WHERE resource_no = ? AND status = ? GROUP BY list_unique_id
+				) chapter ON (chapter.list_unique_id = list.unique_id)
+				WHERE list.resource_no = ?`, 
 		no, status, no).Find(&cartoon_list)
 	return cartoon_list
 }

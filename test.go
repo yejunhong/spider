@@ -1,17 +1,18 @@
 package main
- 
 import (
-    "fmt"
-    "net/http"
-    "strings"
-    "os"
-    "bytes"
-    "io"
-    "io/ioutil"
+  "fmt"
 )
+func main() {
+    var next chan int = make(chan int, 5)
+    for index := 0; index < 10; index++ {
+        next <- 1
+        go func(v int){
+            fmt.Println(v)
+            <-next
+        }(index)
+    }
 
-func main(){
-    var path = "./static/upload/book/2/1.txt"
-    WriteFile(path, "http://img.ufo666.cn/upload/BookCoverH//20190222051500163.jpg")
-    fmt.Println(1)
+    for {
+
+    }
 }

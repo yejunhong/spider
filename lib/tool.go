@@ -10,6 +10,8 @@ import (
     "bytes"
     "io"
     "io/ioutil"
+    "regexp"
+    "strconv"
 )
 
 /**
@@ -114,3 +116,40 @@ func PathExists(path string) bool {
     }
     return false
 }
+
+/**
+ *
+ * 截取字符串中的数字 转为int
+ * @param str 需要处理的字符串
+ * @return int
+ *
+ */
+func InterceptStrNumberToInt(str string) int{
+    var strNumber string = regexp.MustCompile("[^0-9]").ReplaceAllString(str, "")
+    number, err := strconv.Atoi(strNumber)
+    if err != nil {
+        return 0
+    }
+    return number
+}
+
+/**
+ *
+ * 截取字符串中的数字 转为int64
+ * @param str 需要处理的字符串
+ * @return int64
+ *
+ */
+func InterceptStrNumberToInt64(str string) int64{
+    var strNumber string = regexp.MustCompile("[^0-9]").ReplaceAllString(str, "")
+    number, err := strconv.ParseInt(strNumber, 10, 64)
+    if err != nil {
+        return 0
+    }
+    return number
+}
+// var strNumber string = regexp.MustCompile("[^0-9]").ReplaceAllString("第01张", "")
+// fmt.Println(strconv.Atoi(strNumber))
+
+// var strNumber string = regexp.MustCompile("[^一二三四五六七八九十零百千万亿]").ReplaceAllString("第一百二十张", "")
+// fmt.Println(strNumber)

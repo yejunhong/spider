@@ -5,6 +5,7 @@ import (
     Drive "spider/grpc"
     "spider/model"
     "strconv"
+    "os"
 )
 
 type Spider struct{
@@ -93,7 +94,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  *
  */
  func (spider *Spider) SpiderContentByResourceId(resourceId int64) {
-    var request chan *Drive.Request = make(chan *Drive.Request, 3)
+    var request chan *Drive.Request = make(chan *Drive.Request, 10)
     var end chan int = make(chan int, 1)
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
     var spiderRequset *SpiderRequset = &SpiderRequset{
@@ -103,24 +104,28 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
         CartoonChapter: make(map[string]model.CartoonChapter),
     }
     go spider.Browser.Content(spiderRequset)
-    var next chan int = make(chan int, 3)
+    var next chan int = make(chan int, 10)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息
-        var cartoonInfo = spider.Models.GetSqlCartoonListByNoStatus(resource.ResourceNo, 1)
+        var cartoonInfo = spider.Models.GetSqlCartoonListByNoStatus(resource.ResourceNo, 0)
+        var sum = 0
         for _, info := range cartoonInfo {
             var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(info.UniqueId, 0)
-            fmt.Println("编号：", info.ResourceNo, "-名称：", info.ResourceName, "-", info.UniqueId, "-书籍章节：", len(cartoonChapter))
             for _, v := range cartoonChapter {
                 var IdStr string = strconv.FormatInt(v.Id,10)
                 spiderRequset.CartoonChapter[IdStr] = v
             }
-            for _, v := range cartoonChapter {
+            for k, v := range cartoonChapter {
                 next <- 1
                 request <- &Drive.Request{
                         Id: strconv.FormatInt(v.Id,10), 
                         Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+                sum++
+                fmt.Printf("\r编号：%s-名称：%s - %s -书籍章节：%d/%d-处理总数：%d", info.ResourceNo, info.ResourceName, info.UniqueId, (k + 1), len(cartoonChapter), sum)
+                os.Stdout.Sync()
             }
+            fmt.Println("")
         }
         isend = true
     }()
