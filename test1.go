@@ -7,7 +7,10 @@ import (
 
 func main(){
     
-    var models *model.Model = &model.Model{Db: model.InitDb()}
+    var models *model.Model = &model.Model{
+        Db: model.InitDb("202.43.91.26", "caiji", "caijishiwo7788dd", "caiji"),
+        // Db61: model.InitDb("103.232.190.61", "xiaoshuo", "Manhua778899dd+-", "xiaoshuo"),
+    }
     var browser service.NodeBrowser = service.NodeBrowser{
         Service: service.Service{models},
     }
