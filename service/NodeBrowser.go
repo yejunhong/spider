@@ -49,7 +49,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) Book(spiderRequset *SpiderRequset) {
+func(browser *NodeBrowser) Book(spiderRequset *SpiderRequset) {
     // 客户端向grpc服务端发起请求
     // ctx, cancel := context.WithTimeout(context.Background(), 20 * time.Second)
     ctx, cancel := context.WithCancel(context.Background())
@@ -106,7 +106,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) Chapter(spiderRequset *SpiderRequset){
+func(browser *NodeBrowser) Chapter(spiderRequset *SpiderRequset){
     // 客户端向grpc服务端发起请求
     ctx, cancel := context.WithCancel(context.Background())
 	stream, err := browser.GrpcBrowserClient.Chapter(ctx)
@@ -170,7 +170,7 @@ func(browser *NodeBrowser) CreateBrowserClient() *grpc.ClientConn{
  * @param user_config_name string 数据源使用的配置
  *
  */
- func(browser *NodeBrowser) Content(spiderRequset *SpiderRequset){
+func(browser *NodeBrowser) Content(spiderRequset *SpiderRequset){
 
     // 客户端向grpc服务端发起请求
     ctx, cancel := context.WithCancel(context.Background())

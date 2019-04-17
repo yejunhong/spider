@@ -43,7 +43,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  * @param resourceId int64 资源Id
  *
  */
- func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
+func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
     var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
 
@@ -93,7 +93,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  * @param resourceId int64 书籍Id
  *
  */
- func (spider *Spider) SpiderContentByResourceId(resourceId int64) {
+func (spider *Spider) SpiderContentByResourceId(resourceId int64) {
     var request chan *Drive.Request = make(chan *Drive.Request, 10)
     var end chan int = make(chan int, 1)
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
@@ -151,7 +151,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  * @param BookId int64 书籍Id
  *
  */
- func (spider *Spider) SpiderChapterByBookId(BookId int64) {
+func (spider *Spider) SpiderChapterByBookId(BookId int64) {
     var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
     var bookInfo = spider.Models.GetCartoonInfoById(BookId)
@@ -179,7 +179,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  * @param BookId int64 书籍Id
  *
  */
- func (spider *Spider) SpiderContentByBookId(BookId int64) {
+func (spider *Spider) SpiderContentByBookId(BookId int64) {
     var request chan *Drive.Request = make(chan *Drive.Request, 3)
     var end chan int = make(chan int, 1)
     var bookInfo = spider.Models.GetCartoonInfoById(BookId)
