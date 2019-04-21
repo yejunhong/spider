@@ -52,15 +52,21 @@ class Spider {
     if (config.print != undefined && config.print == true) {
       console.log(content)
     }
-
+    await this.Event(page, config);
     // console.log(res)
-    let resdata: any = [];
+    let resdata: any = {list: [], detail: {}};
     let next: any = false;
 
     if (config.jsonHandle != undefined) {
-      // console.log(content)
       const res = await page.JsonContent({selector: config.selector});
-      resdata = await config.jsonHandle(JSON.parse(res));
+      const rData = await config.jsonHandle(JSON.parse(res));
+      if (rData.list != undefined) {
+        resdata.list = rData.list;
+        resdata.detail = rData.detail;
+      } else {
+        resdata.list = rData;
+        resdata.detail = {};
+      }
     }
     
     if (config.scroll != undefined) {
@@ -68,7 +74,14 @@ class Spider {
     }
     if (config.handle != undefined) {
       const res = await page.QuerySelectors({selector: config.selector});
-      resdata = await config.handle(res, Element);
+      const rData = await config.handle(res, Element);
+      if (rData.list != undefined) {
+        resdata.list = rData.list;
+        resdata.detail = rData.detail;
+      } else {
+        resdata.list = rData;
+        resdata.detail = {};
+      }
     }
 
     // 有数据情况下尝试爬取下一页
@@ -76,7 +89,18 @@ class Spider {
       const resNext = await page.QuerySelector({selector: config.next.selector});
       next = await config.next.handle(resNext, page.GetUrl());
     }
-    return {data: resdata, next: next}
+    return {data: resdata.list, detail: resdata.detail, next: next}
+  }
+
+  /**
+   * 操作页面事件
+   * @param page 页面标签对象
+   * @param config 配置信息
+   */
+  public async Event(page: any, config: any) {
+    if (typeof config.event == 'function') {
+      await config.event(page.page);
+    }
   }
 
 }

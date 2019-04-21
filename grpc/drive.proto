@@ -23,7 +23,9 @@ message Book{ // 漫画列表
   string author = 6;
 }
 message Detail {
-  string is_end = 1;
+  string tags = 1;
+  string detail = 2;
+  string is_end = 3;
 }
 
 message Chapter{  // 漫画章节列表
@@ -32,8 +34,6 @@ message Chapter{  // 漫画章节列表
   string resource_url = 3;
   string resource_img_url = 4;
 }
-
-
 
 message Content{ // 章节内容
   string resource_img_url = 1;
@@ -49,8 +49,10 @@ message Res {
 message ResChapter {
   string id = 3;
   repeated Chapter data = 1;
+  Detail detail = 4; // 详情信息
   bool next = 2;
 }
+
 message ResContent {
   string id = 2;
   repeated Content data = 1;

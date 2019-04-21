@@ -69,12 +69,15 @@ func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
             request <- &Drive.Request{
                             Id: strconv.FormatInt(v.Id,10), 
                             Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+            fmt.Println("编号：", v.ResourceNo, "-名称：", v.ResourceName, "-书籍：", v.UniqueId)
         }
         isend = true
     }()
     for {
         select{
             case <-spiderRequset.End:
+                <-next
+                fmt.Println(1)
                 if isend == true && len(spiderRequset.CartoonList) == 0 {
                     spiderEnd <- 1 // 中断程序
                 } 
@@ -200,16 +203,19 @@ func (spider *Spider) SpiderContentByBookId(BookId int64) {
             spiderEnd <- 1
             return
         }
-        fmt.Println("编号：", bookInfo.ResourceNo, "-名称：", bookInfo.ResourceName, "-", bookInfo.UniqueId, "-书籍章节：", len(cartoonChapter))
         for _, v := range cartoonChapter {
             var IdStr string = strconv.FormatInt(v.Id,10)
             spiderRequset.CartoonChapter[IdStr] = v
         }
-        for _, v := range cartoonChapter {
+        var sum = 0;
+        for k, v := range cartoonChapter {
             next <- 1
             request <- &Drive.Request{
                     Id: strconv.FormatInt(v.Id,10), 
                     Url: v.ResourceUrl, ConfigName: resource.ConfigName}
+            sum++
+            fmt.Printf("\r编号：%s-名称：%s - %s -书籍章节：%d/%d-处理总数：%d", bookInfo.ResourceNo, bookInfo.ResourceName, bookInfo.UniqueId, (k + 1), len(cartoonChapter), sum)
+            os.Stdout.Sync()
         }
     }()
     for {

@@ -74,7 +74,17 @@ func (service *Service) RecordChapter(
         })
     }
     if len(data) > 0 {
-        service.Models.UpdateCartoonListById(cartoonInfo.Id, map[string]interface{}{"status": 1})
+        var updateInfo = map[string]interface{}{"status": 1}
+        if chapter.Detail.Tags != "" {
+            updateInfo["tags"] = chapter.Detail.Tags
+        }
+        if chapter.Detail.Detail != ""  {
+            updateInfo["detail"] = chapter.Detail.Detail
+        }
+        if chapter.Detail.IsEnd != ""  {
+            updateInfo["is_end"] = chapter.Detail.IsEnd
+        }
+        service.Models.UpdateCartoonListById(cartoonInfo.Id, updateInfo)
         service.Models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
     }
 }

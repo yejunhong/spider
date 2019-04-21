@@ -1,40 +1,42 @@
 import grpc from 'grpc';
 import browser from './lib/browser';
 import NewSpider from './spider';
-/*
-(async function(){
-
-  const newBrowser = await browser.Create()
-  const spider = new NewSpider();
-  
-  console.log(newBrowser)
-  const page = await spider.newPage(newBrowser, Page);
-  console.log(page)
-})()*/
-
 
 let newBrowser: any;
 
 class Request{
   public async Write(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
     const res = await spider.Request(page, note.url, config, PageCfg);
-    // console.log(res)
-    // console.log(`获取数量：${res.data.length}，url：${note.url}`)
+    console.log(`获取数量：${res.data.length}，url：${note.url}`)
+    if(res.data.length > 0) {
+      steam.write({data: res.data, detail: res.detail, next: res.next?true: false, id: note.id});
+      if (res.next === false) {
+        await page.close() // 关闭页面
+        return
+      }
+      await this.Write(steam, spider, page, res.next, config, PageCfg)
+      return
+    }
+    steam.write({data: [], detail: [], next: false, id: note.id});
+    await page.close() // 关闭页面
+  }
+
+  public async WriteNoDetail(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
+    const res = await spider.Request(page, note.url, config, PageCfg);
+    console.log(`获取数量：${res.data.length}，url：${note.url}`)
     if(res.data.length > 0) {
       steam.write({data: res.data, next: res.next?true: false, id: note.id});
       if (res.next === false) {
         await page.close() // 关闭页面
-        // steam.end();
         return
       }
-      // console.log(`下一页：${res.next}`)
       await this.Write(steam, spider, page, res.next, config, PageCfg)
       return
     }
     steam.write({data: [], next: false, id: note.id});
     await page.close() // 关闭页面
-    // steam.end();
   }
+
 }
 
 class GrpcServer {
@@ -122,7 +124,7 @@ class GrpcServer {
       const spider = new NewSpider();
       const spiderPage = await spider.newPage(newBrowser, Page);
       const res = new Request()
-      await res.Write(steam, spider, spiderPage, note, Content, Page)
+      await res.WriteNoDetail(steam, spider, spiderPage, note, Content, Page)
     });
     steam.on('end', () => {
       console.log('content steam end')
@@ -133,19 +135,3 @@ class GrpcServer {
 
 const grpcService = new GrpcServer();
 grpcService.Run();
-/*
-const request = require('superagent');
-request.get('http://c976.yinsha5.com/index/book/bookcontent/chapeterid/795250?1554191723')
-  .set('User-Agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16D57 MicroMessenger/7.0.3(0x17000321) NetType/WIFI Language/zh_CN')
-  .set('Cookie', `_novelOpenid=oFFzA514uRnqPLc908Y1Zwn8sizc`)
-  .redirects(0)
-  .then(res => {
-    console.log(11111)
-    // console.log(res.text)
-     // console.log(11111)
-    // res.body, res.headers, res.status
-  })
-  .catch(err => {
-    console.log(err.response.text)
-  });
-  console.log(2222)*/

@@ -1,7 +1,23 @@
 # 日志数据库 caiji:caijishiwo7788dd@tcp(202.43.91.26)/caiji?charset=utf8
-book_mysql:
- user: test
- pass: test
- host: 127.0.0.1
+book:
+ user: caiji
+ pass: caijishiwo7788dd
+ host: 202.43.91.26
  port: 3306
- name: spider
+ name: caiji
+
+# 小说
+book_xiaoshuo:
+ user: xiaoshuo
+ pass: Manhua778899dd+-
+ host: 103.232.190.61
+ port: 3306
+ name: xiaoshuo
+
+# 漫画
+book_manhua:
+ user: manhua
+ pass: Manhua778899dd+-
+ host: 154.85.202.170
+ port: 3306
+ name: manhua

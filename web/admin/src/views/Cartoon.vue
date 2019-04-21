@@ -10,14 +10,14 @@
             <div class="card-img">
               <div :class="['status', v.IsEnd == 0?'status-131345': 'status-01730']">
                 {{v.IsEnd == 0 ? '连载': '完结'}} 
-                {{chapters_count[v.UniqueId].Number}}
+                {{chapters_count[v.UniqueId]?chapters_count[v.UniqueId].Number:0}}
               </div>
               <img :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="height: 150%;position: relative;">
             </div>
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
               <el-button type="text" @click="SpiderBookChapter(v)" size="mini">更新</el-button>
-              <span v-if="chapters_count[v.UniqueId].NotNumber > 0">未抓取：{{chapters_count[v.UniqueId].NotNumber}}</span>
+              <span v-if="chapters_count[v.UniqueId] && chapters_count[v.UniqueId].NotNumber > 0">未抓取：{{chapters_count[v.UniqueId].NotNumber}}</span>
             </div>
             <div class="row">
               <el-button type="text" @click="DataAsyncProduce(v)" size="mini">同步到生产库</el-button>
@@ -101,6 +101,7 @@ export default {
     async GetCartoonData(no){
       const res = await http.get('/cartoon/list', {resource_no: no, page: this.page})
       this.chapters_count = res.chapters_count
+      console.log(res.list)
       this.cartoon_list = res.list
       this.total = res.count
     },

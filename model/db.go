@@ -10,6 +10,7 @@ import (
 type Model struct{
 	Db *gorm.DB
 	Db61 *gorm.DB
+	Db170 *gorm.DB
 }
 
 func InitDb(ip, user, pass, database string) *gorm.DB {
@@ -64,8 +65,8 @@ func(model *Model) BatchInsert(table string, data []map[string]interface{}, dupl
 		// fmt.Println(sql)
 	}
 
-	err := model.Db.Exec(sql, values...)
-	fmt.Println(err)
+	model.Db.Exec(sql, values...)
+	// fmt.Println(err)
 }
 
 /**
