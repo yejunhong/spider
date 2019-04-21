@@ -123,20 +123,15 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPos
 func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter []model.CartoonChapter, portalBook CmfPortalPost) {
 	
 		var data []map[string]interface{}
-
 		var chapter_price int = 0
-		
 		var ids []int64
+		
     for _, v := range chapter {
-
 			ids = append(ids, v.Id)
-
 			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
-			
 			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
-
 			if sort > 5 {
-				chapter_price = 48
+				chapter_price = 24
 			}
 
 			data = append(data, map[string]interface{}{
@@ -267,7 +262,7 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 			ids = append(ids, v.Id)
 			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
 			if sort > 5 {
-				chapter_price = 48
+				chapter_price = 25
 			}
 			var path = "manhua/" + book.ResourceNo + "/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".jpg"
 			lib.DonwloadFile(manHuaSrc + path, v.ResourceImgUrl)
