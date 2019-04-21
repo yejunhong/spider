@@ -1,5 +1,5 @@
 # 日志数据库 caiji:caijishiwo7788dd@tcp(202.43.91.26)/caiji?charset=utf8
-book:
+db_caiji:
  user: caiji
  pass: caijishiwo7788dd
  host: 202.43.91.26
@@ -7,7 +7,7 @@ book:
  name: caiji
 
 # 小说
-book_xiaoshuo:
+db_xiaoshuo:
  user: xiaoshuo
  pass: Manhua778899dd+-
  host: 103.232.190.61
@@ -15,7 +15,7 @@ book_xiaoshuo:
  name: xiaoshuo
 
 # 漫画
-book_manhua:
+db_manhua:
  user: manhua
  pass: Manhua778899dd+-
  host: 154.85.202.170

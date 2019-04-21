@@ -3,12 +3,17 @@ package main
 import (
     "fmt"
     "spider/model"
+    "spider/lib"
     "spider/web/api"
     "os"
     "os/exec"
 )
 var models *model.Model
 func main(){
+
+    var config = lib.LoadConfig()
+    fmt.Println(config)
+    return 
     models = &model.Model{
         Db: model.InitDb("202.43.91.26", "caiji", "caijishiwo7788dd", "caiji"),
         Db61: model.InitDb("103.232.190.61", "xiaoshuo", "Manhua778899dd+-", "xiaoshuo"),

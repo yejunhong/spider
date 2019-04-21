@@ -16,23 +16,23 @@ type BookMysql struct {
 }
 
 type YamlConf struct {
-  BookMysql BookMysql
+  Db_caiji BookMysql
+  Db_xiaoshuo BookMysql
+  Db_manhua BookMysql
 }
 
-var Conf *YamlConf
-
-func LoadConfig() {
+func LoadConfig() *YamlConf {
 
   yamlText, _ := ioutil.ReadFile("./config.yaml")
   // fmt.Println(string(yamlText))
-  Conf = &YamlConf{}
+  var Conf *YamlConf = &YamlConf{}
   //把yaml形式的字符串解析成struct类型
   var err error = yaml.Unmarshal(yamlText, &Conf)
   fmt.Println(err)
-  if Conf.BookMysql.Host == "" {
+  if Conf.Db_caiji.Host == "" {
       fmt.Println("配置文件设置错误")
   } else {
     fmt.Println("初始数据", Conf)
   }
-  
+  return Conf
 }
