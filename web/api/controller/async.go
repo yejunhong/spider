@@ -9,6 +9,7 @@ import (
 	"strings"
 	"os"
 	"sync"
+	"encoding/json"
 )
 
 /**
@@ -74,6 +75,12 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPos
 
 	var path = "upload/bookcover/" + book.UniqueId + ".jpg"
 	lib.DonwloadFile(src + path, book.ResourceImgUrl)
+
+	var post_source = "完结"
+	if book.IsEnd == 0 {
+		post_source = ""
+	}
+
 	var bookData []map[string]interface{} = []map[string]interface{}{
 		map[string]interface{}{
 			"parent_id": 0, // '父级id',
@@ -90,7 +97,7 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPos
 			"chapter_update_time": lib.Time(), //'章节更新时间',
 			"post_title": book.ResourceName, // 'post标题',
 			"post_excerpt": book.Detail,// 'post摘要',
-			"post_source": "", // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
+			"post_source": post_source, // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
 			"more": `{"thumbnail":"` + path + `"}`,// '扩展属性,如缩略图;格式为json',
 			"isfinish": book.IsEnd, // '写作进度是否完成 0连载中 1已完成',
 			"isfree": 0, // '是否免费 1免费 0收费',
@@ -202,16 +209,19 @@ func (controller *Controller) ayncPortalCategory(book model.CartoonList, pid int
 	}
 }
 
-
 // 漫画书籍 =============================================================
-
-
 var manHuaSrc = "./static/"
 // 小说文章管理
 func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPortalPost {
 
-	var path = "upload/bookcover/" + book.UniqueId + ".jpg"
-	lib.DonwloadFile(src + path, book.ResourceImgUrl)
+	var path = "manhua/" + book.ResourceNo + "/" + book.UniqueId + ".jpg"
+	lib.DonwloadFile(manHuaSrc + path, book.ResourceImgUrl)
+
+	var post_source = "完结"
+	if book.IsEnd == 0 {
+		post_source = ""
+	}
+
 	var bookData []map[string]interface{} = []map[string]interface{}{
 		map[string]interface{}{
 			"parent_id": 0, // '父级id',
@@ -228,13 +238,12 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"chapter_update_time": lib.Time(), //'章节更新时间',
 			"post_title": book.ResourceName, // 'post标题',
 			"post_excerpt": book.Detail,// 'post摘要',
-			"post_source": "", // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
+			"post_source": post_source, // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
 			"more": `{"thumbnail":"` + path + `"}`,// '扩展属性,如缩略图;格式为json',
 			"isfinish": book.IsEnd, // '写作进度是否完成 0连载中 1已完成',
 			"isfree": 0, // '是否免费 1免费 0收费',
-			"post_tag": 2, // '文章标识：1、漫画，2、小说',
+			"post_tag": 1, // '文章标识：1、漫画，2、小说',
 			"adult": 1, // 18X--1：是，0：否
-			// "file_path": "", // '小说文本存放的位置',
 			"unique_id": book.UniqueId, // '数据同步唯一标识',
 		},
 	}
@@ -246,27 +255,40 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 	return bookInfo
 }
 
-// 同步小说
-// cmf_portal_category
-// cmf_portal_category_post
+// 同步漫画
 func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, chapter []model.CartoonChapter, portalBook CmfPortalPost) {
 	
 		var data []map[string]interface{}
-
 		var chapter_price int = 0
-		
 		var ids []int64
+
     for _, v := range chapter {
 
 			ids = append(ids, v.Id)
-
-			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
-			
 			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
-
 			if sort > 5 {
 				chapter_price = 48
 			}
+			var path = "manhua/" + book.ResourceNo + "/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".jpg"
+			lib.DonwloadFile(manHuaSrc + path, v.ResourceImgUrl)
+
+			var more = map[string]interface{}{
+				"thumbnail": v.ResourceImgUrl,
+				"files": []map[string]string{},
+			}
+			
+			var photos = []map[string]string{}
+			var content = controller.Model.GetContentsFindByChapterUniqueId(v.UniqueId)
+			for k, img := range content {
+				var path_content = "manhua/" + book.ResourceNo + "/" + v.UniqueId + "/" + lib.MD5(img.ResourceUrl) + ".jpg"
+				photos = append(photos, map[string]string{
+					"url": img.ResourceUrl,
+					"name": strconv.Itoa((k + 1)) + ".jpg",
+				})
+				lib.DonwloadFile(manHuaSrc + path_content, img.ResourceUrl)
+			}
+			more["photos"] = photos
+			moreString, _ := json.Marshal(more)
 
 			data = append(data, map[string]interface{}{
 				"status": 1, // '状态;1:显示;0:不显示',
@@ -274,7 +296,8 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 				"list_order": sort, // '排序',
 				"chapter_excerpt":  book.Detail, // '摘要',
 				"chapter_keywords": book.Detail,
-				"chapter_content": path,
+				"chapter_content": book.Detail,
+				"more": string(moreString),
 				"create_time": lib.Time(),
 				"update_time": lib.Time(),
 				"name": v.ResourceName, // '章节名称',
@@ -282,7 +305,7 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 				"pid": portalBook.Id, // '对应的上级ID',
 				"unique_id": v.UniqueId, // '数据同步唯一标识',
 			})
-			lib.WriteFile(src + path, v.Content)
+			
     }
     if len(data) > 0 {
 			model.DbBatchInsert(controller.Model.Db170, "cmf_portal_chapter", data, []string{"name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
