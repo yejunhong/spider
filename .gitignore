@@ -3,4 +3,5 @@
 /web/admin/node_modules
 /web/admin/package-lock.json
 /static
+config.yaml
 .DS_Store

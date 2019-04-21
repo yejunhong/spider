@@ -10,7 +10,7 @@ import (
 type Model struct{
 	Db *gorm.DB
 	Db61 *gorm.DB
-	Db170 *gorm.DB
+	DbManhua *gorm.DB
 }
 
 func InitDb(ip, user, pass, database string) *gorm.DB {

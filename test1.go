@@ -1,15 +1,19 @@
 package main
  
 import (
+    "spider/lib"
     "spider/model"
     "spider/service"
 )
 
 func main(){
     
+    var config = lib.LoadConfig()
+ 
     var models *model.Model = &model.Model{
-        Db: model.InitDb("202.43.91.26", "caiji", "caijishiwo7788dd", "caiji"),
-        // Db61: model.InitDb("103.232.190.61", "xiaoshuo", "Manhua778899dd+-", "xiaoshuo"),
+        Db: model.InitDb(config.Db_caiji.Host, config.Db_caiji.User, config.Db_caiji.Pass, config.Db_caiji.Name),
+        Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
+        // DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
     var browser service.NodeBrowser = service.NodeBrowser{
         Service: service.Service{models},

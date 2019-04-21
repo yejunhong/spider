@@ -125,7 +125,7 @@ func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter [
 		var data []map[string]interface{}
 		var chapter_price int = 0
 		var ids []int64
-		
+
     for _, v := range chapter {
 			ids = append(ids, v.Id)
 			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
@@ -242,11 +242,11 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"unique_id": book.UniqueId, // '数据同步唯一标识',
 		},
 	}
-	model.DbBatchInsert(controller.Model.Db170, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt", "isfinish"})
+	model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt", "isfinish"})
 	// 修改同步信息
 	controller.Model.UpdateCartoonListById(book.Id, map[string]interface{}{"is_async": 1})
 	var bookInfo CmfPortalPost
-	controller.Model.Db170.Where("unique_id = ?", book.UniqueId).Find(&bookInfo)
+	controller.Model.DbManhua.Where("unique_id = ?", book.UniqueId).Find(&bookInfo)
 	return bookInfo
 }
 
@@ -303,7 +303,7 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 			
     }
     if len(data) > 0 {
-			model.DbBatchInsert(controller.Model.Db170, "cmf_portal_chapter", data, []string{"name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
 		}
 		controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
 }
@@ -315,7 +315,7 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
  */
  func (controller *Controller) ManhuaCategoryList() map[string]CmfPortalCategory {
 	var category []CmfPortalCategory
-	controller.Model.Db170.Find(&category)
+	controller.Model.DbManhua.Find(&category)
 	var categoryMap map[string]CmfPortalCategory = map[string]CmfPortalCategory{}
 	for _, v := range category {
 		categoryMap[v.Name] = v
@@ -339,8 +339,8 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 			})
 		}
 	}
-	controller.Model.Db170.Where("post_id = ?", pid).Delete(CmfPortalCategoryPost{})
+	controller.Model.DbManhua.Where("post_id = ?", pid).Delete(CmfPortalCategoryPost{})
 	if len(data) > 0 {
-		model.DbBatchInsert(controller.Model.Db170, "cmf_portal_category_post", data, []string{})
+		model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_category_post", data, []string{})
 	}
 }
