@@ -34,7 +34,7 @@ type CartoonChapterContent struct{
 
 /**
  *
- * 获取漫画章节 内容
+ * 获取漫画所有内容
  * @param list_unique_id 漫画d
  * @return []CartoonChapterContent{}
  *
@@ -43,4 +43,28 @@ type CartoonChapterContent struct{
 	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
 	model.Db.Where("list_unique_id = ?", list_unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
+}
+
+/**
+ *
+ * 获取漫画没有下载过的内容
+ * @param list_unique_id 漫画d
+ * @return []CartoonChapterContent{}
+ *
+ */
+ func (model *Model) GetContentsImgFindByListUniqueId(list_unique_id string) []CartoonChapterContent{
+	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
+	model.Db.Where("list_unique_id = ? AND download_img_url IS NULL", list_unique_id).Find(&cartoonChapters) // 执行sql
+	return cartoonChapters
+}
+
+/**
+ *
+ * 通过id 修改漫画内容状态
+ * @param id int64 漫画id
+ * @param imgPath string 图片地址
+ *
+ */
+ func (model *Model) UpdateCartoonContentById(id int64, udata map[string]interface{}){
+	model.Db.Table("cartoon_chapter_content").Where("id = ?", id).Updates(udata)
 }

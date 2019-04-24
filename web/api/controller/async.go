@@ -9,7 +9,7 @@ import (
 	"strings"
 	"os"
 	"sync"
-	"encoding/json"
+  "encoding/json"
 )
 
 /**
@@ -27,8 +27,35 @@ import (
 	var resource = controller.Model.GetCartoonByResourceNo(bookInfo.ResourceNo)
 
 	if resource.BookType == 1 { // 漫画
-		var chapterContents []model.CartoonChapterContent =  controller.Model.GetContentsFindByChapterListUniqueId(bookInfo.UniqueId)
-		fmt.Println(chapterContents)
+		go func() {
+
+			fmt.Println(len(chapterList))
+			var bookList = controller.Model.GetSqlCartoonListByNo(bookInfo.ResourceNo)
+			fmt.Println("需要同步：", len(bookList))
+			var category map[string]CmfPortalCategory  = controller.ManhuaCategoryList()
+
+			var wait sync.WaitGroup
+			var next chan int = make(chan int, 1) // 并发5
+			for k, v := range bookList {
+				wait.Add(1)
+				next <- 1
+				go func(info model.CartoonList) {
+					var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(info.UniqueId, 1)
+					var portalBook CmfPortalPost = controller.ayncManhuaPortalPost(info)
+					controller.ayncManhuaPortalChapter(info, chapterLists, portalBook)
+					controller.ayncManhuaCategory(info, portalBook.Id, category)
+					<-next
+					wait.Done()
+				}(v)
+				fmt.Printf("\r已同步：%d/%d", k + 1, len(bookList))
+				os.Stdout.Sync()
+				
+			}
+			wait.Wait()
+			fmt.Println("同步完毕")
+			
+		}()
+
 	} else {
 		go func(){
 			fmt.Println(len(chapterList))
@@ -205,12 +232,8 @@ func (controller *Controller) ayncPortalCategory(book model.CartoonList, pid int
 }
 
 // 漫画书籍 =============================================================
-var manHuaSrc = "./static/"
 // 小说文章管理
 func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPortalPost {
-
-	var path = "manhua/" + book.ResourceNo + "/" + book.UniqueId + ".jpg"
-	lib.DonwloadFile(manHuaSrc + path, book.ResourceImgUrl)
 
 	var post_source = "完结"
 	if book.IsEnd == 0 {
@@ -234,7 +257,7 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"post_title": book.ResourceName, // 'post标题',
 			"post_excerpt": book.Detail,// 'post摘要',
 			"post_source": post_source, // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
-			"more": `{"thumbnail":"` + path + `"}`,// '扩展属性,如缩略图;格式为json',
+			"more": `{"thumbnail":"` + book.DownloadImgUrl + `"}`,// '扩展属性,如缩略图;格式为json',
 			"isfinish": book.IsEnd, // '写作进度是否完成 0连载中 1已完成',
 			"isfree": 0, // '是否免费 1免费 0收费',
 			"post_tag": 1, // '文章标识：1、漫画，2、小说',
@@ -264,24 +287,19 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 			if sort > 5 {
 				chapter_price = 25
 			}
-			var path = "manhua/" + book.ResourceNo + "/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".jpg"
-			lib.DonwloadFile(manHuaSrc + path, v.ResourceImgUrl)
-
 			var more = map[string]interface{}{
-				"thumbnail": v.ResourceImgUrl,
+				"thumbnail": v.DownloadImgUrl,
 				"files": []map[string]string{},
 			}
-			
 			var photos = []map[string]string{}
 			var content = controller.Model.GetContentsFindByChapterUniqueId(v.UniqueId)
 			for k, img := range content {
-				var path_content = "manhua/" + book.ResourceNo + "/" + v.UniqueId + "/" + lib.MD5(img.ResourceUrl) + ".jpg"
 				photos = append(photos, map[string]string{
-					"url": img.ResourceUrl,
+					"url": img.DownloadImgUrl,
 					"name": strconv.Itoa((k + 1)) + ".jpg",
 				})
-				lib.DonwloadFile(manHuaSrc + path_content, img.ResourceUrl)
 			}
+			fmt.Println("")
 			more["photos"] = photos
 			moreString, _ := json.Marshal(more)
 
@@ -302,8 +320,9 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 			})
 			
     }
+		fmt.Println("同步章节：", len(data))
     if len(data) > 0 {
-			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
 		}
 		controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
 }

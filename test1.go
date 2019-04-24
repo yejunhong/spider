@@ -1,6 +1,7 @@
 package main
  
 import (
+    "fmt"
     "spider/lib"
     "spider/model"
     "spider/service"
@@ -15,9 +16,21 @@ func main(){
         Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
         // DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
-    var browser service.NodeBrowser = service.NodeBrowser{
-        Service: service.Service{models},
+
+    var services = service.Service{models}
+    var bookList = models.GetCartoonListByNoStatus("C005", 1)
+
+    for _, v := range bookList {
+        fmt.Println("书籍名称：", v.ResourceName)
+        services.DownloadBookIdImg(v.Id, v.ResourceImgUrl)
+        services.DownloadBookIdChaptersImg(v.UniqueId)
+        services.DownloadBookIdContentImg(v.UniqueId)
+        fmt.Println("下载书籍完毕。")
     }
+    
+    return
+
+    var browser service.NodeBrowser = service.NodeBrowser{Service: services}
     
     browser.CreateBrowserClient() // 创建浏览器客户端
    

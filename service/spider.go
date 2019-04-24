@@ -197,7 +197,7 @@ func (spider *Spider) SpiderContentByBookId(BookId int64) {
     var next chan int = make(chan int, 3)
     var spiderEnd chan int = make(chan int, 1)
     go func() { // 协程 发送爬虫信息
-        var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(bookInfo.UniqueId, 0)
+        var cartoonChapter = spider.Models.GetChaptersFindByListUniqueId(bookInfo.UniqueId, -1)
         
         if len(cartoonChapter) == 0 {
             spiderEnd <- 1
@@ -217,6 +217,7 @@ func (spider *Spider) SpiderContentByBookId(BookId int64) {
             fmt.Printf("\r编号：%s-名称：%s - %s -书籍章节：%d/%d-处理总数：%d", bookInfo.ResourceNo, bookInfo.ResourceName, bookInfo.UniqueId, (k + 1), len(cartoonChapter), sum)
             os.Stdout.Sync()
         }
+        fmt.Println()
     }()
     for {
         select{

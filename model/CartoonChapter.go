@@ -101,3 +101,16 @@ type ChaptersCount struct {
 					list_unique_id).Find(&chaptersCount)
 	return chaptersCount
 }
+
+/**
+ *
+ * 获取漫画章节列表
+ * @param unique_id 漫画章节
+ * @return []CartoonChapter{}
+ *
+ */
+ func (model *Model) GetChaptersImgByListUniqueId(list_unique_id string) []CartoonChapter{
+	var cartoonChapters []CartoonChapter = []CartoonChapter{}
+	model.Db.Where("list_unique_id = ? AND download_img_url IS NULL", list_unique_id).Find(&cartoonChapters) // 执行sql
+	return cartoonChapters
+}

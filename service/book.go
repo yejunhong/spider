@@ -1,9 +1,14 @@
 package service
  
 import (
+    "fmt"
+    "os"
+    "net/http"
+    "io/ioutil"
+    "encoding/json"
     "spider/model"
     "spider/lib"
-	Drive "spider/grpc"
+    Drive "spider/grpc"
 )
 
 type Service struct{
@@ -128,3 +133,89 @@ func (service *Service) RecordContent(
     }
 
 }   
+
+type Data struct {
+	Img string
+	Md5 string
+	Img2 string
+}
+type ImgUpload struct {
+	Code int64
+	Message string
+	Data Data
+}
+func UploadImg(imgUrl string) *ImgUpload {
+
+    img := &ImgUpload{}
+
+    resp, err_ := http.Get("http://upload.manhua118.com/Img/Index/load?url=" + imgUrl)
+    if err_ != nil {
+        return img
+    }
+    defer resp.Body.Close()
+    
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return img
+	}
+	
+	var errs = json.Unmarshal(body, img)
+	if errs != nil {
+	    return img
+	}
+	return img
+}
+
+/**
+ *
+ * 下载书籍图片
+ * @param bookId 书籍ID
+ * @param resourceUrl 书籍封面
+ *
+ */
+ func (service *Service) DownloadBookIdImg(bookId int64, resourceUrl string){
+    var UploadFileContent = UploadImg(resourceUrl)
+    service.Models.UpdateCartoonListById(bookId, map[string]interface{}{"download_img_url": UploadFileContent.Data.Img})
+}
+
+/**
+ *
+ * 下载书籍章节图片
+ * @param UniqueId 书籍唯一ID
+ *
+ */
+ func (service *Service) DownloadBookIdChaptersImg(UniqueId string){
+    var chapters = service.Models.GetChaptersImgByListUniqueId(UniqueId)
+    var count = len(chapters)
+    fmt.Println("\r\n同步章节图片")
+    for k, img := range chapters {
+        var UploadFileContent = UploadImg(img.ResourceImgUrl)
+        var filePath string = UploadFileContent.Data.Img
+        if filePath != "" {
+            service.Models.UpdateCartoonChapterById(img.Id, map[string]interface{}{"download_img_url": filePath})
+        }
+        fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
+        os.Stdout.Sync()
+    }
+}
+
+/**
+ *
+ * 下载书籍章节内容图片
+ * @param UniqueId 书籍唯一ID
+ *
+ */
+func (service *Service) DownloadBookIdContentImg(UniqueId string){
+    var content = service.Models.GetContentsImgFindByListUniqueId(UniqueId)
+    var count = len(content)
+    fmt.Println("\r\n同步章节内容图片")
+    for k, img := range content {
+        var UploadFileContent = UploadImg(img.ResourceUrl)
+        var filePath string = UploadFileContent.Data.Img
+        if filePath != "" {
+            service.Models.UpdateCartoonContentById(img.Id, map[string]interface{}{"download_img_url": filePath})
+        }
+        fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
+        os.Stdout.Sync()
+    }
+}

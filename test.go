@@ -6,25 +6,23 @@ import (
   "encoding/json"
 )
 func main() {
-    var photos = []map[string]string{}
-    photos = append(photos, map[string]string{
-        "url": "222",
-        "name": "333",
-    })
-    var user = map[string]interface{}{
-        "thumbnail": "kongyixueyuan",
-        "files": []map[string]string{},
-    }
-    user["photos"] = photos
-
-    jsonStr, _ := json.Marshal(user)
-    fmt.Println(string(jsonStr))
-    var url = "http://store.cqhdx.com/img1/v_112178_7feb38";
-    UploadImg(url)
+    var url = "https://t1.hddhhn.com/uploads/tu/201512/277/98.jpg";
+    var img = UploadImg(url)
+    fmt.Println(img)
 }
 
-func UploadImg(imgUrl string) {
-    resp, err :=   http.Get("http://upload.manhua008.com/Img/Index/load?url=" + imgUrl)
+type Data struct {
+    Img string
+    Md5 string
+    Img2 string
+}
+type ImgUpload struct {
+    Code int64
+    Message string
+    Data Data
+}
+func UploadImg(imgUrl string) *ImgUpload {
+    resp, err := http.Get("http://upload.manhua118.com/Img/Index/load?url=" + imgUrl)
     if err != nil {
         panic(err)
     }
@@ -33,5 +31,10 @@ func UploadImg(imgUrl string) {
     if err != nil {
         panic(err)
     }
-    fmt.Println(string(body))
+    img := &ImgUpload{}
+    var errs = json.Unmarshal(body, img)
+    if errs != nil {
+        panic(errs)
+    }
+    return img
 }

@@ -22,7 +22,7 @@ module.exports.Page = {
   name: '紫漫',
   mobile: "",
   cookie: [
-    {name: "PHPSESSID", value:"hh9i4d686jclve8t3v861mke71", domain: "ttxiefu.com"},
+    {name: "PHPSESSID", value:"qk0h2r1b608h4hfu2v7pfltskr", domain: "ttxiefu.com"},
   ],
   user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
 }
