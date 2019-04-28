@@ -20,7 +20,9 @@
               <span v-if="chapters_count[v.UniqueId] && chapters_count[v.UniqueId].NotNumber > 0">未抓取：{{chapters_count[v.UniqueId].NotNumber}}</span>
             </div>
             <div class="row">
-              <el-button type="text" @click="DataAsyncProduce(v)" size="mini">同步到生产库</el-button>
+              <el-button type="text" @click="DataAsyncProduce(v)" size="mini">
+                同步到生产库<span v-loading="true" style="width:29px;height:29px;"></span>
+              </el-button>
             </div>
             <div class="row">{{v.CdateText}}</div>
           </el-card>

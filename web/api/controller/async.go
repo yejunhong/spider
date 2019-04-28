@@ -28,15 +28,35 @@ import (
 
 	if resource.BookType == 1 { // 漫画
 		go func() {
-
-			fmt.Println(len(chapterList))
+			/*fmt.Println("同步开始")
+			var category map[string]CmfPortalCategory  = controller.ManhuaCategoryList()
+			var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(bookInfo.UniqueId, 1)
+			var portalBook CmfPortalPost = controller.ayncManhuaPortalPost(bookInfo)
+			controller.ayncManhuaPortalChapter(bookInfo, chapterLists, portalBook)
+			controller.ayncManhuaCategory(bookInfo, portalBook.Id, category)
+			fmt.Println("同步结束")
+			fmt.Println(len(chapterList))*/
 			var bookList = controller.Model.GetSqlCartoonListByNo(bookInfo.ResourceNo)
 			fmt.Println("需要同步：", len(bookList))
 			var category map[string]CmfPortalCategory  = controller.ManhuaCategoryList()
 
+			var post_title []interface{}
+			for _, v := range bookList {
+				post_title = append(post_title, v.ResourceName)
+			}
+
+			var postTitles = controller.GetManhuaListByPostTitle(post_title);
 			var wait sync.WaitGroup
 			var next chan int = make(chan int, 1) // 并发5
+
 			for k, v := range bookList {
+
+				if post, ok := postTitles[v.ResourceName]; ok {
+					if post.UniqueId != v.UniqueId {
+						continue
+					}
+				}
+
 				wait.Add(1)
 				next <- 1
 				go func(info model.CartoonList) {
@@ -94,6 +114,7 @@ import (
 type CmfPortalPost struct {
 	Id int64
 	UniqueId string
+	PostTitle string
 }
 
 var src = "./static/"
@@ -118,6 +139,7 @@ func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPos
 			"comment_status": 0, // '评论状态;1:允许;0:不允许',
 			"is_top": 0, // '是否置顶;1:置顶;0:不置顶',
 			"recommended": 0, //'是否推荐;1:推荐;0:不推荐',
+			"post_buy": 0,
 			"post_bookcase": 0, // '书柜量',
 			"create_time": lib.Time(), // '创建时间',
 			"update_time": lib.Time(), // '更新时间',
@@ -158,7 +180,7 @@ func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter [
 			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
 			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
 			if sort > 5 {
-				chapter_price = 24
+				chapter_price = 25
 			}
 
 			data = append(data, map[string]interface{}{
@@ -254,6 +276,7 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"create_time": lib.Time(), // '创建时间',
 			"update_time": lib.Time(), // '更新时间',
 			"chapter_update_time": lib.Time(), //'章节更新时间',
+			"post_buy": 0,
 			"post_title": book.ResourceName, // 'post标题',
 			"post_excerpt": book.Detail,// 'post摘要',
 			"post_source": post_source, // varchar(150) NOT NULL DEFAULT '' COMMENT '更新章节数',
@@ -261,7 +284,7 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"isfinish": book.IsEnd, // '写作进度是否完成 0连载中 1已完成',
 			"isfree": 0, // '是否免费 1免费 0收费',
 			"post_tag": 1, // '文章标识：1、漫画，2、小说',
-			"adult": 1, // 18X--1：是，0：否
+			// "adult": 1, // 18X--1：是，0：否
 			"unique_id": book.UniqueId, // '数据同步唯一标识',
 		},
 	}
@@ -270,6 +293,7 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 	controller.Model.UpdateCartoonListById(book.Id, map[string]interface{}{"is_async": 1})
 	var bookInfo CmfPortalPost
 	controller.Model.DbManhua.Where("unique_id = ?", book.UniqueId).Find(&bookInfo)
+	fmt.Println()
 	return bookInfo
 }
 
@@ -280,26 +304,33 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 		var chapter_price int = 0
 		var ids []int64
 
-    for _, v := range chapter {
+		var img = map[string][]model.CartoonChapterContent{}
+		var contents = controller.Model.GetContentsFindByChapterListUniqueId(book.UniqueId)
+
+		for _, v := range contents {
+			img[v.ChapterUniqueId] = append(img[v.ChapterUniqueId], v)
+		}
+		
+		fmt.Println("获取数据所有内容：", book.ResourceName, len(img))
+		var l = len(chapter)
+    for k, v := range chapter {
 
 			ids = append(ids, v.Id)
 			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
-			if sort > 5 {
-				chapter_price = 25
+			if sort > 2 {
+				chapter_price = 48
 			}
 			var more = map[string]interface{}{
 				"thumbnail": v.DownloadImgUrl,
 				"files": []map[string]string{},
 			}
 			var photos = []map[string]string{}
-			var content = controller.Model.GetContentsFindByChapterUniqueId(v.UniqueId)
-			for k, img := range content {
+			for k, img := range img[v.UniqueId] {
 				photos = append(photos, map[string]string{
 					"url": img.DownloadImgUrl,
 					"name": strconv.Itoa((k + 1)) + ".jpg",
 				})
 			}
-			fmt.Println("")
 			more["photos"] = photos
 			moreString, _ := json.Marshal(more)
 
@@ -318,13 +349,18 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 				"pid": portalBook.Id, // '对应的上级ID',
 				"unique_id": v.UniqueId, // '数据同步唯一标识',
 			})
-			
+			if (len(data) > 10) {
+				model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"pid", "more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+				data = []map[string]interface{}{}
+			}
+			fmt.Printf("\r已同步%d章节：%d/%d", portalBook.Id, k + 1, l)
+			os.Stdout.Sync()
     }
-		fmt.Println("同步章节：", len(data))
     if len(data) > 0 {
 			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
 		}
 		controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
+		fmt.Println()
 }
 
 /**
@@ -362,4 +398,21 @@ func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, cha
 	if len(data) > 0 {
 		model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_category_post", data, []string{})
 	}
+}
+
+
+/**
+ *
+ * 通过标题 获取漫画资源书籍
+ * @return map[string]CmfPortalPost
+ *
+ */
+ func (controller *Controller) GetManhuaListByPostTitle(post_title []interface{}) map[string]CmfPortalPost{
+	var cartoon_list []CmfPortalPost = []CmfPortalPost{}
+	controller.Model.DbManhua.Where("post_title IN (?)", post_title).Find(&cartoon_list)
+	var res map[string]CmfPortalPost = map[string]CmfPortalPost{}
+	for _, v := range cartoon_list {
+		res[v.PostTitle] = v
+	}
+	return res
 }
