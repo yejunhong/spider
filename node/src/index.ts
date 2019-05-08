@@ -14,7 +14,8 @@ class Request{
         await page.close() // 关闭页面
         return
       }
-      await this.Write(steam, spider, page, res.next, config, PageCfg)
+
+      await this.Write(steam, spider, page, {url: res.next}, config, PageCfg)
       return
     }
     steam.write({data: [], detail: [], next: false, id: note.id});
@@ -30,7 +31,7 @@ class Request{
         await page.close() // 关闭页面
         return
       }
-      await this.Write(steam, spider, page, res.next, config, PageCfg)
+      await this.Write(steam, spider, page, {url: res.next}, config, PageCfg)
       return
     }
     steam.write({data: [], next: false, id: note.id});

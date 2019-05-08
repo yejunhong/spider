@@ -1,6 +1,7 @@
 module spider
 
 require (
+	github.com/chai2010/webp v1.1.0
 	github.com/gin-contrib/sse v0.0.0-20190226023149-996076df5b33 // indirect
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-sql-driver/mysql v1.4.1 // indirect

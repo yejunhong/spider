@@ -18,7 +18,7 @@ module.exports.Login = {
 
 // 获取书籍列表
 module.exports.Book = {
-  islogin: true,
+  islogin: false,
   selector: 'div.ItemSpecial', // 列表选择器
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
@@ -71,4 +71,15 @@ module.exports.Chapter = {
 
 module.exports.Content = {
   islogin: false,
+  selector: 'div.imgList img', // 列表选择器
+  async handle (res: any, Element: any): Promise<any> { // 处理数据
+    const resdata: any = [];
+    for(const v of res){
+      const e = new Element(v);
+      resdata.push({
+        resource_img_url: await e.getAttribute('data-src'),
+      })
+    }
+    return resdata
+  },
 }

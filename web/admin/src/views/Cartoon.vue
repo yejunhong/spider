@@ -21,7 +21,7 @@
             </div>
             <div class="row">
               <el-button type="text" @click="DataAsyncProduce(v)" size="mini">
-                同步到生产库<span v-loading="true" style="width:29px;height:29px;"></span>
+                同步到生产库<span v-loading="true" style="width:24px;height:24px;"></span>
               </el-button>
             </div>
             <div class="row">{{v.CdateText}}</div>

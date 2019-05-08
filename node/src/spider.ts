@@ -83,9 +83,9 @@ class Spider {
         resdata.detail = {};
       }
     }
-
+    
     // 有数据情况下尝试爬取下一页
-    if (config.next != undefined && resdata.length > 0) {
+    if (config.next != undefined && resdata.list.length > 0) {
       const resNext = await page.QuerySelector({selector: config.next.selector});
       next = await config.next.handle(resNext, page.GetUrl());
     }

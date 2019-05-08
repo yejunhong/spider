@@ -93,7 +93,8 @@ func DonwloadFile(path string, url string) (n int64, err error) {
 	out, err := os.Create(path)
 	defer out.Close()
 	resp, err := http.Get(url)
-	defer resp.Body.Close()
+    defer resp.Body.Close()
+    // fmt.Println(resp.Body)
 	pix, err := ioutil.ReadAll(resp.Body)
 	n, err = io.Copy(out, bytes.NewReader(pix))
 	return

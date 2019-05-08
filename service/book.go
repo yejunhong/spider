@@ -38,6 +38,7 @@ func (service *Service) RecordBook(book *Drive.Res, cartoon model.CartoonResourc
             "resource_img_url": v.ResourceImgUrl,
             "cdate": lib.Time(),
         })
+        donwloadFile("cover/" + cartoon.ResourceNo, v.ResourceImgUrl)
     }
     if len(data) > 0 {
         service.Models.BatchInsert("cartoon_list", data, []string{"tags", "author", "detail", "resource_url", "resource_name", "resource_img_url"})
@@ -77,6 +78,7 @@ func (service *Service) RecordChapter(
             "book_type": cartoon.BookType,
             "cdate": lib.Time(),
         })
+        donwloadFile("chapter/" + cartoon.ResourceNo, v.ResourceImgUrl)
     }
     if len(data) > 0 {
         var updateInfo = map[string]interface{}{"status": 1}
@@ -119,6 +121,7 @@ func (service *Service) RecordContent(
                 "resource_url": v.ResourceImgUrl,
                 "cdate": lib.Time(),
             })
+            donwloadFile("content/" + cartoon.ResourceNo + "/" + cartoonChapter.ListUniqueId + "/" + cartoonChapter.UniqueId, v.ResourceImgUrl)
         }
         if len(data) > 0 {
             service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{"status": 1})
@@ -134,6 +137,20 @@ func (service *Service) RecordContent(
 
 }   
 
+/**
+ *
+ * 下载文件
+ * @param p string 路径
+ * @param url string 下载url
+ *
+ */
+ func donwloadFile(p string, url string) {
+    if url != "" {
+        var path = "/Volumes/book/" + p + "/" + lib.MD5(url) + ".jpg"
+        lib.DonwloadFile(path, url)
+    }
+}
+
 type Data struct {
 	Img string
 	Md5 string
@@ -147,18 +164,15 @@ type ImgUpload struct {
 func UploadImg(imgUrl string) *ImgUpload {
 
     img := &ImgUpload{}
-
     resp, err_ := http.Get("http://upload.manhua118.com/Img/Index/load?url=" + imgUrl)
     if err_ != nil {
         return img
     }
     defer resp.Body.Close()
-    
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return img
 	}
-	
 	var errs = json.Unmarshal(body, img)
 	if errs != nil {
 	    return img
@@ -213,6 +227,9 @@ func (service *Service) DownloadBookIdContentImg(UniqueId string){
         var UploadFileContent = UploadImg(img.ResourceUrl)
         var filePath string = UploadFileContent.Data.Img
         if filePath != "" {
+            /*go func(Id int64, file string){
+                service.Models.UpdateCartoonContentById(Id, map[string]interface{}{"download_img_url": file})
+            }(img.Id, filePath)*/
             service.Models.UpdateCartoonContentById(img.Id, map[string]interface{}{"download_img_url": filePath})
         }
         fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)

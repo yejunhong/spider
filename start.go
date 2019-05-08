@@ -18,7 +18,7 @@ func main(){
         Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
         DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
-    go CommandNode()
+    // go CommandNode()
     api.HttpRun(models, "4321")
 }
 

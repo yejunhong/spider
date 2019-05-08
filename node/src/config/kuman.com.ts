@@ -1,3 +1,4 @@
+import { fchmod } from "fs";
 
 module.exports.Page = {
   name: '酷漫网',
@@ -13,7 +14,7 @@ module.exports.Book = {
     const resdata: any = [];
     for(const v of res){
       const e = new Element(v);
-      const tags = v.$$eval('li.biaoqian a', res => {
+      const tags = await v.$$eval('li.biaoqian a', res => {
         let tags: any = [];
         for (const e of res) {
           tags.push(e.innerHTML);
@@ -21,6 +22,7 @@ module.exports.Book = {
         tags = tags.join(",");
         return tags
       });
+      // console.log(tags)
       resdata.push({
         tags: tags,
         author: await e.Html('li.zuozhe'),
@@ -31,11 +33,25 @@ module.exports.Book = {
       })
     }
     return resdata
-  }
+  },
+  // 爬取 下一页数据
+  next: {
+    selector: 'div.page', // 列表选择器
+    async handle(e: any, urlStr: string){
+      let page = await e.$eval('a.mun', (e: any) => e.innerHTML)
+      let maxPage = await e.$$eval('a', (ele: any) => {
+        return ele[ele.length-1].innerHTML
+      })
+      if(parseInt(maxPage) > parseInt(page)){
+        return `http://www.kuman.com/all/list---------${(parseInt(page) + 1)}-1/`
+      }
+      return false
+    }
+  },
 }
 
 // 数据章节配置
-module.exports.chapter = {
+module.exports.Chapter = {
   selector: 'div#play_0 ul li', // 列表选择器
   async handle (res, Element): Promise<any> { // 处理数据
     const resdata: any = [];
@@ -55,7 +71,7 @@ module.exports.chapter = {
   }
 }
 
-module.exports.content = {
+module.exports.Content = {
   selector: 'div.show_list ul li', // 列表选择器
   async handle (res, Element): Promise<any> { // 处理数据
     const resdata: any = [];

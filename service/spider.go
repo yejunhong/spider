@@ -77,7 +77,7 @@ func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
         select{
             case <-spiderRequset.End:
                 <-next
-                fmt.Println(1)
+                // fmt.Println(1)
                 if isend == true && len(spiderRequset.CartoonList) == 0 {
                     spiderEnd <- 1 // 中断程序
                 } 
@@ -97,7 +97,7 @@ func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
  *
  */
 func (spider *Spider) SpiderContentByResourceId(resourceId int64) {
-    var request chan *Drive.Request = make(chan *Drive.Request, 10)
+    var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
     var resource model.CartoonResource = spider.Models.GetCartoonById(resourceId)
     var spiderRequset *SpiderRequset = &SpiderRequset{
@@ -107,7 +107,7 @@ func (spider *Spider) SpiderContentByResourceId(resourceId int64) {
         CartoonChapter: make(map[string]model.CartoonChapter),
     }
     go spider.Browser.Content(spiderRequset)
-    var next chan int = make(chan int, 10)
+    var next chan int = make(chan int, 5)
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息

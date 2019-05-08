@@ -15,7 +15,7 @@ type CartoonChapterContent struct{
  * 通过章节id 删除章节内容数据
  *
  */
- func (model *Model) DeleteChapterContentByChapterUniqueId(ChapterUniqueId string){
+func (model *Model) DeleteChapterContentByChapterUniqueId(ChapterUniqueId string){
 	model.Db.Where("chapter_unique_id = ?", ChapterUniqueId).Delete(CartoonChapterContent{})
 }
 
@@ -26,7 +26,7 @@ type CartoonChapterContent struct{
  * @return []CartoonChapterContent{}
  *
  */
- func (model *Model) GetContentsFindByChapterUniqueId(unique_id string) []CartoonChapterContent{
+func (model *Model) GetContentsFindByChapterUniqueId(unique_id string) []CartoonChapterContent{
 	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
 	model.Db.Where("chapter_unique_id = ?", unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
@@ -39,7 +39,7 @@ type CartoonChapterContent struct{
  * @return []CartoonChapterContent{}
  *
  */
- func (model *Model) GetContentsFindByChapterListUniqueId(list_unique_id string) []CartoonChapterContent{
+func (model *Model) GetContentsFindByChapterListUniqueId(list_unique_id string) []CartoonChapterContent{
 	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
 	model.Db.Where("list_unique_id = ?", list_unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
@@ -52,7 +52,7 @@ type CartoonChapterContent struct{
  * @return []CartoonChapterContent{}
  *
  */
- func (model *Model) GetContentsImgFindByListUniqueId(list_unique_id string) []CartoonChapterContent{
+func (model *Model) GetContentsImgFindByListUniqueId(list_unique_id string) []CartoonChapterContent{
 	var cartoonChapters []CartoonChapterContent = []CartoonChapterContent{}
 	model.Db.Where("list_unique_id = ? AND download_img_url IS NULL", list_unique_id).Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
@@ -65,6 +65,6 @@ type CartoonChapterContent struct{
  * @param imgPath string 图片地址
  *
  */
- func (model *Model) UpdateCartoonContentById(id int64, udata map[string]interface{}){
+func (model *Model) UpdateCartoonContentById(id int64, udata map[string]interface{}){
 	model.Db.Table("cartoon_chapter_content").Where("id = ?", id).Updates(udata)
 }

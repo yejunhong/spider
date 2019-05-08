@@ -7,7 +7,7 @@ module.exports.Page = {
     /*CNZZDATA1260292476=38577323-1553934597-%7C1553934597; 
     UM_distinctid=169ce00b0d412d-0fc3f772ab10708-7e145f62-4a574-169ce00b0d5b5; 
     ASPSESSIONIDQCRRDQCT=ILJMIPDDOMCGOOLGNFCCLHNN; 
-    sid=6807933; 
+    sid=6807933;  
     token=3300330093007300030083006300160057008600E6001600D600*/
     {name: "sid", value:"6807933", domain: "c1021.w406.s1388630.ririyue.cn"},
     {name: "token", value: "3300330093007300030083006300160057008600E6001600D600", domain: "c1021.w406.s1388630.ririyue.cn"},
@@ -19,11 +19,11 @@ module.exports.Page = {
 // 获取书籍列表
 module.exports.Book = {
   selector: 'body', // 列表选择器
+  print: true,
   // selector: 'table.bookshelfListMain', // 列表选择器
   async jsonHandle(res: any): Promise<any> {
     // const json = await res.$eval()
     const resdata: any = [];
-    console.log(3)
     res.data.map((v: any) => {
       resdata.push({
         resource_name: v.title,
@@ -33,6 +33,8 @@ module.exports.Book = {
         author: v.author
       })
     })
+    console.log(resdata)
+    return [];
     return resdata
   },
   // 爬取 下一页数据
@@ -56,6 +58,7 @@ module.exports.Book = {
 // 数据章节配置
 module.exports.Chapter = {
   selector: 'div.titleDiv', // 列表选择器
+  print: true,
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     for(const v of res){
