@@ -1,3 +1,6 @@
 protoc --go_out=plugins=grpc:. ./grpc/drive.proto
-
 export LD_LIBRARY_PATH=/usr/local/lib
+export GOPROXY=https://goproxy.io
+
+
+curl -H "Content-Type:jpeg" --data-binary @1.jpg "http://upload.manhua118.com/Img/Index/load"

@@ -3,45 +3,64 @@ package main
 import (
     "bytes"
     "fmt"
-    "io/ioutil"
-    "golang.org/x/image/webp"
+    "io"
+    "mime/multipart"
+    "net/http"
+    "os"
 )
 
 func main() {
-    var buf bytes.Buffer
-    var width, height int
-    var data []byte
-    var err error
+    Upload("http://upload.manhua118.com/Img/Index/load", "./1.jpg")
+}
 
-    // Load file data
-    if data, err = ioutil.ReadFile("/Volumes/book/cover/C006/ace9b4a7a2a91683aea181806a6ac4e3.jpg"); err != nil {
-        fmt.Println(err)
-    }
-
-    // GetInfo
-    if width, height, _, err = webp.GetInfo(data); err != nil {
-        fmt.Println(err)
-    }
-    fmt.Printf("width = %d, height = %d\n", width, height)
-
-    // GetMetadata
-    if metadata, err := webp.GetMetadata(data, "ICCP"); err != nil {
-        fmt.Printf("Metadata: err = %v\n", err)
-    } else {
-        fmt.Printf("Metadata: %s\n", string(metadata))
-    }
-
-    // Decode webp
-    m, err := webp.Decode(bytes.NewReader(data))
+func Upload(url, file string) (err error) {
+    // Prepare a form that you will submit to that URL.
+    var b bytes.Buffer
+    w := multipart.NewWriter(&b)
+    // Add your image file
+    f, err := os.Open(file)
     if err != nil {
-        fmt.Println(err)
+        return 
     }
+    defer f.Close()
+    fw, err := w.CreateFormFile("image", file)
+    if err != nil {
+        return 
+    }
+    if _, err = io.Copy(fw, f); err != nil {
+        return
+    }
+    // Add the other fields
+    if fw, err = w.CreateFormField("key"); err != nil {
+        return
+    }
+    if _, err = fw.Write([]byte("KEY")); err != nil {
+        return
+    }
+    // Don't forget to close the multipart writer.
+    // If you don't close it, your request will be missing the terminating boundary.
+    w.Close()
 
-    // Encode lossless webp
-    if err = webp.Encode(&buf, m, &webp.Options{Lossless: true}); err != nil {
-        fmt.Println(err)
+    // Now that you have a form, you can submit it to your handler.
+    req, err := http.NewRequest("POST", url, &b)
+    if err != nil {
+        return 
     }
-    if err = ioutil.WriteFile("output.webp", buf.Bytes(), 0666); err != nil {
-        fmt.Println(err)
+    // Don't forget to set the content type, this will contain the boundary.
+    req.Header.Set("Content-Type", w.FormDataContentType())
+
+    // Submit the request
+    client := &http.Client{}
+    res, err := client.Do(req)
+    if err != nil {
+        return 
     }
+    body := &bytes.Buffer{}
+     body.ReadFrom(res.Body)
+    fmt.Println(body)
+    // Check the response
+    if res.StatusCode != http.StatusOK {
+        err = fmt.Errorf("bad status: %s", res.Status)
+    }
+    return
 }

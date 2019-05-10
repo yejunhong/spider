@@ -162,7 +162,6 @@ type ImgUpload struct {
 	Data Data
 }
 func UploadImg(imgUrl string) *ImgUpload {
-
     img := &ImgUpload{}
     resp, err_ := http.Get("http://upload.manhua118.com/Img/Index/load?url=" + imgUrl)
     if err_ != nil {
