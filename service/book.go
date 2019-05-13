@@ -72,6 +72,7 @@ func (service *Service) RecordChapter(
             "content": "",
             "is_free": v.IsFree,
             "status": 0,
+            "detail": v.Detail,
             "resource_url": v.ResourceUrl,
             "resource_name": v.ResourceName,
             "resource_img_url": v.ResourceImgUrl,

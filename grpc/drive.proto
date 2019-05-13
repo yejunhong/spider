@@ -31,6 +31,7 @@ message Detail {
 message Chapter{  // 漫画章节列表
   string is_free = 1;
   string resource_name = 2;
+  string detail = 5;
   string resource_url = 3;
   string resource_img_url = 4;
 }

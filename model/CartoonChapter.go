@@ -11,6 +11,7 @@ type CartoonChapter struct{
 	IsFree int64
 	Status int64
 	Content string
+	Detail string
 	ResourceUrl string
 	ResourceName string
 	ResourceImgUrl string

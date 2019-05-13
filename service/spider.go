@@ -44,6 +44,7 @@ func (spider *Spider) SpiderBookByResourceId(resourceId int64){
  *
  */
 func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
+    
     var request chan *Drive.Request = make(chan *Drive.Request, 5)
     var end chan int = make(chan int, 1)
 
@@ -59,7 +60,8 @@ func (spider *Spider) SpiderChapterByResourceId(resourceId int64) {
     var spiderEnd chan int = make(chan int, 1)
     var isend bool = false // 是否结束程序
     go func() { // 协程 发送爬虫信息
-        var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 0)
+        
+        var cartoonInfo = spider.Models.GetCartoonListByNoStatus(resource.ResourceNo, 1)
         for _, v := range cartoonInfo {
             var IdStr string = strconv.FormatInt(v.Id,10)
             spiderRequset.CartoonList[IdStr] = v

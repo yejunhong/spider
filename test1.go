@@ -14,11 +14,12 @@ func main(){
  
     var models *model.Model = &model.Model{
         Db: model.InitDb(config.Db_caiji.Host, config.Db_caiji.User, config.Db_caiji.Pass, config.Db_caiji.Name),
-        Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
+        // Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
         // DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
+    fmt.Println(1)
     var services = service.Service{models}
-    
+    /*
     var bookList = models.GetCartoonListByNoStatus("C001", 1)
     for _, v := range bookList {
         fmt.Println("书籍名称：", v.ResourceName)
@@ -27,7 +28,7 @@ func main(){
         services.DownloadBookIdContentImg(v.UniqueId)
         fmt.Println("下载书籍完毕。")
     }
-    return
+    return*/
     
     var browser service.NodeBrowser = service.NodeBrowser{Service: services}
     
@@ -35,6 +36,6 @@ func main(){
    
     var resource service.Spider = service.Spider{Models: models, Browser: browser}
     // resource.SpiderBookByResourceId(6)
-    // resource.SpiderChapterByResourceId(2)
-    resource.SpiderContentByResourceId(2)
+    resource.SpiderChapterByResourceId(7)
+    // resource.SpiderContentByResourceId(7)
 }
