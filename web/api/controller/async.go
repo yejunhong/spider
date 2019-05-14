@@ -182,10 +182,11 @@ func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter [
 		var chapter_price int = 0
 		var ids []int64
 
-    for _, v := range chapter {
+    for k, v := range chapter {
 			ids = append(ids, v.Id)
 			var path = "upload/book/" + strconv.FormatInt(portalBook.Id, 10) + "/" + v.UniqueId + ".txt"
-			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
+			// var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
+			sort = k + 1;
 			if sort > 5 {
 				chapter_price = 25
 			}
