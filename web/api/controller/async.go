@@ -87,6 +87,9 @@ import (
 			var wait sync.WaitGroup
 			var next chan int = make(chan int, 10) // 并发5
 			for k, v := range bookList {
+				if v.ResourceName == "临时书籍" {
+					continue
+				}
 				wait.Add(1)
 				go func(info model.CartoonList) {
 					var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(info.UniqueId, 1)
@@ -121,8 +124,12 @@ var src = "./static/"
 // 小说文章管理
 func(controller *Controller) ayncPortalPost(book model.CartoonList) CmfPortalPost {
 
-	var path = "upload/bookcover/" + book.UniqueId + ".jpg"
-	lib.DonwloadFile(src + path, book.ResourceImgUrl)
+	var path = ""
+	if book.ResourceImgUrl != "" {
+		path = "upload/bookcover/" + book.UniqueId + ".jpg"
+		lib.DonwloadFile(src + path, book.ResourceImgUrl)
+	}
+	
 
 	var post_source = "完结"
 	if book.IsEnd == 0 {
@@ -187,8 +194,8 @@ func(controller *Controller) ayncPortalChapter(book model.CartoonList, chapter [
 				"status": 1, // '状态;1:显示;0:不显示',
 				"price": chapter_price,// '价格 、观看金币。0为免费',
 				"list_order": sort, // '排序',
-				"chapter_excerpt":  book.Detail, // '摘要',
-				"chapter_keywords": book.Detail,
+				"chapter_excerpt":  v.Detail, // '摘要',
+				"chapter_keywords": v.Detail,
 				"chapter_content": path,
 				"create_time": lib.Time(),
 				"update_time": lib.Time(),

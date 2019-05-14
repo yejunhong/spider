@@ -35,12 +35,24 @@ type CartoonChapter struct{
 /**
  *
  * 通过id 获取漫画资源书籍
- * @return CartoonResource{}
+ * @return cartoon_chapter{}
  *
  */
  func (model *Model) GetCartoonChapterListByNo(no string) []CartoonChapter{
 	var cartoon_chapter []CartoonChapter = []CartoonChapter{}
 	model.Db.Where("resource_no = ? AND is_free = 0 AND status = 0", no).Limit(20000).Find(&cartoon_chapter)
+	return cartoon_chapter
+}
+
+/**
+ *
+ * 通过数据唯一ID 获取书籍章节 指定数量
+ * @return CartoonChapter{}
+ *
+ */
+ func (model *Model) GetChapterListByNoNum(uniqueId string, num int64) []CartoonChapter{
+	var cartoon_chapter []CartoonChapter = []CartoonChapter{}
+	model.Db.Where("list_unique_id = ? AND content <> ''", uniqueId).Limit(num).Find(&cartoon_chapter)
 	return cartoon_chapter
 }
 

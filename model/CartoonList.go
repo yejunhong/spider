@@ -9,7 +9,6 @@ type CartoonList struct{
 	Id int64
 	ResourceNo string
 	UniqueId string
-	Title string
 	Tags string
 	Author string
 	Detail string
@@ -56,6 +55,10 @@ type CartoonList struct{
  */
  func (model *Model) GetCartoonListByNoStatus(no string, status int64) []CartoonList{
 	var cartoon_list []CartoonList = []CartoonList{}
+	if status == -1 {
+		model.Db.Where("resource_no = ?", no).Find(&cartoon_list)
+		return cartoon_list
+	}
 	model.Db.Where("resource_no = ? AND status = ?", no, status).Find(&cartoon_list)
 	return cartoon_list
 }
