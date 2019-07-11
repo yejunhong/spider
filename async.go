@@ -17,11 +17,11 @@ func main(){
         // DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
 
-    var no string = "C007"
-    for i := 0 ; i < 5; i ++ {
+    var no string = "C009"
+    for i := 0 ; i < 4; i ++ {
         var book = models.GetCartoonListByNoStatus(no, -1)
-        var bookName = Transfer(len(book))
-        var list = models.GetChapterListByNoNum("C0072019", 350)
+        var bookName = Transfer(len(book) + 24)
+        var list = models.GetChapterListByNoNum("C009", 350)
         var title string = "第" + bookName + "本"
         var ids []int64
         for _, v := range list {
