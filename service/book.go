@@ -3,11 +3,13 @@ package service
 import (
     "fmt"
     "os"
+    "time"
     "net/http"
     "io/ioutil"
     "encoding/json"
     "spider/model"
     "spider/lib"
+    "sync"
     Drive "spider/grpc"
 )
 
@@ -61,13 +63,15 @@ func (service *Service) RecordChapter(
 
     var cartoon_is_free string = "0"
     var data []map[string]interface{}
+    fmt.Println("抓取章节数量：", len(chapter.Data))
     for _, v := range chapter.Data {
         if v.IsFree == "1" && cartoon_is_free == "0" {
             cartoon_is_free = "1"
         }
+        var UniqueId = lib.MD5(cartoonInfo.UniqueId + cartoon.ResourceNo + v.ResourceName)
         data = append(data, map[string]interface{}{
             "resource_no": cartoon.ResourceNo,
-            "unique_id": lib.MD5(cartoonInfo.UniqueId + cartoon.ResourceNo + v.ResourceName),
+            "unique_id": UniqueId,
             "list_unique_id": cartoonInfo.UniqueId,
             "content": "",
             "is_free": v.IsFree,
@@ -78,8 +82,9 @@ func (service *Service) RecordChapter(
             "resource_img_url": v.ResourceImgUrl,
             "book_type": cartoon.BookType,
             "cdate": lib.Time(),
+            "sort": v.Sort,
         })
-        donwloadFile("chapter/" + cartoon.ResourceNo, v.ResourceImgUrl)
+        donwloadFile("chapter/" + cartoon.ResourceNo + "/" + cartoonInfo.UniqueId, v.ResourceImgUrl)
     }
     if len(data) > 0 {
         var updateInfo = map[string]interface{}{"status": 1}
@@ -93,7 +98,7 @@ func (service *Service) RecordChapter(
             updateInfo["is_end"] = chapter.Detail.IsEnd
         }
         service.Models.UpdateCartoonListById(cartoonInfo.Id, updateInfo)
-        service.Models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url"})
+        service.Models.BatchInsert("cartoon_chapter", data, []string{"is_free", "resource_url", "resource_name", "resource_img_url", "sort"})
     }
 }
 
@@ -131,9 +136,11 @@ func (service *Service) RecordContent(
     }
     
     if cartoon.BookType == 2 {
-        service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{
-            "status": 1,
-            "content": content.Data[0].ResourceImgUrl})
+        if len(content.Data) >= 1 {
+            service.Models.UpdateCartoonChapterById(cartoonChapter.Id, map[string]interface{}{
+                "status": 1,
+                "content": content.Data[0].ResourceImgUrl})
+        } 
     }
 
 }   
@@ -145,11 +152,13 @@ func (service *Service) RecordContent(
  * @param url string 下载url
  *
  */
- func donwloadFile(p string, url string) {
+ func donwloadFile(p string, url string) string {
+    var md5Url string = lib.MD5(url)
     if url != "" {
-        var path = "/Volumes/book/" + p + "/" + lib.MD5(url) + ".jpg"
+        var path = "/data/book/" + p + "/" + md5Url + ".jpg"
         lib.DonwloadFile(path, url)
     }
+    return md5Url
 }
 
 type Data struct {
@@ -164,19 +173,31 @@ type ImgUpload struct {
 }
 func UploadImg(imgUrl string) *ImgUpload {
     img := &ImgUpload{}
-    resp, err_ := http.Get("http://upload.manhua118.com/Img/Index/load?url=" + imgUrl)
+
+    client := &http.Client{
+        Timeout: time.Second * 10,
+    }
+    // var md5Url = donwloadFile("tmp", imgUrl)
+    var uploadUrl = `http://upload.manhua118.com/Img/Index/load?url=http://ye153259.viphk1.ngrok.org/img/` + imgUrl + ".jpg"
+    // fmt.Println(uploadUrl)
+    resp, err_ := client.Get(uploadUrl)
     if err_ != nil {
+        fmt.Println("请求超时", uploadUrl)
         return img
     }
     defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+        fmt.Println("获取body失败", uploadUrl)
 		return img
 	}
 	var errs = json.Unmarshal(body, img)
 	if errs != nil {
+        fmt.Println("获取json参数错误", uploadUrl)
 	    return img
-	}
+    }
+    // fmt.Println(imgUrl)
+    // os.Remove("/data/book/" + imgUrl + ".jpg") // 上传完后 删除图片
 	return img
 }
 
@@ -187,8 +208,8 @@ func UploadImg(imgUrl string) *ImgUpload {
  * @param resourceUrl 书籍封面
  *
  */
- func (service *Service) DownloadBookIdImg(bookId int64, resourceUrl string){
-    var UploadFileContent = UploadImg(resourceUrl)
+ func (service *Service) DownloadBookIdImg(bookId int64, resourceNo string, resourceUrl string){
+    var UploadFileContent = UploadImg("cover/" + resourceNo + "/" + lib.MD5(resourceUrl))
     service.Models.UpdateCartoonListById(bookId, map[string]interface{}{"download_img_url": UploadFileContent.Data.Img})
 }
 
@@ -203,10 +224,12 @@ func UploadImg(imgUrl string) *ImgUpload {
     var count = len(chapters)
     fmt.Println("\r\n同步章节图片")
     for k, img := range chapters {
-        var UploadFileContent = UploadImg(img.ResourceImgUrl)
+        var imgUrl = "chapter/" + img.ResourceNo +"/"+UniqueId+ "/" + lib.MD5(img.ResourceImgUrl)
+        var UploadFileContent = UploadImg(imgUrl)
         var filePath string = UploadFileContent.Data.Img
         if filePath != "" {
             service.Models.UpdateCartoonChapterById(img.Id, map[string]interface{}{"download_img_url": filePath})
+            // os.Remove(imgUrl + ".jpg") // 删除文件test.txt
         }
         fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
         os.Stdout.Sync()
@@ -218,21 +241,57 @@ func UploadImg(imgUrl string) *ImgUpload {
  * 下载书籍章节内容图片
  * @param UniqueId 书籍唯一ID
  *
- */
+*/
 func (service *Service) DownloadBookIdContentImg(UniqueId string){
     var content = service.Models.GetContentsImgFindByListUniqueId(UniqueId)
     var count = len(content)
     fmt.Println("\r\n同步章节内容图片")
+
+    var waitGroup sync.WaitGroup
+    
+    var i chan int = make(chan int, 15)
     for k, img := range content {
-        var UploadFileContent = UploadImg(img.ResourceUrl)
-        var filePath string = UploadFileContent.Data.Img
-        if filePath != "" {
-            /*go func(Id int64, file string){
-                service.Models.UpdateCartoonContentById(Id, map[string]interface{}{"download_img_url": file})
-            }(img.Id, filePath)*/
-            service.Models.UpdateCartoonContentById(img.Id, map[string]interface{}{"download_img_url": filePath})
-        }
-        fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
-        os.Stdout.Sync()
+        waitGroup.Add(1) // 增加计算器
+        i <- 1
+        go func(img model.CartoonChapterContent, k int) {
+            var p = "content/" + img.ResourceNo + "/" + img.ListUniqueId + "/" + img.ChapterUniqueId + "/" + lib.MD5(img.ResourceUrl)
+            var UploadFileContent = UploadImg(p)
+            var filePath string = UploadFileContent.Data.Img
+            if filePath != "" {
+                service.Models.UpdateCartoonContentById(img.Id, map[string]interface{}{"download_img_url": filePath})
+                fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
+                os.Stdout.Sync()
+            }
+            <- i
+            waitGroup.Done()
+        }(img, k)
     }
-}
+    waitGroup.Wait()
+} 
+/**
+ *
+ * 下载书籍章节内容图片
+ * @param UniqueId 书籍唯一ID
+ *
+
+func (service *Service) DownloadBookIdContentImg(UniqueId string){
+    var content = service.Models.GetContentsImgFindByListUniqueId(UniqueId)
+    var count = len(content)
+    fmt.Println("\r\n同步章节内容图片")
+    var c chan int = make(chan int, 2)
+    for k, img := range content {
+        // fmt.Println("下载地址：", img.ResourceUrl)
+        c <- 1
+        go func(img model.CartoonChapterContent){
+            var p = "content/" + img.ResourceNo + "/" + img.ListUniqueId + "/" + img.ChapterUniqueId + "/" + lib.MD5(img.ResourceUrl)
+            var UploadFileContent = UploadImg(p)
+            var filePath string = UploadFileContent.Data.Img
+            if filePath != "" {
+                service.Models.UpdateCartoonContentById(img.Id, map[string]interface{}{"download_img_url": filePath})
+                fmt.Printf("\r图片同步：%d/%d-处理总数：%s", (k + 1), count, filePath)
+                os.Stdout.Sync()
+            }
+            <-c
+        }(img)
+    }
+} */

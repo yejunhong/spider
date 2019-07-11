@@ -17,25 +17,15 @@ func main(){
         // Db61: model.InitDb(config.Db_xiaoshuo.Host, config.Db_xiaoshuo.User, config.Db_xiaoshuo.Pass, config.Db_xiaoshuo.Name),
         // DbManhua: model.InitDb(config.Db_manhua.Host, config.Db_manhua.User, config.Db_manhua.Pass, config.Db_manhua.Name),
     }
-
     var services = service.Service{models}
     var browser service.NodeBrowser = service.NodeBrowser{Service: services}
     browser.CreateBrowserClient() // 创建浏览器客户端
-    var resource service.Spider = service.Spider{Models: models, Browser: browser}
-    /*/
-    var browser service.NodeBrowser = service.NodeBrowser{Service: services}
-    browser.CreateBrowserClient() // 创建浏览器客户端
-    var bookList = models.GetCartoonListByNoStatus("C008", 0)
+    var bookList = models.GetCartoonListByNoStatus("C008", 1)
     for k, v := range bookList {
-        fmt.Println("书籍名称：", v.ResourceName, k + 1)
-        // services.DownloadBookIdImg(v.Id, v.ResourceNo, v.ResourceImgUrl)
-        services.DownloadBookIdChaptersImg(v.UniqueId)
+        // 下载书籍
+        // fmt.Println("下载书籍章节图片", v.ResourceName, k + 1)
+        // services.DownloadBookIdChaptersImg(v.UniqueId)
+        fmt.Println("下载书籍章节内容图片", v.ResourceName, k + 1)
         services.DownloadBookIdContentImg(v.UniqueId)
-        // fmt.Println("下载书籍完毕。")
     }
-    return*/
-    fmt.Println("开始爬取")
-    // resource.SpiderBookByResourceId(8)
-    // resource.SpiderChapterByResourceId(9)
-    resource.SpiderContentByResourceId(9)
 }

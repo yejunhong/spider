@@ -81,16 +81,14 @@ module.exports.Chapter = {
 module.exports.Content = {
   selector: 'body', // 列表选择器
   print: false,
-  browser_request: false, // 是通过浏览器请求
+  // browser_request: false, // 是通过浏览器请求
   async handle (res: any, Element: any): Promise<any> { // 处理数据
     const resdata: any = [];
     resdata.push({
       resource_img_url: await res[0].$eval("div.post-content", (e: any) => {
-        e.removeAttribute("p.center");
-        return e.innerHTML;
+        return e.innerHTML.replace(/<img(.*?)>/, '').replace(/<img(.*?)>/, '');
       }),
     })
-    // console.log(resdata)
     return resdata
   },
 }

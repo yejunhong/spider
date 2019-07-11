@@ -59,6 +59,7 @@ class Spider {
 
     if (config.jsonHandle != undefined) {
       const res = await page.JsonContent({selector: config.selector});
+      // console.log(res)
       const rData = await config.jsonHandle(JSON.parse(res));
       if (rData.list != undefined) {
         resdata.list = rData.list;

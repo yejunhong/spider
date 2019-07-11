@@ -6,36 +6,55 @@ let newBrowser: any;
 
 class Request{
   public async Write(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
-    const res = await spider.Request(page, note.url, config, PageCfg);
-    console.log(`获取数量：${res.data.length}，url：${note.url}`)
-    if(res.data.length > 0) {
-      steam.write({data: res.data, detail: res.detail, next: res.next?true: false, id: note.id});
-      if (res.next === false) {
-        await page.close() // 关闭页面
+    
+    try {
+      console.log(`Write获取数量：url：${note.url}`)
+      const res = await spider.Request(page, note.url, config, PageCfg);
+      console.log(`Write获取数量：${res.data.length}，url：${note.url}`)
+      if(res.data.length > 0) {
+        steam.write({data: res.data, detail: res.detail, next: res.next?true: false, id: note.id});
+        if (res.next === false) {
+          await page.close() // 关闭页面
+          return
+        }
+        await this.Write(steam, spider, page, {id: note.id, url: res.next}, config, PageCfg)
         return
       }
+      steam.write({data: [], detail: [], next: false, id: note.id});
+      await page.close() // 关闭页面
 
-      await this.Write(steam, spider, page, {url: res.next}, config, PageCfg)
-      return
+    }catch(e) {
+      console.log(e)
+      steam.write({data: [], detail: [], next: false, id: note.id});
+      await page.close() // 关闭页面
     }
-    steam.write({data: [], detail: [], next: false, id: note.id});
-    await page.close() // 关闭页面
+    
   }
 
   public async WriteNoDetail(steam: any, spider: any, page: any, note: any, config: any, PageCfg: any) {
-    const res = await spider.Request(page, note.url, config, PageCfg);
-    console.log(`获取数量：${res.data.length}，url：${note.url}`)
-    if(res.data.length > 0) {
-      steam.write({data: res.data, next: res.next?true: false, id: note.id});
-      if (res.next === false) {
-        await page.close() // 关闭页面
+    
+    try {
+      console.log(`Write获取数量：url：${note.url}`)
+      const res = await spider.Request(page, note.url, config, PageCfg);
+      console.log(`WriteNoDetail获取数量：${res.data.length}，url：${note.url}`)
+      if(res.data.length > 0) {
+        steam.write({data: res.data, next: res.next?true: false, id: note.id});
+        if (res.next === false) {
+          await page.close() // 关闭页面
+          return
+        }
+        await this.Write(steam, spider, page, {url: res.next}, config, PageCfg)
         return
       }
-      await this.Write(steam, spider, page, {url: res.next}, config, PageCfg)
-      return
+      steam.write({data: [], next: false, id: note.id});
+      await page.close() // 关闭页面
+
+    }catch(e) {
+      console.log(e)
+      steam.write({data: [], next: false, id: note.id});
+      await page.close() // 关闭页面
     }
-    steam.write({data: [], next: false, id: note.id});
-    await page.close() // 关闭页面
+
   }
 
 }

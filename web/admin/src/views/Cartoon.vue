@@ -12,7 +12,7 @@
                 {{v.IsEnd == 0 ? '连载': '完结'}} 
                 {{chapters_count[v.UniqueId]?chapters_count[v.UniqueId].Number:0}}
               </div>
-              <img :src="v.ResourceImgUrl" @click="SelectCartoonChapter(v)" style="height: 150%;position: relative;">
+              <img :src="v.DownloadImgUrl" @click="SelectCartoonChapter(v)" style="height: 150%;position: relative;">
             </div>
             <span class="title">{{v.ResourceName}}</span>
             <div class="row">
@@ -21,7 +21,7 @@
             </div>
             <div class="row">
               <el-button type="text" @click="DataAsyncProduce(v)" size="mini">
-                同步到生产库<span v-loading="true" style="width:24px;height:24px;"></span>
+                同步到生产库<span style="width:24px;height:24px;"></span>
               </el-button>
             </div>
             <div class="row">{{v.CdateText}}</div>
@@ -45,7 +45,7 @@
           </el-row>
         </div>
         <div v-if="this.resource.BookType == 1" style="width: 59vw;" class="scroll" ref="scrollDiv" v-loading="loading">
-          <img class="chapter-img" :src="v.ResourceUrl" width="100%" v-for="(v, k) in cartoon_chapter_content" :key="k"/>
+          <img class="chapter-img" :src="v.DownloadImgUrl" width="100%" v-for="(v, k) in cartoon_chapter_content" :key="k"/>
         </div>
         <div style="width: 59vw;" class="scroll" v-else v-html="cartoon_chapter.Content"></div>
       </div>

@@ -16,6 +16,7 @@ type CartoonChapter struct{
 	ResourceName string
 	ResourceImgUrl string
 	DownloadImgUrl string
+	Sort int64
 	BookType int64
 	Cdate int64
 }
@@ -79,7 +80,7 @@ func (model *Model) UpdateCartoonChapterByIds(ids []int64, udata map[string]inte
 	if status != -1 {
 		CartoonsDb = CartoonsDb.Where("status = ?", status)
 	}
-	CartoonsDb.Order("LPAD(resource_name, 10, '序')").Find(&cartoonChapters) // 执行sql
+	CartoonsDb.Find(&cartoonChapters) // 执行sql
 	return cartoonChapters
 }
 

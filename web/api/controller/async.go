@@ -28,14 +28,15 @@ import (
 
 	if resource.BookType == 1 { // 漫画
 		go func() {
-			/*fmt.Println("同步开始")
+			fmt.Println("同步开始")
 			var category map[string]CmfPortalCategory  = controller.ManhuaCategoryList()
 			var chapterLists []model.CartoonChapter = controller.Model.GetChaptersFindByListUniqueId(bookInfo.UniqueId, 1)
 			var portalBook CmfPortalPost = controller.ayncManhuaPortalPost(bookInfo)
 			controller.ayncManhuaPortalChapter(bookInfo, chapterLists, portalBook)
 			controller.ayncManhuaCategory(bookInfo, portalBook.Id, category)
 			fmt.Println("同步结束")
-			fmt.Println(len(chapterList))*/
+			/*
+			fmt.Println(len(chapterList))
 			var bookList = controller.Model.GetSqlCartoonListByNo(bookInfo.ResourceNo)
 			fmt.Println("需要同步：", len(bookList))
 			var category map[string]CmfPortalCategory  = controller.ManhuaCategoryList()
@@ -73,7 +74,7 @@ import (
 			}
 			wait.Wait()
 			fmt.Println("同步完毕")
-			
+			*/
 		}()
 
 	} else {
@@ -288,79 +289,81 @@ func(controller *Controller) ayncManhuaPortalPost(book model.CartoonList) CmfPor
 			"unique_id": book.UniqueId, // '数据同步唯一标识',
 		},
 	}
-	model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt", "isfinish"})
+	model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_post", bookData, []string{"more", "post_source", "post_title", "post_excerpt", "isfinish", "chapter_update_time"})
 	// 修改同步信息
 	controller.Model.UpdateCartoonListById(book.Id, map[string]interface{}{"is_async": 1})
 	var bookInfo CmfPortalPost
 	controller.Model.DbManhua.Where("unique_id = ?", book.UniqueId).Find(&bookInfo)
-	fmt.Println()
 	return bookInfo
 }
 
 // 同步漫画
 func(controller *Controller) ayncManhuaPortalChapter(book model.CartoonList, chapter []model.CartoonChapter, portalBook CmfPortalPost) {
 	
-		var data []map[string]interface{}
-		var chapter_price int = 0
-		var ids []int64
+	var data []map[string]interface{}
+	var ids []int64
 
-		var img = map[string][]model.CartoonChapterContent{}
-		var contents = controller.Model.GetContentsFindByChapterListUniqueId(book.UniqueId)
+	var img = map[string][]model.CartoonChapterContent{}
+	var contents = controller.Model.GetContentsFindByChapterListUniqueId(book.UniqueId)
 
-		for _, v := range contents {
-			img[v.ChapterUniqueId] = append(img[v.ChapterUniqueId], v)
-		}
-		
-		fmt.Println("获取数据所有内容：", book.ResourceName, len(img))
-		var l = len(chapter)
+	for _, v := range contents {
+		img[v.ChapterUniqueId] = append(img[v.ChapterUniqueId], v)
+	}
+	
+	fmt.Println("获取数据所有内容：", book.ResourceName, len(img))
+	var l = len(chapter)
+	var str string = "";
     for k, v := range chapter {
-
-			ids = append(ids, v.Id)
-			var sort int = lib.InterceptStrNumberToInt(v.ResourceName)
-			if sort > 2 {
-				chapter_price = 48
-			}
-			var more = map[string]interface{}{
-				"thumbnail": v.DownloadImgUrl,
-				"files": []map[string]string{},
-			}
-			var photos = []map[string]string{}
-			for k, img := range img[v.UniqueId] {
-				photos = append(photos, map[string]string{
-					"url": img.DownloadImgUrl,
-					"name": strconv.Itoa((k + 1)) + ".jpg",
-				})
-			}
-			more["photos"] = photos
-			moreString, _ := json.Marshal(more)
-
-			data = append(data, map[string]interface{}{
-				"status": 1, // '状态;1:显示;0:不显示',
-				"price": chapter_price,// '价格 、观看金币。0为免费',
-				"list_order": sort, // '排序',
-				"chapter_excerpt":  book.Detail, // '摘要',
-				"chapter_keywords": book.Detail,
-				"chapter_content": book.Detail,
-				"more": string(moreString),
-				"create_time": lib.Time(),
-				"update_time": lib.Time(),
-				"name": v.ResourceName, // '章节名称',
-				"published_time": lib.Time(), // '发布时间',
-				"pid": portalBook.Id, // '对应的上级ID',
-				"unique_id": v.UniqueId, // '数据同步唯一标识',
-			})
-			if (len(data) > 10) {
-				model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"pid", "more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
-				data = []map[string]interface{}{}
-			}
-			fmt.Printf("\r已同步%d章节：%d/%d", portalBook.Id, k + 1, l)
-			os.Stdout.Sync()
-    }
-    if len(data) > 0 {
-			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+		var chapter_price int = 0
+		ids = append(ids, v.Id)
+		if v.Sort > 2 {
+			chapter_price = 48
 		}
-		controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
-		fmt.Println()
+		var more = map[string]interface{}{
+			"thumbnail": v.DownloadImgUrl,
+			"files": []map[string]string{},
+		}
+		var photos = []map[string]string{}
+		for k, img := range img[v.UniqueId] {
+			photos = append(photos, map[string]string{
+				"url": img.DownloadImgUrl,
+				"name": strconv.Itoa((k + 1)) + ".jpg",
+			})
+		}
+		more["photos"] = photos
+		moreString, _ := json.Marshal(more)
+
+		data = append(data, map[string]interface{}{
+			"status": 1, // '状态;1:显示;0:不显示',
+			"price": chapter_price,// '价格 、观看金币。0为免费',
+			"list_order": v.Sort, // '排序',
+			"chapter_excerpt":  book.Detail, // '摘要',
+			"chapter_keywords": book.Detail,
+			"chapter_content": book.Detail,
+			"more": string(moreString),
+			"create_time": lib.Time(),
+			"update_time": lib.Time(),
+			"name": v.ResourceName, // '章节名称',
+			"published_time": lib.Time(), // '发布时间',
+			"pid": portalBook.Id, // '对应的上级ID',
+			"unique_id": v.UniqueId, // '数据同步唯一标识',
+		})
+		if (len(data) > 10) {
+			model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"pid", "more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+			data = []map[string]interface{}{}
+		}
+		str = v.ResourceName
+		fmt.Printf("\r已同步%d章节：%d/%d", portalBook.Id, k + 1, l)
+		os.Stdout.Sync()
+	}
+	if len(data) > 0 {
+		model.DbBatchInsert(controller.Model.DbManhua, "cmf_portal_chapter", data, []string{"more", "name", "price", "chapter_excerpt", "chapter_content", "chapter_keywords", "list_order"})
+	}
+	controller.Model.UpdateCartoonChapterByIds(ids, map[string]interface{}{"is_async": 1})
+	if book.IsEnd == 0 {
+		controller.Model.DbManhua.Model(&CmfPortalPost{}).Where("id = ?", portalBook.Id).Update("post_source", str)
+	}
+	fmt.Println()
 }
 
 /**

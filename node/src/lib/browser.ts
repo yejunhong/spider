@@ -11,7 +11,7 @@ class Browser{
                       '--disable-setuid-sandbox', 
                       '--process-per-tab', 
                       '--disable-images',
-                      // '--disable-javascript',
+                      '--disable-javascript',
                       '--start-maximized'
                     ],
                     headless: true}; // headless true 无头浏览器

@@ -138,8 +138,10 @@ func(browser *NodeBrowser) Chapter(spiderRequset *SpiderRequset){
                 return
             }
             if val, ok := spiderRequset.CartoonList[data.Id]; ok {
-                browser.Service.RecordChapter(data, spiderRequset.CartoonResource, val)
-                delete(spiderRequset.CartoonChapter, data.Id)
+                go browser.Service.RecordChapter(data, spiderRequset.CartoonResource, val)
+                if data.Next == false { 
+                    delete(spiderRequset.CartoonChapter, data.Id)
+                }
             }
             
             if data.Next == false {

@@ -33,6 +33,7 @@ message Chapter{  // 漫画章节列表
   string resource_name = 2;
   string detail = 5;
   string resource_url = 3;
+  string sort = 6;
   string resource_img_url = 4;
 }
 
